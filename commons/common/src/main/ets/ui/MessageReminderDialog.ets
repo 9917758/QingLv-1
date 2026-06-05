@@ -12,7 +12,7 @@ export class MessageReminderDialog {
   private constructor() {
   }
 
-  static ShowMsgReminderPopup(vm: MsgDialogModel) {
+  static ShowMsgReminderPopup(vm: MsgDialogModel): boolean {
     if (HMPromptAction.contentNode === undefined) {
       let uiContext = GlobalContext.getUIContext();
       if (uiContext) {
@@ -34,10 +34,12 @@ export class MessageReminderDialog {
         setTimeout(() => {
           HMPromptAction.closeDialog();
         }, 2000);
+        return true;
       } else {
         TCLogger.info(TAG, `GlobalContext uiContext is empty`);
       }
     }
+    return false;
   }
 
   static CloseMsgReminderPopup() {

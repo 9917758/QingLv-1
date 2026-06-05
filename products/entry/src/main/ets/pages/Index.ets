@@ -1,6 +1,7 @@
 import { PersistenceV2 } from '@kit.ArkUI';
 import { LoginPageBuilder } from 'aggregated_login';
 import { GlobalContext, PreferenceConstant, PreferenceUtil, RouterMap, UserInfo } from 'common';
+import { FavoriteUtil } from 'health';
 import { phoneRouterControl } from 'oh_router';
 import { PersonInfoInputPageBuilder, PrivacyAgreementPageBuilder } from 'person';
 import { IndexVM } from '../viewmodel/IndexVM';
@@ -22,6 +23,11 @@ struct Index {
     phoneRouterControl.createRouter(this.pageStack)
     this.vm.registerBreakpointListener(this.getUIContext());
     this.vm.displayOrientationListener();
+    // 清理之前 bug 版本残留的收藏脏数据
+    FavoriteUtil.init();
+    // 清理提醒打卡记录（避免上次运行的 markChecked 残留干扰新测试）
+    const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
+    pref.put('reminder_checked_today', '{}');
     //读取状态值，如果为空设置为true
     let isFirstLaunch = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext())
       .get(PreferenceConstant.FIRST_LAUNCH, true) as boolean

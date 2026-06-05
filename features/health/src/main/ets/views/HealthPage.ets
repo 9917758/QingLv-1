@@ -9,6 +9,7 @@ import { HealthKnowledgeRow } from '../comp/HealthKnowledgeRow';
 import { phoneRouterControl } from 'oh_router';
 import { MessageCenterPageBuilder } from 'person';
 import { HealthRunningFoldRow } from '../comp/HealthRunningFoldRow';
+import { ReminderPlanPageBuilder } from './ReminderPlanPage';
 
 @Builder
 export function HealthPageBuilder() {
@@ -176,6 +177,43 @@ export struct HealthPage {
               ListItem() {
                 HealthKnowledgeRow({ healthModelVM: this.healthModelVM })
               }
+
+              // 用药与饮水提醒入口
+              ListItem() {
+                Row() {
+                  Image($r('app.media.health_medication_reminder_icon'))
+                    .width(24)
+                    .height(24)
+                    .margin({ right: 10 })
+                  Column({ space: 2 }) {
+                    Text('用药与饮水提醒')
+                      .fontColor($r('sys.color.font_primary'))
+                      .fontSize($r('sys.float.Body_L'))
+                      .fontWeight(FontWeight.Medium)
+                    Text('管理提醒计划，到点打卡')
+                      .fontColor($r('sys.color.font_secondary'))
+                      .fontSize($r('sys.float.Caption_S'))
+                  }
+                  .alignItems(HorizontalAlign.Start)
+                  .layoutWeight(1)
+                  Image($r('app.media.iconRight'))
+                    .width(16)
+                    .height(16)
+                    .fillColor($r('sys.color.font_tertiary'))
+                }
+                .width('100%')
+                .padding(14)
+                .backgroundColor(Color.White)
+                .borderRadius($r('sys.float.corner_radius_level7'))
+                .onClick(() => {
+                  phoneRouterControl.jumpPage({
+                    pageName: RouterMap.REMINDER_PLAN_PAGE,
+                    builder: wrapBuilder(ReminderPlanPageBuilder)
+                  })
+                })
+              }
+              .padding({ left: $r('app.float.vp_12') })
+              .width('200%')
             }
           }
           .height('100%')

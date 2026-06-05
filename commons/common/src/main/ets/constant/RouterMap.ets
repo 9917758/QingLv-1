@@ -69,5 +69,7 @@ export class RouterMap {
   public static readonly WEEKLY_REPORT_PAGE = 'WeeklyReportPage'
   // 月度报告页面
   public static readonly MONTHLY_REPORT_PAGE = 'MonthlyReportPage'
+  // 用药与饮水提醒计划页面
+  public static readonly REMINDER_PLAN_PAGE = 'ReminderPlanPage'
 }
 

@@ -1,6 +1,7 @@
-import { CommonHeader, TValueType, BarVM } from 'common'
+import { TValueType, BarVM } from 'common'
 import { OHPage, phoneRouterControl } from 'oh_router'
 import { HealthKnowledgeSingleModel } from '../viewmodel/HealthKnowledgeSingleModel';
+import { FavoriteUtil } from '../util/FavoriteUtil';
 
 @Builder
 export function HealthKnowledgeDetailPageBuilder(value: TValueType) {
@@ -24,23 +25,59 @@ export function HealthKnowledgeDetailPageBuilder(value: TValueType) {
 export struct HealthKnowledgeDetailPage {
   @Param @Require value: TValueType;
   @Local vm?: HealthKnowledgeSingleModel;
+  @Local isFaved: boolean = false; // 独立的响应式收藏状态
   @Local onReturnClick: () => void = () => {
     phoneRouterControl.popPage()
   }
 
   aboutToAppear(): void {
     this.vm = this.value as HealthKnowledgeSingleModel;
+    if (this.vm) {
+      this.isFaved = FavoriteUtil.isFavorited(this.vm.id);
+    }
+  }
+
+  toggleFavorite(): void {
+    if (this.vm) {
+      const newState = FavoriteUtil.toggleFavorite(this.vm.id);
+      this.isFaved = newState;
+      // 不再写 this.vm.isFavorited —— 那是 constants.ets 中共享数组的对象，
+      // 修改它会污染源数据导致其他页面看到错误状态。列表页的 refreshList() 会从存储重读。
+    }
   }
 
   // 页面内容渲染
   @Builder
   render() {
     Column() {
-      CommonHeader({
-        title: (!this.vm || this.vm?.title.length > 0) ? this.vm?.title : $r('app.string.health_knowledge_list_title'),
-        onReturnClick: this.onReturnClick,
-        leftImageRes: $r('app.media.ic_backward2')
-      })
+      // 自定义标题栏（含收藏按钮），手动添加状态栏高度避免重叠
+      Row() {
+        Image($r('app.media.ic_backward2'))
+          .width(40)
+          .aspectRatio(1)
+          .onClick(this.onReturnClick)
+
+        Text((!this.vm || this.vm?.title.length > 0) ? this.vm?.title : '健康知识')
+          .fontSize($r('sys.float.Title_S'))
+          .fontWeight(700)
+          .fontColor($r('sys.color.font_primary'))
+          .layoutWeight(1)
+          .textAlign(TextAlign.Center)
+
+        // 收藏：爱心图标，空心⇄实心切换
+        Stack() {
+          Text(this.isFaved ? '❤️' : '🤍')
+            .fontSize(28)
+        }
+        .width(40)
+        .height(40)
+        .borderRadius($r('sys.float.corner_radius_level4'))
+        .onClick(() => this.toggleFavorite())
+      }
+      .width('100%')
+      .height(48)
+      .margin({ top: px2vp(BarVM.instance.statusBarHeight.value) + 24 })
+      .padding({ left: 16, right: 16 })
 
       Column() {
         List({ space: 12 }) {
