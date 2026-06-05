@@ -82,8 +82,8 @@ export class SleepHistoryVM {
 
       const records: SleepRecord[] = [
         { label: '睡眠', value: item.duration },
-        { label: '开始时间', value: `2025/${month}/${day} ${startHour}:${startMinute.toString().padStart(2, '0')}` },
-        { label: '结束时间', value: `2025/${month}/${nextDay} ${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}` }
+        { label: '开始时间', value: `2026/${month}/${day} ${startHour}:${startMinute.toString().padStart(2, '0')}` },
+        { label: '结束时间', value: `2026/${month}/${nextDay} ${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}` }
       ];
 
       SleepDetailVM.instance.setDetailData(dateTitle, records);

@@ -9,7 +9,7 @@ export class HealthHistoryModel {
   private static _instance: HealthHistoryModel;
 
   historyGroups: MonthGroup[] = HEALTH_HISTORY_GROUPS;
-  @Trace selectedMonth: string = '2025年4月';
+  @Trace selectedMonth: string = '2026年5月';
   @Trace showMonthPicker: boolean = false;
 
   public static get instance() {

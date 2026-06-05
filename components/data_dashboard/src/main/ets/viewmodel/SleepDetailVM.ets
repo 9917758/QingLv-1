@@ -9,8 +9,8 @@ export class SleepDetailVM {
   @Trace dateTitle: string = '4月28日';
   @Trace records: SleepRecord[] = [
     { label: '睡眠', value: '8小时30分钟' },
-    { label: '开始时间', value: '2025/4/28 22:30' },
-    { label: '结束时间', value: '2025/4/29 07:00' }
+    { label: '开始时间', value: '2026/4/28 22:30' },
+    { label: '结束时间', value: '2026/4/29 07:00' }
   ];
 
   public static get instance(): SleepDetailVM {

@@ -14,15 +14,15 @@ import {
 export const BLOOD_GLUCOSE_RANGE_OPTIONS: Record<BloodGlucoseTimeRange, BloodGlucoseRangeOption[]> = {
   [BloodGlucoseTimeRange.WEEK]: [
     {
-      label: '2025年04月24日 - 04月30日',
-      period: '04月24日(周日)',
+      label: '2026年06月24日 - 06月30日',
+      period: '06月24日(周日)',
       currentValue: 5.0,
       values: [3.0, 5.0, 7.0, 3.5, 5.5, 8.0, 4.0],
       labels: [],
       statistics: { avgValue: 5.0, minValue: 3.0, maxValue: 8.0 }
     },
     {
-      label: '2025年02月17日 - 02月23日',
+      label: '2026年02月17日 - 02月23日',
       period: '02月20日(周四)',
       currentValue: 4.8,
       values: [4.6, 5.1, 4.8, 4.9, 5.0, 4.7, 5.2],
@@ -32,8 +32,8 @@ export const BLOOD_GLUCOSE_RANGE_OPTIONS: Record<BloodGlucoseTimeRange, BloodGlu
   ],
   [BloodGlucoseTimeRange.MONTH]: [
     {
-      label: '2025年4月',
-      period: '04月19日',
+      label: '2026年4月',
+      period: '06月19日',
       currentValue: 5.0,
       values: [6.8, 3.5, 5.2, 3.0, 4.9, 7.2, 4.7, 5.1, 3.8, 6.2, 4.3, 5.5, 4.1, 6.0, 3.7, 5.8, 4.6, 5.3, 3.9, 6.1, 4.4,
         5.7, 4.2, 5.9, 3.6, 6.3, 4.8, 5.4, 4.0, 5.6],
@@ -43,7 +43,7 @@ export const BLOOD_GLUCOSE_RANGE_OPTIONS: Record<BloodGlucoseTimeRange, BloodGlu
       statistics: { avgValue: 4.9, minValue: 3.0, maxValue: 7.2 }
     },
     {
-      label: '2025年3月',
+      label: '2026年3月',
       period: '03月15日',
       currentValue: 4.8,
       values: [4.7, 4.9, 5.0, 4.8, 5.1, 4.6, 5.2, 4.9, 5.0, 4.8, 4.7, 5.1, 4.9],
@@ -53,7 +53,7 @@ export const BLOOD_GLUCOSE_RANGE_OPTIONS: Record<BloodGlucoseTimeRange, BloodGlu
   ],
   [BloodGlucoseTimeRange.THREE_MONTHS]: [
     {
-      label: '2025年2月 - 04月',
+      label: '2026年2月 - 06月',
       period: '3月平均值',
       currentValue: 5.0,
       values: [4.6, 3.8, 5.2, 4.8, 5.0, 6.8, 4.5, 5.1, 7.2, 3.5, 6.5, 4.9],
@@ -82,7 +82,7 @@ export const BLOOD_GLUCOSE_RANGE_OPTIONS: Record<BloodGlucoseTimeRange, BloodGlu
  */
 export const BLOOD_GLUCOSE_HISTORY_MONTHS: BloodGlucoseMonthGroup[] = [
   {
-    monthTitle: '2025年4月',
+    monthTitle: '2026年4月',
     records: [
       {
         value: 5.0,
@@ -135,7 +135,7 @@ export const BLOOD_GLUCOSE_HISTORY_MONTHS: BloodGlucoseMonthGroup[] = [
     ]
   },
   {
-    monthTitle: '2025年3月',
+    monthTitle: '2026年3月',
     records: [
       {
         value: 5.2,
@@ -200,7 +200,7 @@ export const BLOOD_GLUCOSE_HISTORY_MONTHS: BloodGlucoseMonthGroup[] = [
     ]
   },
   {
-    monthTitle: '2025年2月',
+    monthTitle: '2026年2月',
     records: [
       {
         value: 5.1,

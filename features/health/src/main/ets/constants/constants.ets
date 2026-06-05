@@ -112,7 +112,7 @@ export const healthCard: HealthCardModel[] = [
     value: '',
     desc: '暂无数据',
     icon: '',
-    timeStatus: '2025年4月28日',
+    timeStatus: '2026年5月28日',
   },
   {
     img: $r('app.media.health_sleep_icon'),

@@ -14,7 +14,7 @@ import {
 export const HEART_RATE_RANGE_OPTIONS: Record<HeartRateTimeRange, HeartRateRangeOption[]> = {
   [HeartRateTimeRange.WEEK]: [
     {
-      label: '2025年04月24日 - 04月30日',
+      label: '2026年06月24日 - 06月30日',
       period: '',
       currentRange: '79-112',
       ranges: [[45, 85], [28, 98], [40, 88], [25, 90], [42, 95], [32, 125], [30, 80]],
@@ -29,7 +29,7 @@ export const HEART_RATE_RANGE_OPTIONS: Record<HeartRateTimeRange, HeartRateRange
   ],
   [HeartRateTimeRange.MONTH]: [
     {
-      label: '2025年4月',
+      label: '2026年4月',
       period: '',
       currentRange: '79-112',
       ranges: [
@@ -50,7 +50,7 @@ export const HEART_RATE_RANGE_OPTIONS: Record<HeartRateTimeRange, HeartRateRange
   ],
   [HeartRateTimeRange.THREE_MONTHS]: [
     {
-      label: '2025年2月 - 04月',
+      label: '2026年2月 - 06月',
       period: '',
       currentRange: '79-112',
       ranges: [
@@ -80,7 +80,7 @@ export const HEART_RATE_RANGE_OPTIONS: Record<HeartRateTimeRange, HeartRateRange
  */
 export const HEART_RATE_HISTORY_MONTHS: HeartRateMonthGroup[] = [
   {
-    monthTitle: '2025年4月',
+    monthTitle: '2026年4月',
     records: [
       { range: '56 ~ 121次/分钟', dateTime: '4月30日' },
       { range: '60 ~ 115次/分钟', dateTime: '4月29日' },
@@ -115,7 +115,7 @@ export const HEART_RATE_HISTORY_MONTHS: HeartRateMonthGroup[] = [
     ]
   },
   {
-    monthTitle: '2025年3月',
+    monthTitle: '2026年3月',
     records: [
       { range: '58 ~ 117次/分钟', dateTime: '3月30日' },
       { range: '60 ~ 120次/分钟', dateTime: '3月27日' },
@@ -130,7 +130,7 @@ export const HEART_RATE_HISTORY_MONTHS: HeartRateMonthGroup[] = [
     ]
   },
   {
-    monthTitle: '2025年2月',
+    monthTitle: '2026年2月',
     records: [
       { range: '59 ~ 118次/分钟', dateTime: '2月28日' },
       { range: '57 ~ 115次/分钟', dateTime: '2月25日' },

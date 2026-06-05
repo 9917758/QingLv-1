@@ -18,7 +18,7 @@ export struct HealthHistoryDetailPage {
     id: '1',
     date: '9月12日',
     weight: 112.4,
-    fullDate: '2025年9月12日',
+    fullDate: '2026年5月28日',
     height: 167,
     age: 28,
     bmi: 23.2,

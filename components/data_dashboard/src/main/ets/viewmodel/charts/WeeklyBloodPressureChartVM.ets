@@ -276,8 +276,8 @@ export class WeeklyBloodPressureChartVM {
     // 生成04月27日(周三)格式的日期
     const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
-    // 基于当前显示：2025年04月24日 - 04月30日，从04月27日(周日)开始
-    const baseDate = new Date(2025, 3, 24); // 2025年4月24日(周日)
+    // 基于当前显示：2026年04月24日 - 04月30日，从04月27日(周日)开始
+    const baseDate = new Date(2026, 3, 24); // 2026年4月24日(周日)
     const targetDate = new Date(baseDate.getTime() + index * 24 * 60 * 60 * 1000);
 
     const month = String(targetDate.getMonth() + 1).padStart(2, '0');

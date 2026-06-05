@@ -13,8 +13,8 @@ import {
 export const BLOOD_PRESSURE_RANGE_OPTIONS: Record<BloodPressureTimeRange, BloodPressureRangeOption[]> = {
   [BloodPressureTimeRange.WEEK]: [
     {
-      label: '2025年04月24日 - 04月30日',
-      period: '04月24日(周日)',
+      label: '2026年06月24日 - 06月30日',
+      period: '06月24日(周日)',
       currentSystolic: 128,
       currentDiastolic: 88,
       systolicValues: [130, 125, 128, 135, 120, 132, 128],
@@ -35,8 +35,8 @@ export const BLOOD_PRESSURE_RANGE_OPTIONS: Record<BloodPressureTimeRange, BloodP
   ],
   [BloodPressureTimeRange.MONTH]: [
     {
-      label: '2025年4月',
-      period: '04月05日',
+      label: '2026年4月',
+      period: '06月05日',
       currentSystolic: 128,
       currentDiastolic: 88,
       systolicValues: [125, 130, 128, 120, 165, 120, 128, 132, 128, 125, 130, 172, 132, 163, 126, 129, 127, 131, 124,
@@ -61,7 +61,7 @@ export const BLOOD_PRESSURE_RANGE_OPTIONS: Record<BloodPressureTimeRange, BloodP
   ],
   [BloodPressureTimeRange.THREE_MONTHS]: [
     {
-      label: '2025年2月 - 04月',
+      label: '2026年2月 - 06月',
       period: '3月平均值',
       currentSystolic: 128,
       currentDiastolic: 88,
@@ -99,7 +99,7 @@ export const BLOOD_PRESSURE_RANGE_OPTIONS: Record<BloodPressureTimeRange, BloodP
  */
 export const BLOOD_PRESSURE_HISTORY_MONTHS: BloodPressureMonthGroup[] = [
   {
-    monthTitle: '2025年4月',
+    monthTitle: '2026年4月',
     records: [
       {
         systolic: 130,
@@ -153,7 +153,7 @@ export const BLOOD_PRESSURE_HISTORY_MONTHS: BloodPressureMonthGroup[] = [
     ]
   },
   {
-    monthTitle: '2025年3月',
+    monthTitle: '2026年3月',
     records: [
       {
         systolic: 135,
@@ -228,7 +228,7 @@ export const BLOOD_PRESSURE_HISTORY_MONTHS: BloodPressureMonthGroup[] = [
     ]
   },
   {
-    monthTitle: '2025年2月',
+    monthTitle: '2026年2月',
     records: [
       {
         systolic: 128,

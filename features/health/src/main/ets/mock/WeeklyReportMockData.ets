@@ -4,9 +4,9 @@
 import { WeeklyReportData } from '../types/WeeklyReportTypes';
 
 export const WEEKLY_REPORT_DATA: WeeklyReportData = {
-  startDate: '2025年2月24日',
+  startDate: '2026年2月24日',
   endDate: '03月02日',
-  dateRange: '2025年2月24日 - 03月02日',
+  dateRange: '2026年2月24日 - 03月02日',
 
   weightTrend: {
     maxWeight: 122,

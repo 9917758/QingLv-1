@@ -26,6 +26,15 @@ struct Index {
     let isFirstLaunch = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext())
       .get(PreferenceConstant.FIRST_LAUNCH, true) as boolean
     if (isFirstLaunch) {
+      // 首次启动预填模拟用户数据，确保健康报告等页面有完整数据可展示
+      this.userInfo.isLogin = true;
+      this.userInfo.isEditOk = true;
+      this.userInfo.id = '10001';
+      this.userInfo.nickName = '健康用户';
+      this.userInfo.gender = '男';
+      this.userInfo.birthday = '1998-06-15';
+      this.userInfo.height = 172;
+      this.userInfo.weight = 68;
       //隐私政策
       phoneRouterControl.jumpPage({
         pageName: RouterMap.PRIVACY_AGREEMENT_PAGE,

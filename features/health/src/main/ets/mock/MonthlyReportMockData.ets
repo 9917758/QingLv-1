@@ -4,9 +4,9 @@
 import { MonthlyReportData } from '../types/MonthlyReportTypes';
 
 export const MONTHLY_REPORT_DATA: MonthlyReportData = {
-  startDate: '2025年4月1日',
+  startDate: '2026年4月1日',
   endDate: '4月30日',
-  dateRange: '2025年4月',
+  dateRange: '2026年4月',
 
   weightTrend: {
     maxWeight: 122,

@@ -46,25 +46,33 @@ export class HealthModel extends BaseViewModel {
 
   /**
    * Mock 模式下注入虚拟健康数据
-   * 仅在 inputVM 的值为默认值 0 时才注入，避免覆盖用户已手动录入的数据
+   * 每次进入应用均重新生成，模拟设备"刚刚完成新一轮测量"
+   * 加入 ±5-10% 随机抖动，模拟真实数据采集的自然波动
    */
   private initMockInputData() {
-    if (this.inputVM.heartRate === 0) {
-      this.inputVM.heartRate = 75;
-      this.inputVM.heartRateTime = '今天 08:30';
-    }
-    if (this.inputVM.bloodPressureSystolic === 0) {
-      this.inputVM.bloodPressureSystolic = 120;
-      this.inputVM.bloodPressureDiastolic = 80;
-      this.inputVM.bloodPressureTime = '今天 08:30';
-    }
-    if (this.inputVM.bloodSugar === 0) {
-      this.inputVM.bloodSugar = 5.5;
-      this.inputVM.bloodSugarTime = '今天 08:30';
-    }
+    const now = new Date();
+    const timeStr = `今天 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    // 心率：基于时间段的基线 + 微小浮动，模拟静息心率的自然变化
+    // 清晨(6-12点)静息心率偏低 65-72，下午(12-18点)略高 70-78，晚间回落 67-75
+    const hour = now.getHours();
+    const hrBase = (hour >= 6 && hour < 12) ? 68 : (hour >= 12 && hour < 18) ? 73 : 70;
+    this.inputVM.heartRate = hrBase + Math.floor(Math.random() * 7);
+    this.inputVM.heartRateTime = timeStr;
+
+    // 血压：以正常值 120/80 为基准 ±6 浮动
+    this.inputVM.bloodPressureSystolic = 116 + Math.floor(Math.random() * 9);
+    this.inputVM.bloodPressureDiastolic = 77 + Math.floor(Math.random() * 7);
+    this.inputVM.bloodPressureTime = timeStr;
+
+    // 血糖：空腹正常范围 4.8-6.2，用整数运算避免浮点精度问题
+    const sugarTenths = 48 + Math.floor(Math.random() * 15); // 48~62 → 4.8~6.2
+    this.inputVM.bloodSugar = Number((sugarTenths / 10).toFixed(1));
+    this.inputVM.bloodSugarTime = timeStr;
   }
 
   initDeviceData() {
+    const now = new Date();
     this.dataVM.img = $r('app.media.health_data_icon');
     this.dataVM.title = '健康数据';
     this.dataVM.type = 1;
@@ -95,13 +103,23 @@ export class HealthModel extends BaseViewModel {
       }
 
       this.sleepVM.value = '';
-      this.sleepVM.desc = '7时35分';
+      // 睡眠数据：基于日期生成，一天内稳定，不同天之间有微小差异
+      // 模拟每晚 6.5~8.5 小时的睡眠时长
+      const totalSleepMinutes = 390 + (now.getDate() * 13 + now.getMonth() * 7) % 120;
+      const sleepH = Math.floor(totalSleepMinutes / 60);
+      const sleepM = totalSleepMinutes % 60;
+      this.sleepVM.desc = `${sleepH}时${sleepM}分`;
       this.sleepVM.timeStatus = '目标 8小时 ｜良好';
 
-      this.activityHeat = 260;
-      this.exerciseDuration = 20;
-      this.travelDistance = 2.5;
-      this.stepCount = 2739;
+      // 运动数据：基于当天时间累积增长（模拟真实全天活动规律）
+      // 假设用户 8:00 起床开始活动，22:00 结束，目标日步数 ~8000
+      const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+      const activeMinutes = Math.max(0, minutesSinceMidnight - 8 * 60); // 8点后开始累积
+      const dayProgress = Math.min(activeMinutes / (14 * 60), 1.0); // 8:00-22:00 14小时活跃窗口
+      this.stepCount = Math.floor(500 + dayProgress * 7500);
+      this.activityHeat = Math.floor(30 + dayProgress * 280);
+      this.exerciseDuration = Math.floor(2 + dayProgress * 45);
+      this.travelDistance = Math.round((0.3 + dayProgress * 3.7) * 10) / 10;
 
     } else {
       this.dataVM.value = '';
