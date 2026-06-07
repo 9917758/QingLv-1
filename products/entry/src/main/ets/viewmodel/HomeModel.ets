@@ -1,23 +1,11 @@
 import { PersistenceV2 } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
-import { Constants, GlobalContext, OHDialog, OHDialogModel, PreferenceUtil, TimeUtil, USE_MOCK_DATA } from 'common';
+import { Constants, GlobalContext, OHDialog, OHDialogModel, PreferenceConstant, PreferenceUtil, TimeUtil, USE_MOCK_DATA } from 'common';
 import { PairedDeviceMacList } from 'device';
 import { SkipStepModel } from 'person';
+import { ReminderPlanItem, ReminderService } from 'health';
 import { TAB_CONFIG } from '../constants/constants';
 import { TabSingleItem } from './TabSingleItem';
-
-const REMINDER_STORAGE_KEY = 'reminder_plans';
-const REMINDER_CHECKED_KEY = 'reminder_checked_today';
-
-interface ReminderPlan {
-  id: string;
-  type: number; // 0=饮水, 1=用药
-  name: string;
-  time: string; // HH:mm
-  dosage: string;
-  isEnabled: boolean;
-  isCheckedToday: boolean;
-}
 
 @Builder
 function homeModelDialogBuilder(vm: OHDialogModel) {
@@ -68,34 +56,9 @@ export class HomeModel {
     }
   }
 
-  /** 默认提醒计划（与 ReminderMockData 保持一致，首次/数据损坏时兜底） */
-  private static readonly DEFAULT_PLANS: ReminderPlan[] = [
-    { id: '1', type: 0, name: '上午喝水', time: '10:00', dosage: '250ml（约一杯）', isEnabled: true, isCheckedToday: false },
-    { id: '2', type: 0, name: '下午喝水', time: '15:00', dosage: '250ml（约一杯）', isEnabled: true, isCheckedToday: false },
-    { id: '3', type: 1, name: '降压药', time: '19:00', dosage: '1片，饭后30分钟服用', isEnabled: true, isCheckedToday: false },
-    { id: '4', type: 1, name: '维生素片', time: '08:30', dosage: '1片，随餐服用', isEnabled: true, isCheckedToday: false },
-    { id: '5', type: 0, name: '晚间补水', time: '21:00', dosage: '200ml（半杯）', isEnabled: true, isCheckedToday: false }
-  ];
-
-  /** 加载用户自定义提醒计划 */
-  private loadPlans(): ReminderPlan[] {
-    try {
-      const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const data = pref.get(REMINDER_STORAGE_KEY, '') as string;
-      if (data) {
-        const parsed: ReminderPlan[] = JSON.parse(data) as ReminderPlan[];
-        // 检测损坏数据（之前 @ObservedV2 序列化产生的）
-        if (parsed.length > 0 && (!parsed[0].name || parsed[0].name === 'undefined')) {
-          pref.delete(REMINDER_STORAGE_KEY);
-          return HomeModel.DEFAULT_PLANS;
-        }
-        return parsed;
-      }
-    } catch {
-      // ignore
-    }
-    // 存储为空：返回默认计划，确保定时器有数据可匹配
-    return HomeModel.DEFAULT_PLANS;
+  /** 加载用户自定义提醒计划（委托 ReminderService，带缓存） */
+  private loadPlans(): ReminderPlanItem[] {
+    return ReminderService.loadPlans();
   }
 
   /** 获取今天已打卡的计划ID集合 */
@@ -103,7 +66,7 @@ export class HomeModel {
     const today = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const stored = pref.get(REMINDER_CHECKED_KEY, '{}') as string;
+      const stored = pref.get(PreferenceConstant.REMINDER_CHECKED_TODAY, '{}') as string;
       const data: Record<string, Object> = JSON.parse(stored) as Record<string, Object>;
       if (data['date'] === today) {
         return new Set((data['ids'] as string[]) ?? []);
@@ -120,17 +83,28 @@ export class HomeModel {
     const checked = this.getCheckedToday();
     checked.add(planId);
     const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-    pref.put(REMINDER_CHECKED_KEY, JSON.stringify({ date: today, ids: Array.from(checked) }));
+    pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY, JSON.stringify({ date: today, ids: Array.from(checked) }));
+  }
+
+  /** 公开方法：供弹窗"已完成"按钮调用，标记指定计划已打卡（#10） */
+  public markPlanChecked(planId: string): void {
+    this.markChecked(planId);
+  }
+
+  /** 公开方法：根据计划名称查找计划ID（供弹窗打卡用） */
+  public findPlanIdByName(planName: string): string {
+    const plans = this.loadPlans();
+    for (let i = 0; i < plans.length; i++) {
+      if (plans[i].name === planName) {
+        return plans[i].id;
+      }
+    }
+    return '';
   }
 
   /** 初始检查（首页加载时触发一次），定时轮询由 HomePage 的 ComponentV2 生命周期管理 */
   addHealthRemind() {
     this.checkAndRemind();
-  }
-
-  /** 诊断：返回当前加载的计划列表，供 HomePage 诊断横幅使用 */
-  public getLoadedPlans(): ReminderPlan[] {
-    return this.loadPlans();
   }
 
   /** 检查所有计划并在匹配时弹窗（public — 由 HomePage 定时调用以确保 UIContext 有效） */
@@ -141,7 +115,7 @@ export class HomeModel {
     // 跨天重置打卡记录
     if (this.lastCheckedDate && this.lastCheckedDate !== currentDate) {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.put(REMINDER_CHECKED_KEY, JSON.stringify({ date: currentDate, ids: [] }));
+      pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY, JSON.stringify({ date: currentDate, ids: [] }));
     }
     this.lastCheckedDate = currentDate;
 
@@ -153,17 +127,14 @@ export class HomeModel {
     let matchedPlanName: string = '';
     let matchedPlanTime: string = '';
     let matchedPlanType: number = -1;
-    let diagResult: string = '';
 
     for (let i = 0; i < plans.length; i++) {
-      const plan: ReminderPlan = plans[i];
+      const plan: ReminderPlanItem = plans[i];
       if (!plan.isEnabled) {
-        diagResult += `${plan.name}[off] `;
         continue;
       }
       const alreadyChecked: boolean = checkedToday.has(plan.id);
       if (alreadyChecked) {
-        diagResult += `${plan.name}[done] `;
         continue;
       }
       const parts: string[] = plan.time.split(':');
@@ -177,9 +148,6 @@ export class HomeModel {
         matchedPlanTime = plan.time;
         matchedPlanType = plan.type;
         this.markChecked(plan.id);
-        diagResult += `${plan.name}[HIT d=${diff}] `;
-      } else {
-        diagResult += `${plan.name}[d=${diff}] `;
       }
     }
 
@@ -187,12 +155,11 @@ export class HomeModel {
       const localHour: number = Math.floor(nowMinutes / 60) % 24;
       const localMin: number = nowMinutes % 60;
       const timeStr: string = `${localHour.toString().padStart(2, '0')}:${localMin.toString().padStart(2, '0')}`;
-      // 格式: "m=1;name=X;time=X;type=N;|HH:MM|诊断"
       let status: string = '';
       if (matchedPlanName.length > 0) {
-        status = `m=1;name=${matchedPlanName};time=${matchedPlanTime};type=${matchedPlanType};|${timeStr}|${diagResult}`;
+        status = `m=1;name=${matchedPlanName};time=${matchedPlanTime};type=${matchedPlanType};|${timeStr}`;
       } else {
-        status = `m=0;|${timeStr}|${diagResult}`;
+        status = `m=0;|${timeStr}`;
       }
       this.onCheckComplete(status);
     }

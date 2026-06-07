@@ -35,6 +35,10 @@ export class Constants {
     eventId: 812
   }
 
+  public static readonly onReminderCheckIn: emitter.InnerEvent = {
+    eventId: 813
+  }
+
   public static readonly TAB_INDEX_ZERO: number = 0;
   public static readonly TAB_INDEX_ONE: number = 1;
   public static readonly TAB_INDEX_TWO: number = 2;

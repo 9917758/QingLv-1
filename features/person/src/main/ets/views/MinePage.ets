@@ -29,6 +29,8 @@ export struct MinePage {
   logTag: string = 'MinePage';
   @Local userInfo: UserInfo = PersistenceV2.connect(UserInfo, () => new UserInfo())!;
   @Local mineArr: MineItem[] = [
+    new MineItem('我的收藏', $r('app.media.icon_envelope'), undefined,
+      RouterMap.HEALTH_FAVORITES_PAGE),
     new MineItem('意见反馈', $r('app.media.icon_feedback'), wrapBuilder(BuildFeedbackSubmitPage),
       RouterMap.FEEDBACK_PAGE),
     new MineItem('设置', $r('app.media.icon_Setting'), wrapBuilder(SetUpPageBuilder), RouterMap.SET_UP_PAGE)

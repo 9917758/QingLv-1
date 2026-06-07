@@ -43,7 +43,8 @@ export struct HealthPage {
     })
   }
 
-  @Local onHealthDataChange: () => void = () => {
+  // #9 修复：emitter 回调不使用 @Local，保持引用稳定性
+  private onHealthDataChange: () => void = () => {
     this.healthModelVM.initDeviceData();
     this.healthModelVM.initHealthData();
   }
@@ -59,6 +60,25 @@ export struct HealthPage {
     try {
       emitter.off(Constants.onHealthDataChange.eventId, this.onHealthDataChange);
     } catch (err) {
+    }
+  }
+
+  /**
+   * #11 根据卡片类型获取对应的 ViewModel（消除 if-else 链）
+   */
+  private getCardModel(type: number): HealthCardModel {
+    if (type === 1) {
+      return this.healthModelVM.dataVM;
+    } else if (type === 2) {
+      return this.healthModelVM.reportVM;
+    } else if (type === 3) {
+      return this.healthModelVM.sleepVM;
+    } else if (type === 4) {
+      return this.healthModelVM.bloodPreVM;
+    } else if (type === 5) {
+      return this.healthModelVM.heartRateVM;
+    } else {
+      return this.healthModelVM.bloodSugarVM;
     }
   }
 
@@ -156,21 +176,10 @@ export struct HealthPage {
             ListItemGroup({
               space: 12
             }) {
+              // #11 用方法调用替代 if-else 链
               ForEach(this.healthModelVM.cardList, (item: HealthCardModel, _index: number) => {
                 ListItem() {
-                  if (item.type === 1) {
-                    HealthCardRow({ healthCardModelVM: this.healthModelVM.dataVM })
-                  } else if (item.type === 2) {
-                    HealthCardRow({ healthCardModelVM: this.healthModelVM.reportVM })
-                  } else if (item.type === 3) {
-                    HealthCardRow({ healthCardModelVM: this.healthModelVM.sleepVM })
-                  } else if (item.type === 4) {
-                    HealthCardRow({ healthCardModelVM: this.healthModelVM.bloodPreVM })
-                  } else if (item.type === 5) {
-                    HealthCardRow({ healthCardModelVM: this.healthModelVM.heartRateVM })
-                  } else if (item.type === 6) {
-                    HealthCardRow({ healthCardModelVM: this.healthModelVM.bloodSugarVM })
-                  }
+                  HealthCardRow({ healthCardModelVM: this.getCardModel(item.type) })
                 }
               }, (item: HealthCardModel, index: number) => `${item.title}_${index}}`)
 
@@ -236,4 +245,3 @@ export struct HealthPage {
     .width('100%')
   }
 }
-

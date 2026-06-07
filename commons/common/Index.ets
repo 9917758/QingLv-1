@@ -21,6 +21,7 @@ export { TimeUtil } from './src/main/ets/util/TimeUtil';
 export { UnitConverter } from './src/main/ets/util/UnitConverter';
 export { CacheUtil } from './src/main/ets/util/CacheUtil';
 export { PermissionUtil } from './src/main/ets/util/PermissionUtil';
+export { ErrorUtil } from './src/main/ets/util/ErrorUtil';
 export { HMPromptAction } from './src/main/ets/util/HMPromptAction';
 export { getString, getMedia, getColor } from './src/main/ets/util/ResManager';
 export { CommonHeader } from './src/main/ets/ui/CommonHeader';

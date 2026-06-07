@@ -1,7 +1,7 @@
 import { PersistenceV2 } from '@kit.ArkUI';
 import { LoginPageBuilder } from 'aggregated_login';
 import { GlobalContext, PreferenceConstant, PreferenceUtil, RouterMap, UserInfo } from 'common';
-import { FavoriteUtil } from 'health';
+import { FavoriteUtil, HealthFavoritesPageBuilder } from 'health';
 import { phoneRouterControl } from 'oh_router';
 import { PersonInfoInputPageBuilder, PrivacyAgreementPageBuilder } from 'person';
 import { IndexVM } from '../viewmodel/IndexVM';
@@ -21,13 +21,15 @@ struct Index {
 
   aboutToAppear() {
     phoneRouterControl.createRouter(this.pageStack)
+    // 预注册「我的收藏」路由（person 模块无法直接 import health，需在此注册）
+    phoneRouterControl.registerPageBuilder(RouterMap.HEALTH_FAVORITES_PAGE, wrapBuilder(HealthFavoritesPageBuilder))
     this.vm.registerBreakpointListener(this.getUIContext());
     this.vm.displayOrientationListener();
     // 清理之前 bug 版本残留的收藏脏数据
     FavoriteUtil.init();
     // 清理提醒打卡记录（避免上次运行的 markChecked 残留干扰新测试）
     const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-    pref.put('reminder_checked_today', '{}');
+    pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY, '{}');
     //读取状态值，如果为空设置为true
     let isFirstLaunch = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext())
       .get(PreferenceConstant.FIRST_LAUNCH, true) as boolean

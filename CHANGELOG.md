@@ -1,5 +1,64 @@
 # 版本记录
 
+## 1.2.0
+
+### 架构优化
+
+**提醒服务模块化**
+- 新增 `ReminderService` 服务类，集中管理提醒计划的加载、校验、缓存、存储。
+- `HomeModel` 和 `ReminderPlanPage` 共用同一服务，消除重复的 `ReminderPlan` interface、`DEFAULT_PLANS`、`parsePlansFromStorage`、`copyPlan` 等重复定义。
+- 提醒计划数据加载增加内存缓存，30 秒轮询不再重复读取磁盘和 JSON.parse。
+- 新增 `isValidPlan()` 校验函数，解析 JSON 时自动跳过损坏条目。
+
+**「我的收藏」独立页面**
+- 「我的收藏」从健康知识列表页的 tab 筛选栏移至「我的」tab 作为独立入口。
+- 新增 `HealthFavoritesPage` 页面，支持收藏文章列表展示和空状态提示。
+- 通过 entry 模块预注册路由解决 person↔health 模块循环依赖问题。
+
+**模块常量集中管理**
+- `PreferenceConstant` 新增 `REMINDER_PLANS`、`REMINDER_CHECKED_TODAY` 常量，替代各文件中的硬编码字符串。
+
+**统一错误处理**
+- 新增 `ErrorUtil` 工具类，提供 `handle()` 和 `log()` 方法，统一错误日志格式。
+
+### 功能改进
+
+**弹窗打卡**
+- 提醒弹窗新增「打卡」+「知道了」双按钮，替代原来的单一「我知道了」。
+- 点击「打卡」后按钮变为「✅ 已完成」并置灰，同时标记该计划今日已打卡。
+- 打卡状态通过 `emitter` 实时同步到提醒计划页面，列表项显示绿色「已完成」标签。
+- 提醒计划页面每次可见时自动同步打卡状态（`syncCheckedStatus`）。
+
+**定时器异常保护**
+- `HomePage` 的 `scheduleNextCheck` 回调增加 try-catch，确保单次异常不会中断整个定时链。
+
+**emitter 回调引用稳定性**
+- `HealthPage` 的 `onHealthDataChange` 从 `@Local` 改为 `private`，避免组件重建时引用变化导致 `emitter.off` 失效。
+
+**Date 对象复用**
+- `HealthModel` 的 `initDeviceData` 和 `initHealthData` 中复用 `now`/`nowMs` 变量，消除重复 `new Date()` 调用。
+
+### 修改文件
+
+| 文件 | 变更类型 | 说明 |
+|------|---------|------|
+| `features/health/src/main/ets/service/ReminderService.ets` | 新增 | 提醒计划服务（加载、缓存、校验、打卡状态同步） |
+| `features/health/src/main/ets/views/HealthFavoritesPage.ets` | 新增 | 独立的「我的收藏」页面 |
+| `commons/common/src/main/ets/util/ErrorUtil.ets` | 新增 | 统一错误处理工具 |
+| `commons/common/src/main/ets/constant/PreferenceConstant.ts` | 修改 | 新增提醒存储 key 常量 |
+| `commons/common/src/main/ets/constant/Constants.ets` | 修改 | 新增 `onReminderCheckIn` 事件 |
+| `commons/common/src/main/ets/constant/RouterMap.ets` | 修改 | 新增 `HEALTH_FAVORITES_PAGE` 路由 |
+| `commons/common/Index.ets` | 修改 | 导出 ErrorUtil |
+| `features/health/Index.ets` | 修改 | 导出 ReminderService、ReminderPlanItem、HealthFavoritesPageBuilder |
+| `features/health/src/main/ets/views/ReminderPlanPage.ets` | 修改 | 委托 ReminderService，监听打卡事件，显示「已完成」标签 |
+| `features/health/src/main/ets/views/HealthKnowledgeListPage.ets` | 修改 | 移除「全部/我的收藏」tab 筛选栏 |
+| `features/health/src/main/ets/views/HealthPage.ets` | 修改 | emitter 回调改为 private，新增 getCardModel 方法 |
+| `features/health/src/main/ets/viewmodel/HealthModel.ets` | 修改 | 复用 Date 对象 |
+| `products/entry/src/main/ets/pages/HomePage.ets` | 修改 | 弹窗双按钮打卡、定时器 try-catch、emitter 通知 |
+| `products/entry/src/main/ets/viewmodel/HomeModel.ets` | 修改 | 委托 ReminderService，新增 markPlanChecked/findPlanIdByName |
+| `products/entry/src/main/ets/pages/Index.ets` | 修改 | 预注册 HealthFavoritesPageBuilder 路由 |
+| `features/person/src/main/ets/views/MinePage.ets` | 修改 | 菜单新增「我的收藏」入口 |
+
 ## 1.1.0
 
 ### 新增功能

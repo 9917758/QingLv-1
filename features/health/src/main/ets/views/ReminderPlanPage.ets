@@ -1,45 +1,8 @@
-import { BarVM, CommonHeader, GlobalContext, PreferenceUtil } from 'common';
+import { BarVM, CommonHeader, Constants } from 'common';
+import { emitter } from '@kit.BasicServicesKit';
 import { phoneRouterControl } from 'oh_router';
 import { ReminderPlanItem } from '../model/ReminderPlanModel';
-import { DEFAULT_REMINDER_PLANS } from '../mock/ReminderMockData';
-
-const REMINDER_STORAGE_KEY = 'reminder_plans';
-
-/**
- * JSON 解析放在 ComponentV2 外部，避免 arkts-no-any-unknown
- */
-function parsePlansFromStorage(data: string): ReminderPlanItem[] {
-  const raw: Object[] = JSON.parse(data) as Object[];
-  const result: ReminderPlanItem[] = [];
-  for (let i = 0; i < raw.length; i++) {
-    const item: Record<string, Object> = raw[i] as Record<string, Object>;
-    const plan = new ReminderPlanItem();
-    plan.id = (item['id'] as string) || '';
-    plan.type = (item['type'] as number) || 0;
-    plan.name = (item['name'] as string) || '';
-    plan.time = (item['time'] as string) || '';
-    plan.dosage = (item['dosage'] as string) || '';
-    plan.isEnabled = (item['isEnabled'] as boolean) ?? true;
-    plan.isCheckedToday = (item['isCheckedToday'] as boolean) ?? false;
-    result.push(plan);
-  }
-  return result;
-}
-
-/**
- * 深拷贝一个提醒计划（ArkTS 不允许对象 spread）
- */
-function copyPlan(src: ReminderPlanItem): ReminderPlanItem {
-  const dst = new ReminderPlanItem();
-  dst.id = src.id;
-  dst.type = src.type;
-  dst.name = src.name;
-  dst.time = src.time;
-  dst.dosage = src.dosage;
-  dst.isEnabled = src.isEnabled;
-  dst.isCheckedToday = src.isCheckedToday;
-  return dst;
-}
+import { ReminderService } from '../service/ReminderService';
 
 @Builder
 export function ReminderPlanPageBuilder() {
@@ -61,46 +24,41 @@ export struct ReminderPlanPage {
   @Local onReturnClick: () => void = () => {
     phoneRouterControl.popPage()
   }
-
-  aboutToAppear(): void {
+  private onReminderCheckIn: () => void = () => {
     this.loadPlans();
   }
 
+  aboutToAppear(): void {
+    this.loadPlans();
+    emitter.on(Constants.onReminderCheckIn, this.onReminderCheckIn);
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(Constants.onReminderCheckIn.eventId, this.onReminderCheckIn);
+  }
+
   loadPlans(): void {
-    try {
-      const pref: PreferenceUtil = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const stored: string = pref.get(REMINDER_STORAGE_KEY, '') as string;
-      if (stored && stored.length > 0) {
-        const parsed: ReminderPlanItem[] = parsePlansFromStorage(stored);
-        if (parsed.length > 0 && (!parsed[0].name || parsed[0].name === 'undefined')) {
-          // 损坏数据（之前 @ObservedV2 序列化产生的），清空重新初始化
-          pref.delete(REMINDER_STORAGE_KEY);
-        } else {
-          this.plans = parsed;
-        }
-      }
-    } catch {
-      // 首次使用或数据损坏
-    }
-    if (this.plans.length === 0) {
-      const defaults: ReminderPlanItem[] = [];
-      for (let i = 0; i < DEFAULT_REMINDER_PLANS.length; i++) {
-        defaults.push(copyPlan(DEFAULT_REMINDER_PLANS[i]));
-      }
-      this.plans = defaults;
+    // 委托 ReminderService 加载（含缓存和校验，#2 #4 #7）
+    const loaded: ReminderPlanItem[] = ReminderService.loadPlans();
+    if (loaded.length > 0) {
+      // 同步今日打卡状态（弹窗打卡后 isCheckedToday 需要与存储一致）
+      this.plans = ReminderService.syncCheckedStatus(loaded);
+      this.plansVersion++;
+    } else {
+      this.plans = ReminderService.getDefaultPlans();
       this.savePlans();
     }
   }
 
   savePlans(): void {
-    const pref: PreferenceUtil = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-    pref.put(REMINDER_STORAGE_KEY, JSON.stringify(this.plans));
+    // #2 委托 ReminderService 保存并更新缓存
+    ReminderService.savePlans(this.plans);
   }
 
   togglePlan(index: number): void {
     const updated: ReminderPlanItem[] = [];
     for (let i = 0; i < this.plans.length; i++) {
-      const cloned: ReminderPlanItem = copyPlan(this.plans[i]);
+      const cloned: ReminderPlanItem = ReminderService.copyPlan(this.plans[i]);
       if (i === index) {
         cloned.isEnabled = !cloned.isEnabled;
       }
@@ -128,7 +86,7 @@ export struct ReminderPlanPage {
     if (this.editingIndex >= 0 && this.editingIndex < this.plans.length) {
       const updated: ReminderPlanItem[] = [];
       for (let i = 0; i < this.plans.length; i++) {
-        const cloned: ReminderPlanItem = copyPlan(this.plans[i]);
+        const cloned: ReminderPlanItem = ReminderService.copyPlan(this.plans[i]);
         if (i === this.editingIndex) {
           cloned.name = this.editName;
           cloned.type = this.editType;
@@ -168,6 +126,10 @@ export struct ReminderPlanPage {
       .height('100%')
     }
     .hideTitleBar(true)
+    .onAppear(() => {
+      // 每次页面可见时重新同步打卡状态（弹窗打卡后返回时刷新）
+      this.loadPlans();
+    })
     .onBackPressed(() => {
       phoneRouterControl.popPage()
       return true
@@ -221,6 +183,14 @@ export struct ReminderPlanPage {
                     .padding({ left: 5, right: 5, top: 1, bottom: 1 })
                     .backgroundColor(this.getTypeColor(plan.type))
                     .borderRadius($r('sys.float.corner_radius_level2'))
+                  if (plan.isCheckedToday) {
+                    Text('已完成')
+                      .fontSize(10)
+                      .fontColor(Color.White)
+                      .padding({ left: 5, right: 5, top: 1, bottom: 1 })
+                      .backgroundColor('#4CAF50')
+                      .borderRadius($r('sys.float.corner_radius_level2'))
+                  }
                 }
                 Text(`${plan.time}  ${plan.dosage}`)
                   .fontSize($r('sys.float.Body_S'))
@@ -240,7 +210,7 @@ export struct ReminderPlanPage {
             .borderRadius($r('sys.float.corner_radius_level7'))
             .onClick(() => this.openEditDialog(plan, index))
           }
-        }, (item: ReminderPlanItem) => `${item.id}_${item.time}_${item.name}_${item.type}_${item.isEnabled}`)
+        }, (item: ReminderPlanItem) => `${item.id}_${item.time}_${item.name}_${item.type}_${item.isEnabled}_${item.isCheckedToday}`)
 
         ListItem().height(px2vp(BarVM.instance.aiBarH))
       }

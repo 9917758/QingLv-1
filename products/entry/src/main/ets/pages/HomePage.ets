@@ -1,6 +1,6 @@
 import { common } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { TCLogger, BarVM } from 'common';
+import { BusinessError, emitter } from '@kit.BasicServicesKit';
+import { TCLogger, BarVM, Constants } from 'common';
 import { HomeModel } from '../viewmodel/HomeModel';
 import { TabSingleItem } from '../viewmodel/TabSingleItem';
 
@@ -21,6 +21,7 @@ export struct HomePage {
   @Local reminderBody: string = '';
   @Local reminderIconType: number = 0; // 0=water, 1=med
   @Local tickCount: number = 0;
+  @Local checkedIn: boolean = false; // #10 本次弹窗是否已打卡
 
   @Builder
   tabBuilder(tabItem: TabSingleItem) {
@@ -55,6 +56,7 @@ export struct HomePage {
             if (kv[0] === 'type') { this.reminderIconType = parseInt(kv[1]); }
           }
         }
+        this.checkedIn = false; // 新弹窗重置打卡状态
         this.reminderVisible = true;
       }
     };
@@ -64,8 +66,14 @@ export struct HomePage {
 
   private scheduleNextCheck(): void {
     this.timerId = setTimeout(() => {
-      this.tickCount++;
-      this.vm.checkAndRemind();
+      // #8 定时器异常保护：确保异常不会中断定时链
+      try {
+        this.tickCount++;
+        this.vm.checkAndRemind();
+      } catch (e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        TCLogger.error(TAG, `checkAndRemind error: ${err.message}`);
+      }
       this.scheduleNextCheck();
     }, CHECK_INTERVAL);
   }
@@ -75,6 +83,22 @@ export struct HomePage {
       clearTimeout(this.timerId);
       this.timerId = -1;
     }
+  }
+
+  /** #10 弹窗打卡 */
+  private handleCheckIn(): void {
+    const planId = this.vm.findPlanIdByName(this.reminderTitle);
+    if (planId.length > 0) {
+      this.vm.markPlanChecked(planId);
+    }
+    this.checkedIn = true;
+    // 通知 ReminderPlanPage 刷新打卡状态
+    emitter.emit(Constants.onReminderCheckIn);
+  }
+
+  /** 关闭弹窗 */
+  private dismissReminder(): void {
+    this.reminderVisible = false;
   }
 
   // 页面内容渲染
@@ -143,16 +167,32 @@ export struct HomePage {
 
           Blank().height(20)
 
-          // 确认按钮
-          Button('我知道了')
-            .width('80%')
-            .height(44)
-            .fontSize(16)
-            .fontWeight(FontWeight.Medium)
-            .fontColor(Color.White)
-            .backgroundColor(this.reminderIconType === 0 ? '#4ECDC4' : '#FF6B6B')
-            .borderRadius(22)
-            .onClick(() => this.reminderVisible = false)
+          // #10 打卡 + 知道了 双按钮
+          Row({ space: 12 }) {
+            Button(this.checkedIn ? '✅ 已完成' : '打卡')
+              .height(44)
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .fontColor(Color.White)
+              .backgroundColor(this.checkedIn ? '#AAAAAA' : '#4ECDC4')
+              .borderRadius(22)
+              .layoutWeight(1)
+              .enabled(!this.checkedIn)
+              .onClick(() => this.handleCheckIn())
+
+            Button('知道了')
+              .height(44)
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .fontColor(this.reminderIconType === 0 ? '#4ECDC4' : '#FF6B6B')
+              .backgroundColor(Color.White)
+              .borderRadius(22)
+              .borderWidth(1)
+              .borderColor(this.reminderIconType === 0 ? '#4ECDC4' : '#FF6B6B')
+              .layoutWeight(1)
+              .onClick(() => this.dismissReminder())
+          }
+          .width('80%')
 
           Blank().height(8)
         }
@@ -169,7 +209,7 @@ export struct HomePage {
       .alignItems(HorizontalAlign.Center)
       .backgroundColor('rgba(0,0,0,0.35)')
       .visibility(this.reminderVisible ? Visibility.Visible : Visibility.None)
-      .onClick(() => this.reminderVisible = false)
+      .onClick(() => this.dismissReminder())
     }
     .width('100%')
     .height('100%')
