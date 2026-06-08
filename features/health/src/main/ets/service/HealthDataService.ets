@@ -1,19 +1,36 @@
 /**
  * 健康数据管理服务
  * 负责健康数据记录的持久化、查询和聚合
+ * 支持两种模式：本地 Mock / 后端 API
+ * 本地存储按用户ID隔离
  */
 import { HealthDataRecord } from '../types/HealthDataRecordTypes';
-import { GlobalContext, PreferenceUtil, USE_MOCK_DATA } from 'common';
+import { GlobalContext, HttpUtil, AuthToken, PreferenceUtil, UserInfo, USE_MOCK_DATA } from 'common';
+import type { ApiResponse, ApiRecordListResponse, ApiHealthRecord } from 'common';
+import { PersistenceV2 } from '@kit.ArkUI';
 import { getMockHealthRecords } from '../mock/HealthDataRecordMockData';
 
-const HEALTH_RECORDS_KEY = 'health_data_records';
-const MAX_RECORDS = 500; // 最多保留500条记录
+const MAX_RECORDS = 500;
+
+interface HealthRecordPayload {
+  weight: number;
+  bmi: number;
+  body_fat_percentage: number;
+  fat_weight: number;
+  blood_sugar: number;
+  blood_pressure_systolic: number;
+  blood_pressure_diastolic: number;
+  heart_rate: number;
+  waist_circumference: number;
+  hip_circumference: number;
+}
 
 @ObservedV2
 export class HealthDataService {
   private static _instance: HealthDataService;
-  private _records: HealthDataRecord[] = [];
+  @Trace _records: HealthDataRecord[] = [];
   private _loaded: boolean = false;
+  private _loadedUserId: string = '';
 
   public static get instance(): HealthDataService {
     if (!HealthDataService._instance) {
@@ -22,106 +39,138 @@ export class HealthDataService {
     return HealthDataService._instance;
   }
 
-  /**
-   * 加载所有历史记录
-   */
+  private static getUserId(): string {
+    const userInfo = PersistenceV2.connect(UserInfo, () => new UserInfo());
+    return userInfo ? userInfo.id : 'anonymous';
+  }
+
+  private getRecordsKey(): string {
+    return `health_data_records_${HealthDataService.getUserId()}`;
+  }
+
+  /** 清除内存缓存（退出登录/切换用户时调用） */
+  public clearCache(): void {
+    this._records = [];
+    this._loaded = false;
+    this._loadedUserId = '';
+  }
+
+  /** 同步加载（兼容旧调用） */
   public loadRecords(): HealthDataRecord[] {
+    const userId = HealthDataService.getUserId();
+    // 用户切换时自动清除缓存
+    if (this._loadedUserId.length > 0 && this._loadedUserId !== userId) {
+      this.clearCache();
+    }
     if (this._loaded) {
       return this._records;
     }
-
     if (USE_MOCK_DATA) {
       this._records = getMockHealthRecords();
       this._loaded = true;
+      this._loadedUserId = userId;
       return this._records;
     }
-
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const raw = pref.get(HEALTH_RECORDS_KEY, '[]') as string;
+      const raw = pref.get(this.getRecordsKey(), '[]') as string;
       this._records = JSON.parse(raw) as HealthDataRecord[];
     } catch {
       this._records = [];
     }
     this._loaded = true;
+    this._loadedUserId = userId;
     return this._records;
   }
 
-  /**
-   * 保存一条新记录
-   */
+  /** 从后端 API 加载记录（异步） */
+  public async loadFromApi(limit: number = 100): Promise<HealthDataRecord[]> {
+    if (!AuthToken.isLoggedIn()) {
+      this.loadRecords();
+      return this._records;
+    }
+    const resp: ApiResponse<ApiRecordListResponse> = await HttpUtil.get<ApiRecordListResponse>(`/api/health/records?limit=${limit}`);
+    if (resp.data) {
+      this._records = resp.data.records.map((r: ApiHealthRecord) => this.fromApiRecord(r));
+      this._loaded = true;
+      this._loadedUserId = HealthDataService.getUserId();
+    }
+    return this._records;
+  }
+
+  /** 保存一条新记录（同步本地 + 异步 API） */
   public saveRecord(record: HealthDataRecord): void {
-    this._records.unshift(record); // 新记录在前
-    // 超过上限时裁剪
+    this._records.unshift(record);
     if (this._records.length > MAX_RECORDS) {
       this._records = this._records.slice(0, MAX_RECORDS);
     }
-    this.persist();
+    if (AuthToken.isLoggedIn()) {
+      HttpUtil.post<HealthRecordPayload>('/api/health/records', this.toApiPayload(record));
+    }
+    this.persistLocal();
   }
 
-  /**
-   * 从用户输入的健康指标值创建并保存一条记录
-   */
   public saveFromInput(weight: number, bmiValue: number, bodyFatPercentage: number,
     fatWeight: number, bloodSugar: number, bloodPressureSystolic: number,
     bloodPressureDiastolic: number, heartRate: number,
     waistCircumference: number, hipCircumference: number): void {
     const record: HealthDataRecord = {
-      id: `rec_${Date.now()}`,
-      timestamp: Date.now(),
-      weight: weight,
-      bmi: bmiValue,
-      bodyFatPercentage: bodyFatPercentage,
-      fatWeight: fatWeight,
-      bloodSugar: bloodSugar,
-      bloodPressureSystolic: bloodPressureSystolic,
-      bloodPressureDiastolic: bloodPressureDiastolic,
-      heartRate: heartRate,
-      waistCircumference: waistCircumference,
-      hipCircumference: hipCircumference
+      id: `rec_${Date.now()}`, timestamp: Date.now(),
+      weight, bmi: bmiValue, bodyFatPercentage, fatWeight,
+      bloodSugar, bloodPressureSystolic, bloodPressureDiastolic,
+      heartRate, waistCircumference, hipCircumference
     };
     this.saveRecord(record);
   }
 
-  /**
-   * 获取指定时间范围内的记录
-   */
   public getRecordsByDateRange(startMs: number, endMs: number): HealthDataRecord[] {
-    // 包含 endMs 当天的全部数据（到当天 23:59:59）
     const endOfDay = endMs + 24 * 60 * 60 * 1000 - 1;
     return this._records.filter(r => r.timestamp >= startMs && r.timestamp <= endOfDay);
   }
 
-  /**
-   * 获取最近 N 条记录
-   */
   public getRecentRecords(count: number): HealthDataRecord[] {
     return this._records.slice(0, count);
   }
 
-  /**
-   * 获取所有记录（只读副本）
-   */
   public getAllRecords(): HealthDataRecord[] {
     return this._records.slice();
   }
 
-  /**
-   * 获取记录总数
-   */
   public getRecordCount(): number {
     return this._records.length;
   }
 
-  /**
-   * 持久化到 Preferences
-   */
-  private persist(): void {
+  private persistLocal(): void {
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.put(HEALTH_RECORDS_KEY, JSON.stringify(this._records));
-    } catch (err) {
-      console.error('HealthDataService persist failed');
+      pref.put(this.getRecordsKey(), JSON.stringify(this._records));
+    } catch {
+      // ignore
     }
+  }
+
+  private fromApiRecord(r: ApiHealthRecord): HealthDataRecord {
+    return {
+      id: `api_${r.id}`, timestamp: new Date(r.timestamp).getTime(),
+      weight: r.weight, bmi: r.bmi, bodyFatPercentage: r.body_fat_percentage,
+      fatWeight: r.fat_weight, bloodSugar: r.blood_sugar,
+      bloodPressureSystolic: r.blood_pressure_systolic,
+      bloodPressureDiastolic: r.blood_pressure_diastolic,
+      heartRate: r.heart_rate, waistCircumference: r.waist_circumference,
+      hipCircumference: r.hip_circumference
+    };
+  }
+
+  private toApiPayload(record: HealthDataRecord): HealthRecordPayload {
+    return {
+      weight: record.weight, bmi: record.bmi,
+      body_fat_percentage: record.bodyFatPercentage, fat_weight: record.fatWeight,
+      blood_sugar: record.bloodSugar,
+      blood_pressure_systolic: record.bloodPressureSystolic,
+      blood_pressure_diastolic: record.bloodPressureDiastolic,
+      heart_rate: record.heartRate,
+      waist_circumference: record.waistCircumference,
+      hip_circumference: record.hipCircumference
+    };
   }
 }

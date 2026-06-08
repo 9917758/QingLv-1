@@ -33,6 +33,10 @@ function buildWeeklyBodyFatChart(chartData: ChartDataPoint[]) {
 export struct WeeklyReportPage {
   private vm: WeeklyReportModel = WeeklyReportModel.instance;
 
+  aboutToAppear(): void {
+    this.vm.loadFromApi();
+  }
+
   build() {
     BaseReportPage({
       vm: this.vm,

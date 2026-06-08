@@ -1,9 +1,9 @@
-import { CommonHeader, RouterMap, BarVM, OHDialog, OHDialogModel, USE_MOCK_DATA } from 'common';
+import { CommonHeader, RouterMap, BarVM, OHDialog, OHDialogModel, USE_MOCK_DATA, NetworkConfig, AuthToken } from 'common';
+import { emitter } from '@kit.BasicServicesKit';
 import { OHPage, phoneRouterControl } from 'oh_router';
 import { UserInfoRow } from '../comp/UserInfoRow';
 import { PrivacySettingsPageBuilder } from './PrivacySettingsPage';
 import { AboutPageBuilder } from './AboutPage';
-import { LoginPageBuilder } from 'aggregated_login';
 import { ClearCacheDialogModel } from '../viewmodel/ClearCacheDialogModel';
 import { SettingAboutVM } from '../viewmodel/SetUpVM';
 import { EditPersonalCenterBuilder } from './EditPersonalCenterPage';
@@ -27,10 +27,13 @@ import { SetUpGenericCard } from '../comp/SetUpGenericCard';
 @ComponentV2
 export struct SetUpPage {
   vm: SettingAboutVM = new SettingAboutVM();
+  @Local serverUrl: string = NetworkConfig.serverUrl;
 
   aboutToAppear(): void {
     this.vm.init()
     this.vm.getClearSize()
+    NetworkConfig.load();
+    this.serverUrl = NetworkConfig.serverUrl;
   }
 
   @Builder
@@ -167,6 +170,51 @@ export struct SetUpPage {
             }
           }
 
+          SetUpGenericCard() {
+            Row() {
+              Text('🌐')
+                .fontSize(16)
+                .margin({ right: 8 })
+              Text('后端服务器地址')
+                .fontSize($r('sys.float.Body_L'))
+                .fontColor($r('sys.color.font_primary'))
+                .fontWeight(FontWeight.Medium)
+            }
+            .width('100%')
+            .padding({ left: 16, right: 16, top: 14, bottom: 8 })
+
+            Row({ space: 8 }) {
+              TextInput({ text: $$this.serverUrl, placeholder: 'http://192.168.x.x:8000' })
+                .layoutWeight(1)
+                .height(40)
+                .borderRadius(8)
+                .backgroundColor('#F5F5F5')
+                .fontSize(13)
+              Button('保存')
+                .height(40)
+                .borderRadius(8)
+                .backgroundColor('#4ECDC4')
+                .fontColor(Color.White)
+                .fontSize(13)
+                .onClick(() => {
+                  try {
+                    NetworkConfig.save(this.serverUrl);
+                    this.getUIContext().getPromptAction().showToast({
+                      message: '服务器地址已保存',
+                      duration: 1500
+                    });
+                  } catch (e) {
+                    this.getUIContext().getPromptAction().showToast({
+                      message: '保存失败',
+                      duration: 1500
+                    });
+                  }
+                })
+            }
+            .width('100%')
+            .padding({ left: 16, right: 16, top: 4, bottom: 14 })
+          }
+
           Blank().layoutWeight(1)
           Button($r('app.string.person_setting_logout'))
             .borderRadius($r('sys.float.corner_radius_level10'))
@@ -180,21 +228,12 @@ export struct SetUpPage {
               if (this.vm.userInfo.isLogin) {
                 let logoutDialogModelVM = new LogoutDialogModel();
                 logoutDialogModelVM.onValueConfirmClick = () => {
+                  AuthToken.clear();
                   this.vm.userInfo.isLogin = false;
                   this.getUIContext()
                     .getPromptAction()
                     .showToast({ message: $r('app.string.person_setting_logout_success'), duration: 2000 });
-                  phoneRouterControl.jumpPage({
-                    pageName: RouterMap.LOGIN_PAGE,
-                    builder: wrapBuilder(LoginPageBuilder),
-                    onPop: (_popInfo: PopInfo) => {
-                      let mainBuilder = phoneRouterControl.getPageBuilder(RouterMap.MAIN_PAGE);
-                      phoneRouterControl.replacePage({
-                        pageName: RouterMap.MAIN_PAGE,
-                        builder: mainBuilder
-                      });
-                    }
-                  })
+                  emitter.emit({ eventId: 814 });
                 }
                 OHDialog.ShowPopup(logoutDialogModelVM)
               } else {

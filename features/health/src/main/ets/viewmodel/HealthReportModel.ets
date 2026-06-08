@@ -3,7 +3,8 @@
  */
 import { HealthReportData, HealthMetricItem, ReportMenuItem, BMILevel } from '../types/HealthReportTypes';
 import { HealthDataInputModel } from './HealthDataInputModel';
-import { TimeUtil, UserInfo } from 'common';
+import { TimeUtil, UserInfo, HttpUtil, AuthToken } from 'common';
+import type { ApiResponse, ApiDashboard } from 'common';
 import { PersistenceV2 } from '@kit.ArkUI';
 
 @ObservedV2
@@ -309,6 +310,39 @@ export class HealthReportModel {
         return '#F44336';
       default:
         return '#00d2b9';
+    }
+  }
+
+  /**
+   * 从后端 API 加载仪表盘数据（异步）
+   */
+  public async loadFromApi(): Promise<void> {
+    if (!AuthToken.isLoggedIn()) return;
+    const resp: ApiResponse<ApiDashboard> = await HttpUtil.get<ApiDashboard>('/api/health/dashboard');
+    if (resp.data) {
+      const d = resp.data;
+      const now = new Date();
+      const reportDateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+      this.reportData = {
+        userName: this.userInfo?.nickName || '用户',
+        score: d.today_score,
+        percentile: this.calculatePercentile(d.today_score),
+        reportDate: reportDateStr,
+        weight: d.weight,
+        height: this.userInfo?.height || 0,
+        age: this.userInfo?.birthday ? this.calculateAge(this.userInfo.birthday) : 0,
+        bmi: d.bmi,
+        bmiLevel: this.getBMILevelFromValue(d.bmi),
+        bodyFat: d.body_fat_percentage,
+        fatMass: Math.round(d.weight * d.body_fat_percentage / 100 * 10) / 10,
+        heartRate: d.heart_rate,
+        bloodPressureSystolic: d.blood_pressure_systolic,
+        bloodPressureDiastolic: d.blood_pressure_diastolic,
+        bloodGlucose: d.blood_sugar,
+        bmiTarget: this.calculateBMITarget(d.bmi),
+        bmiAdvice: this.generateBMIAdvice(this.getBMILevelFromValue(d.bmi))
+      } as HealthReportData;
     }
   }
 

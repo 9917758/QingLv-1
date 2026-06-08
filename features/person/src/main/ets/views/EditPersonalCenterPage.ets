@@ -1,9 +1,17 @@
 import { PersistenceV2 } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
 import { FormGroup, FormType, ObservedInfoItem, PersonalInfoView } from 'collect_personal_info'
-import { CommonHeader, Constants, TimeUtil, UserInfo } from 'common';
+import { CommonHeader, Constants, TimeUtil, UserInfo, HttpUtil, AuthToken } from 'common';
 import { OHPage, phoneRouterControl } from 'oh_router'
 import { GenderStringToType, GenderTypeToString } from '../utils/TypeConversion';
+
+interface UserProfilePayload {
+  nick_name: string;
+  gender: string;
+  birthday?: string;
+  height: number;
+  weight: number;
+}
 
 /**
  * @usage: 个人信息编辑页面，提供用户基本信息的编辑功能。包含头像选择、昵称修改、性别选择、生日设置、身高体重输入等功能。
@@ -236,7 +244,24 @@ export struct EditPersonalCenter {
     }
   ];
   @Local onReturnClick: () => void = () => {
+    // 退出时同步个人信息到后端
+    this.syncToApi();
     phoneRouterControl.popPage();
+  }
+
+  /** 将个人信息同步到后端 API */
+  private syncToApi(): void {
+    if (!AuthToken.isLoggedIn()) return;
+    const body: UserProfilePayload = {
+      nick_name: this.userInfo.nickName,
+      gender: this.userInfo.gender,
+      height: this.userInfo.height,
+      weight: this.userInfo.weight,
+    };
+    if (this.userInfo.birthday) {
+      body.birthday = this.userInfo.birthday;
+    }
+    HttpUtil.put<object>('/api/auth/me', body);
   }
 
   build() {

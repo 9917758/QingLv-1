@@ -39,6 +39,10 @@ export class Constants {
     eventId: 813
   }
 
+  public static readonly onLogout: emitter.InnerEvent = {
+    eventId: 814
+  }
+
   public static readonly TAB_INDEX_ZERO: number = 0;
   public static readonly TAB_INDEX_ONE: number = 1;
   public static readonly TAB_INDEX_TWO: number = 2;

@@ -15,3 +15,5 @@ export { AchievementService } from './src/main/ets/service/AchievementService';
 export { AnomalyHistoryService } from './src/main/ets/service/AnomalyHistoryService';
 export { SleepQualityService } from './src/main/ets/service/SleepQualityService';
 export { AnomalyHistoryPageBuilder } from './src/main/ets/views/AnomalyHistoryPage';
+export { BackendLoginPageBuilder } from './src/main/ets/views/BackendLoginPage';
+export { AiAgentPageBuilder } from './src/main/ets/views/AiAgentPage';

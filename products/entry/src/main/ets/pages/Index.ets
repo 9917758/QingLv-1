@@ -1,10 +1,17 @@
 import { PersistenceV2 } from '@kit.ArkUI';
-import { LoginPageBuilder } from 'aggregated_login';
-import { GlobalContext, PreferenceConstant, PreferenceUtil, RouterMap, UserInfo } from 'common';
+import { emitter } from '@kit.BasicServicesKit';
+import { GlobalContext, PreferenceConstant, PreferenceUtil, RouterMap, UserInfo, NetworkConfig, AuthToken, Constants } from 'common';
 import { FavoriteUtil, HealthFavoritesPageBuilder } from 'health';
 import { BmiCalculatorPageBuilder } from 'health/src/main/ets/views/BmiCalculatorPage';
 import { AchievementPageBuilder } from 'health/src/main/ets/views/AchievementPage';
 import { AnomalyHistoryPageBuilder } from 'health/src/main/ets/views/AnomalyHistoryPage';
+import { BackendLoginPageBuilder } from 'health/src/main/ets/views/BackendLoginPage';
+import { HealthDataService } from 'health';
+import { WaterIntakeService } from 'health';
+import { ReminderService } from 'health';
+import { CheckinStreakService } from 'health';
+import { HealthGoalService } from 'health';
+import { HealthScoreService, AchievementService, AnomalyHistoryService, SleepQualityService } from 'health';
 import { phoneRouterControl } from 'oh_router';
 import { PersonInfoInputPageBuilder, PrivacyAgreementPageBuilder } from 'person';
 import { IndexVM } from '../viewmodel/IndexVM';
@@ -33,20 +40,34 @@ struct Index {
     this.vm.displayOrientationListener();
     // 清理之前 bug 版本残留的收藏脏数据
     FavoriteUtil.init();
+    // 加载后端服务器地址配置
+    NetworkConfig.load();
+    // 监听退出登录事件（SetupPage 发出）
+    emitter.on(Constants.onLogout, () => {
+      // 清除所有 Service 的内存缓存，防止下一个用户读到旧数据
+      HealthDataService.instance.clearCache();
+      WaterIntakeService.instance.clearCache();
+      ReminderService.invalidateCache();
+      CheckinStreakService.instance.clearCache();
+      HealthGoalService.instance.clearCache();
+      HealthScoreService.instance.clearCache();
+      AchievementService.instance.clearCache();
+      AnomalyHistoryService.instance.clearCache();
+      SleepQualityService.instance.clearCache();
+      this.userInfo.isLogin = false;
+      phoneRouterControl.replacePage({
+        pageName: RouterMap.LOGIN_PAGE,
+        builder: wrapBuilder(BackendLoginPageBuilder)
+      });
+    });
     //读取状态值，如果为空设置为true
     let isFirstLaunch = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext())
       .get(PreferenceConstant.FIRST_LAUNCH, true) as boolean
     if (isFirstLaunch) {
-      // 首次启动预填模拟用户数据，确保健康报告等页面有完整数据可展示
-      this.userInfo.isLogin = true;
-      this.userInfo.isEditOk = true;
-      this.userInfo.id = '10001';
-      this.userInfo.nickName = '健康用户';
-      this.userInfo.gender = '男';
-      this.userInfo.birthday = '1998-06-15';
-      this.userInfo.height = 172;
-      this.userInfo.weight = 68;
-      //隐私政策
+      // 标记首次启动完成，下次不再走这段逻辑
+      PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext())
+        .put(PreferenceConstant.FIRST_LAUNCH, false);
+      // 首次启动：显示隐私协议，同意后进入登录页
       phoneRouterControl.jumpPage({
         pageName: RouterMap.PRIVACY_AGREEMENT_PAGE,
         builder: wrapBuilder(PrivacyAgreementPageBuilder),
@@ -67,13 +88,21 @@ struct Index {
         builder: wrapBuilder(HomePageBuilder)
       })
     } else {
-      phoneRouterControl.jumpPage({
-        pageName: RouterMap.LOGIN_PAGE,
-        builder: wrapBuilder(LoginPageBuilder),
-        onPop: (_popInfo: PopInfo) => {
-          this.gotoMineOrMainPage();
-        }
-      })
+      // 优先使用后端登录页，有 Token 则直接进主页
+      if (AuthToken.isLoggedIn()) {
+        phoneRouterControl.replacePage({
+          pageName: RouterMap.MAIN_PAGE,
+          builder: wrapBuilder(HomePageBuilder)
+        })
+      } else {
+        phoneRouterControl.jumpPage({
+          pageName: RouterMap.LOGIN_PAGE,
+          builder: wrapBuilder(BackendLoginPageBuilder),
+          onPop: (_popInfo: PopInfo) => {
+            this.gotoMineOrMainPage();
+          }
+        })
+      }
     }
   }
 

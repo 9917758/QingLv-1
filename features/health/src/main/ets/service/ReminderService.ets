@@ -1,50 +1,59 @@
-import { GlobalContext, PreferenceConstant, PreferenceUtil, TCLogger, TimeUtil } from 'common';
+/**
+ * 提醒计划服务
+ * 集中管理提醒计划的加载、校验、缓存、存储，供 HomePage 和 ReminderPlanPage 共用
+ * 支持两种模式：本地 Mock / 后端 API
+ * 本地存储按用户ID隔离
+ */
+import { GlobalContext, PreferenceUtil, HttpUtil, AuthToken, TCLogger, TimeUtil, UserInfo } from 'common';
+import type { ApiResponse, ApiReminderPlan } from 'common';
+import { PersistenceV2 } from '@kit.ArkUI';
 import { ReminderPlanItem } from '../model/ReminderPlanModel';
 import { DEFAULT_REMINDER_PLANS } from '../mock/ReminderMockData';
 
 const TAG = 'ReminderService';
 
-/**
- * 提醒计划服务
- * 集中管理提醒计划的加载、校验、缓存、存储，供 HomePage 和 ReminderPlanPage 共用
- * （#2 模块职责内聚、#4 内存缓存、#7 JSON 校验）
- */
+interface PlanSavePayload {
+  plan_id: string;
+  plan_type: number;
+  name: string;
+  time: string;
+  dosage: string;
+  is_enabled: boolean;
+}
+
 export class ReminderService {
   private static cachedPlans: ReminderPlanItem[] | null = null;
-  // 今日已打卡计划ID缓存（内存级，同步持久化到 Preferences）
   private static checkedTodayIds: Set<string> = new Set();
   private static checkedTodayDate: string = '';
+  private static cachedUserId: string = '';
 
-  /**
-   * 校验解析后的对象是否为合法的 ReminderPlanItem（#7）
-   */
+  private static getUserId(): string {
+    const userInfo = PersistenceV2.connect(UserInfo, () => new UserInfo());
+    return userInfo ? userInfo.id : 'anonymous';
+  }
+
+  private static getPlansKey(): string {
+    return `reminder_plans_${ReminderService.getUserId()}`;
+  }
+
+  private static getCheckedKey(): string {
+    return `reminder_checked_${ReminderService.getUserId()}`;
+  }
+
   static isValidPlan(obj: Record<string, Object>): boolean {
-    if (obj['id'] === undefined || obj['id'] === null || typeof obj['id'] !== 'string') {
-      return false;
-    }
-    if (obj['name'] === undefined || obj['name'] === null || typeof obj['name'] !== 'string') {
-      return false;
-    }
-    if (obj['time'] === undefined || obj['time'] === null || typeof obj['time'] !== 'string') {
-      return false;
-    }
-    if (obj['type'] === undefined || obj['type'] === null || typeof obj['type'] !== 'number') {
-      return false;
-    }
+    if (obj['id'] === undefined || obj['id'] === null || typeof obj['id'] !== 'string') return false;
+    if (obj['name'] === undefined || obj['name'] === null || typeof obj['name'] !== 'string') return false;
+    if (obj['time'] === undefined || obj['time'] === null || typeof obj['time'] !== 'string') return false;
+    if (obj['type'] === undefined || obj['type'] === null || typeof obj['type'] !== 'number') return false;
     return true;
   }
 
-  /**
-   * 从存储解析计划列表（模块级函数，避免 any）
-   */
   private static parsePlans(data: string): ReminderPlanItem[] {
     const raw: Object[] = JSON.parse(data) as Object[];
     const result: ReminderPlanItem[] = [];
     for (let i = 0; i < raw.length; i++) {
       const item: Record<string, Object> = raw[i] as Record<string, Object>;
-      if (!ReminderService.isValidPlan(item)) {
-        continue; // 跳过损坏条目
-      }
+      if (!ReminderService.isValidPlan(item)) continue;
       const plan = new ReminderPlanItem();
       plan.id = (item['id'] as string) || '';
       plan.type = (item['type'] as number) || 0;
@@ -58,24 +67,14 @@ export class ReminderService {
     return result;
   }
 
-  /**
-   * 深拷贝单条计划（ArkTS 不允许对象 spread）
-   */
   static copyPlan(src: ReminderPlanItem): ReminderPlanItem {
     const dst = new ReminderPlanItem();
-    dst.id = src.id;
-    dst.type = src.type;
-    dst.name = src.name;
-    dst.time = src.time;
-    dst.dosage = src.dosage;
-    dst.isEnabled = src.isEnabled;
-    dst.isCheckedToday = src.isCheckedToday;
+    dst.id = src.id; dst.type = src.type; dst.name = src.name;
+    dst.time = src.time; dst.dosage = src.dosage;
+    dst.isEnabled = src.isEnabled; dst.isCheckedToday = src.isCheckedToday;
     return dst;
   }
 
-  /**
-   * 获取默认计划的深拷贝列表
-   */
   static getDefaultPlans(): ReminderPlanItem[] {
     const defaults: ReminderPlanItem[] = [];
     for (let i = 0; i < DEFAULT_REMINDER_PLANS.length; i++) {
@@ -84,25 +83,33 @@ export class ReminderService {
     return defaults;
   }
 
-  /**
-   * 加载提醒计划（带内存缓存，#4）
-   * 30 秒轮询一次时直接返回缓存，避免重复磁盘读取+JSON.parse
-   */
+  /** 用户切换时自动清除缓存 */
+  private static checkUserSwitch(): void {
+    const userId = ReminderService.getUserId();
+    if (ReminderService.cachedUserId.length > 0 && ReminderService.cachedUserId !== userId) {
+      ReminderService.invalidateCache();
+      ReminderService.checkedTodayIds = new Set();
+      ReminderService.checkedTodayDate = '';
+    }
+    ReminderService.cachedUserId = userId;
+  }
+
+  /** 同步加载 */
   static loadPlans(): ReminderPlanItem[] {
+    ReminderService.checkUserSwitch();
     if (ReminderService.cachedPlans !== null) {
       return ReminderService.cachedPlans;
     }
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const data = pref.get(PreferenceConstant.REMINDER_PLANS, '') as string;
+      const data = pref.get(ReminderService.getPlansKey(), '') as string;
       if (data && data.length > 0) {
         const parsed: ReminderPlanItem[] = ReminderService.parsePlans(data);
         if (parsed.length > 0 && parsed[0].name !== 'undefined') {
           ReminderService.cachedPlans = parsed;
           return parsed;
         }
-        // 数据损坏，清除
-        pref.delete(PreferenceConstant.REMINDER_PLANS);
+        pref.delete(ReminderService.getPlansKey());
       }
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
@@ -113,53 +120,67 @@ export class ReminderService {
     return defaults;
   }
 
-  /**
-   * 保存计划到存储并更新缓存
-   */
+  /** 从后端 API 加载计划 */
+  static async loadFromApi(): Promise<ReminderPlanItem[]> {
+    if (!AuthToken.isLoggedIn()) return ReminderService.loadPlans();
+    const resp: ApiResponse<ApiReminderPlan[]> = await HttpUtil.get<ApiReminderPlan[]>('/api/health/plans');
+    if (resp.data && resp.data.length > 0) {
+      const plans: ReminderPlanItem[] = [];
+      for (let i = 0; i < resp.data.length; i++) {
+        const r = resp.data[i];
+        const plan = new ReminderPlanItem();
+        plan.id = r.plan_id; plan.type = r.plan_type; plan.name = r.name;
+        plan.time = r.time; plan.dosage = r.dosage; plan.isEnabled = r.is_enabled;
+        plan.isCheckedToday = ReminderService.isPlanCheckedToday(r.plan_id);
+        plans.push(plan);
+      }
+      ReminderService.cachedPlans = plans;
+    }
+    return ReminderService.cachedPlans || ReminderService.loadPlans();
+  }
+
+  /** 保存计划 */
   static savePlans(plans: ReminderPlanItem[]): void {
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.put(PreferenceConstant.REMINDER_PLANS, JSON.stringify(plans));
+      pref.put(ReminderService.getPlansKey(), JSON.stringify(plans));
       ReminderService.cachedPlans = plans;
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
       TCLogger.error(TAG, `savePlans error: ${err.message}`);
     }
+    if (AuthToken.isLoggedIn()) {
+      for (let i = 0; i < plans.length; i++) {
+        const p = plans[i];
+        const payload: PlanSavePayload = {
+          plan_id: p.id, plan_type: p.type, name: p.name,
+          time: p.time, dosage: p.dosage, is_enabled: p.isEnabled
+        };
+        HttpUtil.post<ApiReminderPlan>('/api/health/plans', payload);
+      }
+    }
   }
 
-  /**
-   * 使缓存失效（ReminderPlanPage 修改计划后调用，#4）
-   */
   static invalidateCache(): void {
     ReminderService.cachedPlans = null;
   }
 
-  /**
-   * 获取今天已打卡的计划 ID 集合（内存缓存 + 存储双层）
-   */
   static getCheckedTodayIds(): Set<string> {
     const today = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
-    // 跨天清空
     if (ReminderService.checkedTodayDate !== today) {
       ReminderService.checkedTodayIds = new Set();
       ReminderService.checkedTodayDate = today;
     }
-    // 内存已有数据直接返回
-    if (ReminderService.checkedTodayIds.size > 0) {
-      return ReminderService.checkedTodayIds;
-    }
-    // 从存储加载
+    if (ReminderService.checkedTodayIds.size > 0) return ReminderService.checkedTodayIds;
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const stored = pref.get(PreferenceConstant.REMINDER_CHECKED_TODAY, '{}') as string;
+      const stored = pref.get(ReminderService.getCheckedKey(), '{}') as string;
       const data: Record<string, Object> = JSON.parse(stored) as Record<string, Object>;
       if (data['date'] === today) {
         const ids = data['ids'];
         if (ids !== undefined && ids !== null) {
           const arr = ids as string[];
-          for (let i = 0; i < arr.length; i++) {
-            ReminderService.checkedTodayIds.add(arr[i]);
-          }
+          for (let i = 0; i < arr.length; i++) ReminderService.checkedTodayIds.add(arr[i]);
         }
       }
     } catch {
@@ -168,42 +189,34 @@ export class ReminderService {
     return ReminderService.checkedTodayIds;
   }
 
-  /**
-   * 标记指定计划今日已打卡（内存 + 持久化）
-   */
   static markPlanChecked(planId: string): void {
     const today = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
-    ReminderService.getCheckedTodayIds(); // 确保已加载
-    if (ReminderService.checkedTodayIds.has(planId)) {
-      return; // 已打过
-    }
+    ReminderService.getCheckedTodayIds();
+    if (ReminderService.checkedTodayIds.has(planId)) return;
     ReminderService.checkedTodayIds.add(planId);
     ReminderService.checkedTodayDate = today;
+    if (AuthToken.isLoggedIn()) {
+      HttpUtil.post<object>(`/api/health/checkin/${planId}`);
+    }
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY,
+      pref.put(ReminderService.getCheckedKey(),
         JSON.stringify({ date: today, ids: Array.from(ReminderService.checkedTodayIds) }));
     } catch {
       TCLogger.error(TAG, 'markPlanChecked error');
     }
   }
 
-  /**
-   * 检查指定计划今日是否已打卡
-   */
   static isPlanCheckedToday(planId: string): boolean {
     return ReminderService.getCheckedTodayIds().has(planId);
   }
 
-  /**
-   * 跨天重置打卡记录（清空内存缓存和存储）
-   */
   static resetCheckedToday(): void {
     ReminderService.checkedTodayIds = new Set();
     ReminderService.checkedTodayDate = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY,
+      pref.put(ReminderService.getCheckedKey(),
         JSON.stringify({ date: ReminderService.checkedTodayDate, ids: [] }));
     } catch {
       TCLogger.error(TAG, 'resetCheckedToday error');
@@ -211,10 +224,6 @@ export class ReminderService {
     ReminderService.invalidateCache();
   }
 
-  /**
-   * 将今日打卡状态同步到计划列表的 isCheckedToday 字段
-   * 返回同步后的新数组（深拷贝），可直接赋值给 @Local plans
-   */
   static syncCheckedStatus(plans: ReminderPlanItem[]): ReminderPlanItem[] {
     const checkedIds = ReminderService.getCheckedTodayIds();
     const result: ReminderPlanItem[] = [];
@@ -226,14 +235,11 @@ export class ReminderService {
     return result;
   }
 
-  /**
-   * 清除缓存和存储（重置场景用）
-   */
   static clearAll(): void {
     ReminderService.cachedPlans = null;
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.delete(PreferenceConstant.REMINDER_PLANS);
+      pref.delete(ReminderService.getPlansKey());
     } catch (e) {
       TCLogger.error(TAG, `clearAll error: ${JSON.stringify(e)}`);
     }

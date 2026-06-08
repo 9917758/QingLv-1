@@ -26,6 +26,11 @@ export class AchievementService {
     return AchievementService._instance;
   }
 
+  /** 清除内存缓存 */
+  public clearCache(): void {
+    this.achievements = [];
+  }
+
   /**
    * 初始化所有成就定义
    */

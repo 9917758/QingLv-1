@@ -1,15 +1,18 @@
 /**
  * 健康目标管理服务
  * 管理用户设定的健康目标（目标体重等）
+ * 本地存储按用户ID隔离
  */
-import { GlobalContext, PreferenceUtil } from 'common';
+import { GlobalContext, PreferenceUtil, UserInfo } from 'common';
+import { PersistenceV2 } from '@kit.ArkUI';
 
-const GOAL_WEIGHT_KEY = 'health_goal_weight';
+const GOAL_WEIGHT_KEY_PREFIX = 'health_goal_weight_';
 
 @ObservedV2
 export class HealthGoalService {
   private static _instance: HealthGoalService;
-  @Trace goalWeight: number = 0; // 目标体重（斤），0表示未设定
+  @Trace goalWeight: number = 0;
+  private _loadedUserId: string = '';
 
   public static get instance(): HealthGoalService {
     if (!HealthGoalService._instance) {
@@ -18,13 +21,35 @@ export class HealthGoalService {
     return HealthGoalService._instance;
   }
 
-  /**
-   * 加载目标体重
-   */
+  private static getUserId(): string {
+    const userInfo = PersistenceV2.connect(UserInfo, () => new UserInfo());
+    return userInfo ? userInfo.id : 'anonymous';
+  }
+
+  private getGoalKey(): string {
+    return `${GOAL_WEIGHT_KEY_PREFIX}${HealthGoalService.getUserId()}`;
+  }
+
+  /** 清除内存缓存 */
+  public clearCache(): void {
+    this.goalWeight = 0;
+    this._loadedUserId = '';
+  }
+
+  /** 用户切换时自动清除缓存 */
+  private checkUserSwitch(): void {
+    const userId = HealthGoalService.getUserId();
+    if (this._loadedUserId.length > 0 && this._loadedUserId !== userId) {
+      this.clearCache();
+    }
+    this._loadedUserId = userId;
+  }
+
   public loadGoal(): number {
+    this.checkUserSwitch();
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const val = pref.get(GOAL_WEIGHT_KEY, '0') as string;
+      const val = pref.get(this.getGoalKey(), '0') as string;
       this.goalWeight = Number(val);
     } catch {
       this.goalWeight = 0;
@@ -32,46 +57,29 @@ export class HealthGoalService {
     return this.goalWeight;
   }
 
-  /**
-   * 设置目标体重
-   */
   public setGoalWeight(weight: number): void {
     this.goalWeight = weight;
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.put(GOAL_WEIGHT_KEY, String(weight));
+      pref.put(this.getGoalKey(), String(weight));
     } catch {
+      // ignore
     }
   }
 
-  /**
-   * 计算当前体重与目标的差距（斤）
-   * 正值表示还需减重，负值表示已超过目标
-   */
   public getWeightDiff(currentWeight: number): number {
     if (this.goalWeight <= 0) return 0;
     return Math.round((currentWeight - this.goalWeight) * 10) / 10;
   }
 
-  /**
-   * 获取目标进度描述
-   */
   public getGoalDescription(currentWeight: number): string {
     if (this.goalWeight <= 0) return '';
     const diff = this.getWeightDiff(currentWeight);
-    if (diff > 0) {
-      return `距目标还差 ${diff.toFixed(1)} 斤`;
-    } else if (diff < 0) {
-      return `已超过目标 ${Math.abs(diff).toFixed(1)} 斤`;
-    } else {
-      return '🎉 已达成目标！';
-    }
+    if (diff > 0) return `距目标还差 ${diff.toFixed(1)} 斤`;
+    else if (diff < 0) return `已超过目标 ${Math.abs(diff).toFixed(1)} 斤`;
+    else return '🎉 已达成目标！';
   }
 
-  /**
-   * 获取进度百分比（0-100）
-   * 假设起始体重比目标重 20 斤为 0%，达到目标为 100%
-   */
   public getProgress(startWeight: number, currentWeight: number): number {
     if (this.goalWeight <= 0 || startWeight <= this.goalWeight) return 0;
     const totalToLose = startWeight - this.goalWeight;

@@ -34,3 +34,8 @@ export { OHDialog } from './src/main/ets/dialog/OHDialog';
 export { OHDialogModel } from './src/main/ets/dialog/OHDialogModel';
 
 export { USE_MOCK_DATA } from './src/main/ets/constant/MockConfig';
+
+export { HttpUtil, ApiResponse } from './src/main/ets/util/HttpUtil';
+export { NetworkConfig } from './src/main/ets/util/NetworkConfig';
+export { AuthToken } from './src/main/ets/util/AuthToken';
+export * from './src/main/ets/util/ApiTypes';

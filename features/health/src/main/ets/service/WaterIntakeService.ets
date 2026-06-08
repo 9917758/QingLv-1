@@ -1,13 +1,17 @@
 /**
  * 喝水打卡服务
  * 管理每日喝水次数记录，支持打卡和查询
+ * 支持两种模式：本地 Mock / 后端 API
+ * 本地存储按用户ID隔离
  */
-import { GlobalContext, PreferenceUtil } from 'common';
+import { GlobalContext, PreferenceUtil, HttpUtil, AuthToken, UserInfo } from 'common';
+import type { ApiResponse, ApiWaterIntake } from 'common';
+import { PersistenceV2 } from '@kit.ArkUI';
 
 const WATER_INTAKE_PREFIX = 'water_intake_';
-const WATER_GOAL_KEY = 'water_intake_goal';
-const DEFAULT_DAILY_GOAL = 8; // 默认每日目标杯数
-const MAX_CUPS = 20; // 每日最大杯数上限
+const WATER_GOAL_KEY_PREFIX = 'water_intake_goal_';
+const DEFAULT_DAILY_GOAL = 8;
+const MAX_CUPS = 20;
 
 @ObservedV2
 export class WaterIntakeService {
@@ -23,18 +27,29 @@ export class WaterIntakeService {
     return WaterIntakeService._instance;
   }
 
-  /**
-   * 获取今天的存储 key（格式：water_intake_20260607）
-   */
-  private getTodayKey(): string {
-    const now = new Date();
-    const key = `${WATER_INTAKE_PREFIX}${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}`;
-    return key;
+  private static getUserId(): string {
+    const userInfo = PersistenceV2.connect(UserInfo, () => new UserInfo());
+    return userInfo ? userInfo.id : 'anonymous';
   }
 
-  /**
-   * 加载今日喝水数据
-   */
+  private getTodayKey(): string {
+    const now = new Date();
+    const uid = WaterIntakeService.getUserId();
+    return `${WATER_INTAKE_PREFIX}${uid}_${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}`;
+  }
+
+  private getGoalKey(): string {
+    return `${WATER_GOAL_KEY_PREFIX}${WaterIntakeService.getUserId()}`;
+  }
+
+  /** 清除内存缓存 */
+  public clearCache(): void {
+    this.todayCount = 0;
+    this.todayGoal = DEFAULT_DAILY_GOAL;
+    this._todayKey = '';
+  }
+
+  /** 同步加载（兼容旧调用） */
   public loadToday(): number {
     this._todayKey = this.getTodayKey();
     try {
@@ -47,45 +62,53 @@ export class WaterIntakeService {
     return this.todayCount;
   }
 
-  /**
-   * 喝水打卡（+1），上限 MAX_CUPS
-   */
-  public drink(): number {
-    if (this.todayCount >= MAX_CUPS) {
+  /** 从后端 API 加载今日饮水（异步） */
+  public async loadFromApi(): Promise<number> {
+    if (!AuthToken.isLoggedIn()) {
+      this.loadToday();
       return this.todayCount;
     }
-    this.todayCount++;
-    this.persist();
+    const resp: ApiResponse<ApiWaterIntake> = await HttpUtil.get<ApiWaterIntake>('/api/health/water');
+    if (resp.data) {
+      this.todayCount = resp.data.cup_count;
+      this.todayGoal = resp.data.daily_goal;
+    }
     return this.todayCount;
   }
 
-  /**
-   * 设置今日喝水次数（用于手动调整）
-   */
-  public setCount(count: number): void {
-    this.todayCount = Math.max(0, count);
-    this.persist();
+  /** 喝水打卡（+1） */
+  public drink(): number {
+    if (this.todayCount >= MAX_CUPS) return this.todayCount;
+    this.todayCount++;
+    if (AuthToken.isLoggedIn()) {
+      HttpUtil.post<ApiWaterIntake>('/api/health/water/drink');
+    }
+    this.persistLocal();
+    return this.todayCount;
   }
 
-  /**
-   * 设置每日目标杯数
-   */
+  public setCount(count: number): void {
+    this.todayCount = Math.max(0, count);
+    this.persistLocal();
+  }
+
   public setGoal(goal: number): void {
     this.todayGoal = Math.max(1, goal);
+    if (AuthToken.isLoggedIn()) {
+      HttpUtil.put<ApiWaterIntake>(`/api/health/water/goal?goal=${this.todayGoal}`);
+    }
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.put(WATER_GOAL_KEY, String(this.todayGoal));
+      pref.put(this.getGoalKey(), String(this.todayGoal));
     } catch {
+      // ignore
     }
   }
 
-  /**
-   * 加载每日目标
-   */
   public loadGoal(): number {
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const val = pref.get(WATER_GOAL_KEY, String(DEFAULT_DAILY_GOAL)) as string;
+      const val = pref.get(this.getGoalKey(), String(DEFAULT_DAILY_GOAL)) as string;
       this.todayGoal = Number(val);
     } catch {
       this.todayGoal = DEFAULT_DAILY_GOAL;
@@ -93,33 +116,22 @@ export class WaterIntakeService {
     return this.todayGoal;
   }
 
-  /**
-   * 获取今日进度百分比
-   */
   public getProgress(): number {
     if (this.todayGoal <= 0) return 0;
     return Math.min(Math.round((this.todayCount / this.todayGoal) * 100), 100);
   }
 
-  /**
-   * 是否达标
-   */
   public isGoalReached(): boolean {
     return this.todayCount >= this.todayGoal;
   }
 
-  /**
-   * 持久化今日喝水次数
-   */
-  private persist(): void {
-    if (!this._todayKey) {
-      this._todayKey = this.getTodayKey();
-    }
+  private persistLocal(): void {
+    if (!this._todayKey) this._todayKey = this.getTodayKey();
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
       pref.put(this._todayKey, String(this.todayCount));
-    } catch (err) {
-      console.error('WaterIntakeService persist failed');
+    } catch {
+      // ignore
     }
   }
 }

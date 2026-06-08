@@ -18,6 +18,7 @@ export struct HealthHistoryPage {
 
   aboutToAppear(): void {
     this.vm.loadHistory();
+    this.vm.loadFromApi();
   }
 
   handleBack = (): void => {

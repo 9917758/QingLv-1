@@ -10,6 +10,7 @@ import { phoneRouterControl } from 'oh_router';
 import { MessageCenterPageBuilder } from 'person';
 import { HealthRunningFoldRow } from '../comp/HealthRunningFoldRow';
 import { ReminderPlanPageBuilder } from './ReminderPlanPage';
+import { AiAgentPageBuilder } from './AiAgentPage';
 import { WaterIntakeService } from '../service/WaterIntakeService';
 import { HealthGoalService } from '../service/HealthGoalService';
 import { HealthScoreService } from '../service/HealthScoreService';
@@ -80,7 +81,7 @@ export struct HealthPage {
     } catch (err) {
       TCLogger.error(TAG, `aboutToAppear error: ${JSON.stringify(err)}`);
     }
-    // 加载喝水和目标数据
+    // 加载喝水和目标数据（先同步加载本地缓存，再异步从 API 刷新）
     this.waterService.loadToday();
     this.waterService.loadGoal();
     this.goalService.loadGoal();
@@ -96,6 +97,20 @@ export struct HealthPage {
     );
     this.achievementService.generateMock();
     this.anomalyService.generateMock();
+
+    // 异步从后端 API 刷新数据（不阻塞 UI 渲染）
+    this.refreshFromApi();
+  }
+
+  /** 异步从后端加载最新数据并刷新 UI */
+  private async refreshFromApi(): Promise<void> {
+    try {
+      await this.waterService.loadFromApi();
+      await this.scoreService.loadFromApi();
+      await this.suggestionService.loadFromApi();
+    } catch (err) {
+      TCLogger.error(TAG, `refreshFromApi error: ${JSON.stringify(err)}`);
+    }
   }
 
   aboutToDisappear(): void {
@@ -614,6 +629,43 @@ export struct HealthPage {
               // 健康建议
               ListItem() {
                 this.healthSuggestionCardSection()
+              }
+              .width('100%')
+
+              // AI 健康顾问入口
+              ListItem() {
+                Row() {
+                  Text('🤖')
+                    .fontSize(20)
+                    .margin({ right: 10 })
+                  Column() {
+                    Text('AI 健康顾问')
+                      .fontSize(16)
+                      .fontWeight(FontWeight.Medium)
+                      .fontColor('#333333')
+                    Text('基于你的健康数据，智能问答')
+                      .fontSize(13)
+                      .fontColor('#999999')
+                      .margin({ top: 2 })
+                  }
+                  .alignItems(HorizontalAlign.Start)
+                  Blank()
+                  Text('›')
+                    .fontSize(20)
+                    .fontColor('#CCCCCC')
+                }
+                .width('100%')
+                .height(64)
+                .padding({ left: 16, right: 16 })
+                .backgroundColor(Color.White)
+                .borderRadius(12)
+                .margin({ left: 16, right: 16 })
+                .onClick(() => {
+                  phoneRouterControl.jumpPage({
+                    pageName: 'AiAgentPage',
+                    builder: wrapBuilder(AiAgentPageBuilder)
+                  })
+                })
               }
               .width('100%')
 

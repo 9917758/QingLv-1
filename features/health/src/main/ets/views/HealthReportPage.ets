@@ -32,6 +32,11 @@ export struct HealthReportPage {
   private vm: HealthReportModel = HealthReportModel.instance;
   @Local breakPointModel: BreakpointModel = AppStorageV2.connect(BreakpointModel, () => new BreakpointModel())!;
 
+  aboutToAppear(): void {
+    // 异步从后端刷新报告数据
+    this.vm.loadFromApi();
+  }
+
   @Computed
   get getFoldShow(): boolean {
     if (this.breakPointModel.currentBreakpoint === BreakpointNameEnum.SM) {

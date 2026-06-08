@@ -83,6 +83,12 @@ export class WeeklyReportModel {
     this.reportData = this.buildReportFromHistory(this.selectedDateIndex);
   }
 
+  /** 从后端 API 加载数据后重新生成报告 */
+  public async loadFromApi(): Promise<void> {
+    await HealthDataService.instance.loadFromApi(100);
+    this.generateReport();
+  }
+
   public getWeightChangeText(): string {
     return getChangeText(this.reportData.weightTrend.change);
   }

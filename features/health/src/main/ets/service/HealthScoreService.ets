@@ -1,11 +1,11 @@
 /**
  * 健康评分服务
  * 综合 BMI、血压、心率、血糖、运动等指标计算 0-100 的健康评分
+ * 支持本地计算 + 后端 API 评分同步
  */
-import { GlobalContext, PreferenceUtil } from 'common';
+import { HttpUtil, AuthToken } from 'common';
+import type { ApiResponse, ApiDashboard } from 'common';
 import { HealthDataInputModel } from '../viewmodel/HealthDataInputModel';
-
-const SCORE_HISTORY_KEY = 'health_score_history';
 
 export interface ScoreHistory {
   date: string;
@@ -27,6 +27,8 @@ export class HealthScoreService {
   @Trace bsScore: number = 0;
   @Trace exerciseScore: number = 0;
   @Trace scoreHistory: ScoreHistory[] = [];
+  @Trace scoreLevel: string = '无数据';
+  @Trace scoreColor: string = '#999999';
 
   public static get instance(): HealthScoreService {
     if (!HealthScoreService._instance) {
@@ -35,9 +37,20 @@ export class HealthScoreService {
     return HealthScoreService._instance;
   }
 
-  /**
-   * 计算今日健康评分
-   */
+  /** 清除内存缓存（退出登录/切换用户时调用） */
+  public clearCache(): void {
+    this.todayScore = 0;
+    this.bmiScore = 0;
+    this.bpScore = 0;
+    this.hrScore = 0;
+    this.bsScore = 0;
+    this.exerciseScore = 0;
+    this.scoreHistory = [];
+    this.scoreLevel = '无数据';
+    this.scoreColor = '#999999';
+  }
+
+  /** 本地计算评分（兼容旧调用） */
   public calculateScore(inputVM: HealthDataInputModel, stepCount: number, sleepHours: number): number {
     this.bmiScore = this.calcBmiScore(inputVM.bmiValue);
     this.bpScore = this.calcBpScore(inputVM.bloodPressureSystolic, inputVM.bloodPressureDiastolic);
@@ -46,20 +59,28 @@ export class HealthScoreService {
     this.exerciseScore = this.calcExerciseScore(stepCount, sleepHours);
 
     this.todayScore = Math.round(
-      this.bmiScore * 0.25 +
-      this.bpScore * 0.2 +
-      this.hrScore * 0.15 +
-      this.bsScore * 0.15 +
-      this.exerciseScore * 0.25
+      this.bmiScore * 0.25 + this.bpScore * 0.2 + this.hrScore * 0.15 +
+      this.bsScore * 0.15 + this.exerciseScore * 0.25
     );
-
+    this.updateLevelAndColor();
     this.saveTodayScore();
     return this.todayScore;
   }
 
-  /**
-   * Mock 模式下生成评分历史（最近 7 天）
-   */
+  /** 从后端 API 获取评分（异步） */
+  public async loadFromApi(): Promise<number> {
+    if (!AuthToken.isLoggedIn()) {
+      return this.todayScore;
+    }
+    const resp: ApiResponse<ApiDashboard> = await HttpUtil.get<ApiDashboard>('/api/health/dashboard');
+    if (resp.data) {
+      this.todayScore = resp.data.today_score;
+      this.scoreLevel = resp.data.score_level;
+      this.updateColorFromScore();
+    }
+    return this.todayScore;
+  }
+
   public generateMockHistory(): void {
     const history: ScoreHistory[] = [];
     const now = new Date();
@@ -67,7 +88,6 @@ export class HealthScoreService {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
-      // 确保每项子评分不为 0
       const bmi = 20 + Math.floor(Math.random() * 5);
       const bp = 17 + Math.floor(Math.random() * 3);
       const hr = 13 + Math.floor(Math.random() * 2);
@@ -77,11 +97,7 @@ export class HealthScoreService {
       history.push({
         date: dateStr,
         score: Math.min(100, Math.max(70, total)),
-        bmiScore: bmi,
-        bpScore: bp,
-        hrScore: hr,
-        bsScore: bs,
-        exerciseScore: ex
+        bmiScore: bmi, bpScore: bp, hrScore: hr, bsScore: bs, exerciseScore: ex
       });
     }
     this.scoreHistory = history;
@@ -93,29 +109,32 @@ export class HealthScoreService {
       this.hrScore = last.hrScore;
       this.bsScore = last.bsScore;
       this.exerciseScore = last.exerciseScore;
+      this.updateLevelAndColor();
     }
   }
 
-  /**
-   * 获取评分等级文字
-   */
   public getScoreLevel(): string {
-    if (this.todayScore >= 90) return '优秀';
-    if (this.todayScore >= 80) return '良好';
-    if (this.todayScore >= 70) return '一般';
-    if (this.todayScore >= 60) return '偏差';
-    return '需关注';
+    return this.scoreLevel;
   }
 
-  /**
-   * 获取评分等级颜色
-   */
   public getScoreColor(): string {
-    if (this.todayScore >= 90) return '#4CAF50';
-    if (this.todayScore >= 80) return '#8BC34A';
-    if (this.todayScore >= 70) return '#FFC107';
-    if (this.todayScore >= 60) return '#FF9800';
-    return '#F44336';
+    return this.scoreColor;
+  }
+
+  private updateLevelAndColor(): void {
+    if (this.todayScore >= 90) { this.scoreLevel = '优秀'; this.scoreColor = '#4CAF50'; }
+    else if (this.todayScore >= 80) { this.scoreLevel = '良好'; this.scoreColor = '#8BC34A'; }
+    else if (this.todayScore >= 70) { this.scoreLevel = '一般'; this.scoreColor = '#FFC107'; }
+    else if (this.todayScore >= 60) { this.scoreLevel = '偏差'; this.scoreColor = '#FF9800'; }
+    else { this.scoreLevel = '需关注'; this.scoreColor = '#F44336'; }
+  }
+
+  private updateColorFromScore(): void {
+    if (this.todayScore >= 90) this.scoreColor = '#4CAF50';
+    else if (this.todayScore >= 80) this.scoreColor = '#8BC34A';
+    else if (this.todayScore >= 70) this.scoreColor = '#FFC107';
+    else if (this.todayScore >= 60) this.scoreColor = '#FF9800';
+    else this.scoreColor = '#F44336';
   }
 
   private calcBmiScore(bmi: number): number {
@@ -160,15 +179,11 @@ export class HealthScoreService {
 
   private saveTodayScore(): void {
     const today = new Date();
-    const dateStr = `${today.getFullYear()}-${(today.getMonth()+1).toString().padStart(2,'0')}-${today.getDate().toString().padStart(2,'0')}`;
+    const dateStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
     const entry: ScoreHistory = {
-      date: dateStr,
-      score: this.todayScore,
-      bmiScore: this.bmiScore,
-      bpScore: this.bpScore,
-      hrScore: this.hrScore,
-      bsScore: this.bsScore,
-      exerciseScore: this.exerciseScore
+      date: dateStr, score: this.todayScore,
+      bmiScore: this.bmiScore, bpScore: this.bpScore,
+      hrScore: this.hrScore, bsScore: this.bsScore, exerciseScore: this.exerciseScore
     };
     const updated = this.scoreHistory.filter(h => h.date !== dateStr);
     updated.push(entry);

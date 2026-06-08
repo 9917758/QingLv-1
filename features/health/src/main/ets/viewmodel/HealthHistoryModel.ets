@@ -23,22 +23,34 @@ export class HealthHistoryModel {
   }
 
   /**
-   * 加载历史数据
+   * 加载历史数据（同步，兼容旧调用）
    */
   public loadHistory(): void {
     if (USE_MOCK_DATA) {
-      // Mock 模式：合并 mock 数据和用户录入的数据
       const records = HealthDataService.instance.loadRecords();
       const fromRecords = this.convertRecordsToGroups(records);
-      // 合并 mock 数据和记录数据，去重
       const allGroups = this.mergeGroups(HEALTH_HISTORY_GROUPS, fromRecords);
       this.historyGroups = allGroups;
     } else {
       const records = HealthDataService.instance.loadRecords();
       this.historyGroups = this.convertRecordsToGroups(records);
     }
+    if (this.historyGroups.length > 0 && !this.selectedMonth) {
+      this.selectedMonth = this.historyGroups[0].month;
+    }
+  }
 
-    // 设置默认选中月份
+  /**
+   * 从后端 API 加载历史数据（异步）
+   */
+  public async loadFromApi(): Promise<void> {
+    const records = await HealthDataService.instance.loadFromApi(200);
+    const fromRecords = this.convertRecordsToGroups(records);
+    if (USE_MOCK_DATA) {
+      this.historyGroups = this.mergeGroups(HEALTH_HISTORY_GROUPS, fromRecords);
+    } else {
+      this.historyGroups = fromRecords;
+    }
     if (this.historyGroups.length > 0 && !this.selectedMonth) {
       this.selectedMonth = this.historyGroups[0].month;
     }

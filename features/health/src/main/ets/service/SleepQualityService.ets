@@ -28,6 +28,12 @@ export class SleepQualityService {
     return SleepQualityService._instance;
   }
 
+  /** 清除内存缓存 */
+  public clearCache(): void {
+    this.todayResult = null;
+    this.weekScores = [];
+  }
+
   /**
    * 从睡眠数据计算质量评分
    * @param deepHours 深睡小时

@@ -28,6 +28,11 @@ export class AnomalyHistoryService {
     return AnomalyHistoryService._instance;
   }
 
+  /** 清除内存缓存 */
+  public clearCache(): void {
+    this.events = [];
+  }
+
   /**
    * 记录异常事件
    */

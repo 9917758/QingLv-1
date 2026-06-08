@@ -30,6 +30,10 @@ function buildMonthlyBodyFatChart(chartData: ChartDataPoint[]) {
 export struct MonthlyReportPage {
   private vm: MonthlyReportModel = MonthlyReportModel.instance;
 
+  aboutToAppear(): void {
+    this.vm.loadFromApi();
+  }
+
   build() {
     BaseReportPage({
       vm: this.vm,
