@@ -8,7 +8,6 @@ export class SettingAboutVM {
   logTag: string = 'SetUpPage';
   @Trace bottomHeight: number = 0;
   @Trace userInfo: UserInfo = PersistenceV2.connect(UserInfo, () => new UserInfo())!;
-  @Trace isVersionCheckSheet: boolean = false
   @Trace cacheSize: string = '计算中...'
   ctx: UIContext = GlobalContext.getUIContext();
 
@@ -57,31 +56,6 @@ export class SettingAboutVM {
     })
   }
 
-  showAlert() {
-    this.ctx.showAlertDialog({
-      message: '仅限清除APP内部缓存文件，不包含下载的文件',
-      subtitle: '确认清除APP缓存吗？',
-      autoCancel: false,
-      alignment: DialogAlignment.Center,
-      showInSubWindow: true,
-      isModal: true,
-      buttonDirection: DialogButtonDirection.HORIZONTAL,
-      buttons: [
-        {
-          value: '取消',
-          action: () => {
-          }
-        },
-        {
-          value: '确定',
-          action: () => {
-            this.clean()
-          }
-        }
-      ]
-    })
-  }
-
   async clean() {
     // 清除APP缓存文件，不包括清除下载
     CacheUtil.clearCache()
@@ -92,17 +66,5 @@ export class SettingAboutVM {
       duration: 2000
     });
     TCLogger.info(this.logTag, 'clean cache completed');
-  }
-
-  clearUserInfo() {
-    this.userInfo.id = '';
-    this.userInfo.avatarUrl = '';
-    this.userInfo.nickName = '';
-    this.userInfo.telephone = '';
-    this.userInfo.isLogin = false;
-    this.userInfo.gender = '';
-    this.userInfo.age = '';
-    this.userInfo.birthday = '';
-    this.userInfo.email = '';
   }
 }

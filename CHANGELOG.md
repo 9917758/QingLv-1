@@ -1,5 +1,177 @@
 # 版本记录
 
+## 1.6.0
+
+### 新增功能
+
+**📊 今日健康评分**
+- 新增 `HealthScoreService`，综合 BMI（25%）、血压（20%）、心率（15%）、血糖（15%）、运动（25%）五项指标计算 0-100 健康评分。
+- 健康首页新增评分卡片，显示大号评分数字、等级（优秀/良好/一般/偏差/需关注）、各项子评分（横向排列）。
+- 支持 7 天评分历史记录，Mock 模式自动生成模拟数据（各项子评分确保非零）。
+
+**🔥 连续打卡天数**
+- 新增 `CheckinStreakService`，追踪每条提醒计划的连续打卡天数、最长连续天数、总打卡次数。
+- 提醒入口卡片下方显示"已累计打卡 X 天"。
+- 支持本月打卡完成率计算。
+- Mock 模式自动生成 5 条计划的打卡历史。
+
+**💡 健康建议卡片**
+- 新增 `HealthSuggestionService`，根据当前 BMI、血压、心率、血糖、运动量、饮水量动态生成个性化建议。
+- 健康首页新增建议卡片，显示图标 + 标题 + 建议内容，按优先级排序。
+- 建议数据与健康主页实际展示的数据源同步（从 HealthDataInputModel 读取）。
+
+**🏆 成就徽章系统**
+- 新增 `AchievementService`，定义 8 个成就目标（连续打卡 7/30 天、饮水达标、录入全部指标、达到目标体重、万步达人、阅读 10 篇文章、查看报告）。
+- 新增成就徽章页面 `AchievementPage`，2 列 Grid 展示所有成就，已解锁显示绿色背景和解锁日期。
+- 健康首页快捷入口显示已解锁数量。
+
+**⚠️ 健康事件时间线**
+- 新增 `AnomalyHistoryService`，记录所有触发异常提醒的事件（心率、血压、血糖、BMI）。
+- 新增异常历史页面 `AnomalyHistoryPage`，按日期分组展示事件列表，每条显示图标/标题/严重程度/详情/数值/时间。
+- 健康首页快捷入口显示本周异常事件数量。
+
+**😴 睡眠质量评分**
+- 新增 `SleepQualityService`，基于深睡（30分）、REM（25分）、清醒（20分）、总时长（25分）四维度计算 0-100 睡眠质量评分。
+- 生成评分等级（优秀/良好/一般/较差）和个性化建议。
+- Mock 模式自动生成 7 天评分历史。
+
+**📊 BMI 计算器**
+- 新增独立 BMI 计算器页面 `BmiCalculatorPage`，支持身高（140-200cm）和体重（30-150kg）输入。
+- 实时计算 BMI 值、显示分类（偏瘦/正常/偏胖/肥胖）、健康体重范围、可视化彩色条指示器。
+
+**🔗 快捷入口行**
+- 健康首页新增三个快捷入口：BMI 计算器、成就徽章、健康事件，点击直接跳转对应页面。
+
+### 布局修复
+
+**健康首页 List 布局重构**
+- 原有 `lanes(2)` + `width('200%')` 组合导致全宽项与两列卡片混排冲突，表现为项目重叠、横向溢出。
+- 外层 List 移除 `lanes`，健康卡片列表单独嵌套 List + `lanes(2)`，全宽项使用 `width('100%')` 独占一行。
+- `HealthKnowledgeRow` 组件内部 `width('200%')` 改为 `width('100%')`，移除 lanes 补偿 padding。
+
+### 新增文件
+
+| 文件 | 类型 | 说明 |
+|------|------|------|
+| `features/health/src/main/ets/service/HealthScoreService.ets` | 新增 | 健康评分服务 |
+| `features/health/src/main/ets/service/CheckinStreakService.ets` | 新增 | 连续打卡天数服务 |
+| `features/health/src/main/ets/service/HealthSuggestionService.ets` | 新增 | 健康建议服务 |
+| `features/health/src/main/ets/service/AchievementService.ets` | 新增 | 成就徽章服务 |
+| `features/health/src/main/ets/service/AnomalyHistoryService.ets` | 新增 | 异常事件历史服务 |
+| `features/health/src/main/ets/service/SleepQualityService.ets` | 新增 | 睡眠质量评分服务 |
+| `features/health/src/main/ets/views/BmiCalculatorPage.ets` | 新增 | BMI 计算器页面 |
+| `features/health/src/main/ets/views/AchievementPage.ets` | 新增 | 成就徽章页面 |
+| `features/health/src/main/ets/views/AnomalyHistoryPage.ets` | 新增 | 异常事件历史页面 |
+
+### 修改文件
+
+| 文件 | 变更类型 | 说明 |
+|------|---------|------|
+| `features/health/Index.ets` | 修改 | 导出 6 个新服务 |
+| `features/health/src/main/ets/views/HealthPage.ets` | 修改 | 集成评分/建议/打卡/快捷入口，List 布局重构 |
+| `features/health/src/main/ets/comp/HealthKnowledgeRow.ets` | 修改 | width 200%→100%，移除 lanes padding |
+| `commons/common/src/main/ets/constant/RouterMap.ets` | 修改 | 新增 BMI_CALCULATOR_PAGE、ACHIEVEMENT_PAGE、ANOMALY_HISTORY_PAGE 路由 |
+| `products/entry/src/main/ets/pages/Index.ets` | 修改 | 注册 3 个新页面路由 |
+
+## 1.5.0
+
+| 文件 | 类型 | 说明 |
+|------|------|------|
+| `features/health/src/main/ets/service/HealthScoreService.ets` | 新增 | 健康评分服务 |
+| `features/health/src/main/ets/service/CheckinStreakService.ets` | 新增 | 连续打卡天数服务 |
+| `features/health/src/main/ets/service/HealthSuggestionService.ets` | 新增 | 健康建议服务 |
+| `features/health/src/main/ets/service/AchievementService.ets` | 新增 | 成就徽章服务 |
+| `features/health/src/main/ets/service/AnomalyHistoryService.ets` | 新增 | 异常事件历史服务 |
+| `features/health/src/main/ets/service/SleepQualityService.ets` | 新增 | 睡眠质量评分服务 |
+| `features/health/src/main/ets/views/BmiCalculatorPage.ets` | 新增 | BMI 计算器页面 |
+| `features/health/src/main/ets/views/AchievementPage.ets` | 新增 | 成就徽章页面 |
+| `features/health/src/main/ets/views/AnomalyHistoryPage.ets` | 新增 | 异常事件历史页面 |
+
+### 修改文件
+
+| 文件 | 变更类型 | 说明 |
+|------|---------|------|
+| `features/health/Index.ets` | 修改 | 导出 6 个新服务 |
+| `features/health/src/main/ets/views/HealthPage.ets` | 修改 | 集成评分/建议/打卡/快捷入口 |
+| `commons/common/src/main/ets/constant/RouterMap.ets` | 修改 | 新增 BMI_CALCULATOR_PAGE、ACHIEVEMENT_PAGE、ANOMALY_HISTORY_PAGE 路由 |
+| `products/entry/src/main/ets/pages/Index.ets` | 修改 | 注册 3 个新页面路由 |
+
+## 1.5.0
+
+### Bug 修复
+
+**消息中心显示错误的异常警报**
+- `getMsgData()` 返回硬编码的"心率异常""血压危象""高血糖预警"等内容，与实际健康数据（Mock 模式下均为正常值）完全脱节。
+- 改为与 Mock 数据正常状态一致的健康提醒：健康日报、血压监测提示、血糖管理建议，颜色从红色改为绿色。
+
+### Bug 修复（上半部分）
+
+**OHRouter 导航栈跟踪不同步**
+- `replacePage` 现在同步更新跟踪数组：移除栈顶旧页面，压入新页面。
+- `deletePage` 现在同步操作 `NavPathStack.pop()`，不再只删跟踪数组不弹页面。
+- `getNavPageInfoList` 支持 `routerName` 参数，不再硬编码使用默认路由栈名。
+
+**PreferenceUtil.removeFromArray 数据损坏**
+- 当 `value` 不在数组中时，`indexOf` 返回 -1，`splice(-1, 1)` 会错误删除最后一个元素。改为先检查 `indexOf !== -1` 再执行 splice。
+
+**IndexVM display 监听器内存泄漏**
+- `display.on('change')` 和 `display.on('foldStatusChange')` 注册后从未移除。改为保存回调引用，新增 `unregisterDisplayListeners()` 方法在 `aboutToDisappear` 时清理。
+
+**DevicePage 双重 PersistenceV2.connect**
+- `DevicePage` 和 `DeviceModel` 各自 `connect` 同一类型 `PairedDeviceMacList`，导致两个独立实例。移除 DevicePage 的本地 connect，统一使用 `deviceModelVM.macList`。
+
+**TimeUtil.formatCommentData 空操作 bug**
+- `.replace('', '')` 替换空字符串为空字符串，完全是空操作。`formatCommentData` 已合并到 `formatAppointment` 方法中，通过 `style` 参数区分两种格式。
+
+**TimeUtil.convertDateTimeToTimestamp 死 try/catch**
+- `new Date(string)` 在 JavaScript 中永远不会抛异常（无效输入返回 `Invalid Date`）。改为 `isNaN(date.getTime())` 检查，无效输入时显示 Toast 并返回 -1。
+
+### 代码质量改善
+
+**空 catch 块统一修复（12 处）**
+- `HealthPage.ets`：2 处 emitter 注册/注销的空 catch 改为 TCLogger.error
+- `ReminderService.ets`：4 处打卡状态操作的空 catch 改为 TCLogger.error
+- `EntryAbility.ets`：2 处前后台事件的空 catch 改为 TCLogger.error
+- `DeviceModel.ets`：5 处蓝牙事件的空 catch 改为 TCLogger.error
+- `PreferenceUtil.ets`：1 处构造函数的空 catch 改为 TCLogger.error
+
+**TimeRangeButton 组件提取**
+- 5 个数据看板页面（步数/血压/血糖/心率/睡眠）中完全相同的 `TimeRangeButton` struct 提取为共享组件 `components/data_dashboard/src/main/ets/components/TimeRangeButton.ets`，各页面改为 import 引用。
+
+### 修改文件
+
+| 文件 | 变更类型 | 说明 |
+|------|---------|------|
+| `commons/OHRouter/src/main/ets/router/PhoneImpl/PhoneRouterManager.ets` | 修改 | replacePage/deletePage 同步跟踪数组，getNavPageInfoList 支持 routerName |
+| `commons/common/src/main/ets/util/PreferenceUtil.ets` | 修改 | removeFromArray 防止 splice(-1)，空 catch 修复 |
+| `commons/common/src/main/ets/util/TimeUtil.ets` | 修改 | 合并 formatCommentData，修复 convertDateTimeToTimestamp |
+| `products/entry/src/main/ets/viewmodel/IndexVM.ets` | 修改 | 新增 display 监听器清理方法 |
+| `products/entry/src/main/ets/pages/Index.ets` | 修改 | aboutToDisappear 调用 unregisterDisplayListeners |
+| `features/device/src/main/ets/views/DevicePage.ets` | 修改 | 移除重复 PersistenceV2.connect，使用 deviceModelVM.macList |
+| `features/health/src/main/ets/views/HealthPage.ets` | 修改 | 空 catch 修复 |
+| `features/health/src/main/ets/service/ReminderService.ets` | 修改 | 空 catch 修复 |
+| `products/entry/src/main/ets/entryability/EntryAbility.ets` | 修改 | 空 catch 修复 |
+| `features/device/src/main/ets/viewmodel/DeviceModel.ets` | 修改 | 空 catch 修复 |
+| `components/data_dashboard/src/main/ets/components/TimeRangeButton.ets` | 新增 | 共享时间范围按钮组件 |
+| `components/data_dashboard/src/main/ets/pages/StepCountPage.ets` | 修改 | 使用共享 TimeRangeButton |
+| `components/data_dashboard/src/main/ets/pages/BloodPressurePage.ets` | 修改 | 使用共享 TimeRangeButton |
+| `components/data_dashboard/src/main/ets/pages/BloodGlucosePage.ets` | 修改 | 使用共享 TimeRangeButton |
+| `components/data_dashboard/src/main/ets/pages/HeartRatePage.ets` | 修改 | 使用共享 TimeRangeButton |
+| `components/data_dashboard/src/main/ets/pages/SleepPage.ets` | 修改 | 使用共享 TimeRangeButton |
+| `features/person/src/main/ets/constants/Constants.ets` | 修改 | 消息中心数据改为与 Mock 正常状态一致 |
+| `features/health/src/main/ets/util/ReportAggregator.ets` | 新增 | 周报/月报共用聚合工具函数 |
+| `features/health/src/main/ets/viewmodel/WeeklyReportModel.ets` | 重构 | 使用 ReportAggregator 消除重复聚合逻辑 |
+| `features/health/src/main/ets/viewmodel/MonthlyReportModel.ets` | 重构 | 使用 ReportAggregator 消除重复聚合逻辑 |
+| `features/health/src/main/ets/views/HealthFavoritesPage.ets` | 重构 | 移除重复的断点/列表渲染逻辑 |
+| `features/health/src/main/ets/views/HealthPage.ets` | 重构 | build() 拆分为 6 个 @Builder 方法 |
+| `features/person/src/main/ets/views/MinePage.ets` | 修改 | ForEach key 从 JSON.stringify 改为 item.titleName |
+| `features/person/src/main/ets/viewmodel/SetUpVM.ets` | 修改 | 移除未使用的 isVersionCheckSheet、showAlert()、clearUserInfo() |
+| `features/health/src/main/ets/viewmodel/HealthDataInputModel.ets` | 修改 | 移除未使用的 bloodSugarIndex |
+| `features/health/src/main/ets/constants/constants.ets` | 修改 | 移除未使用的 bloodSugarLeftRange、bloodSugarRightRange、healthInfoTip |
+| `commons/common/src/main/ets/dialog/OHDialog.ets` | 修改 | TAG 从 'HMWeightDialog' 改为 'OHDialog' |
+| `commons/common/src/main/ets/constant/RouterMap.ets` | 修改 | DEVICE_INFO_PAGE 注释从"设备-扫描"改为"设备-信息" |
+| `products/entry/src/main/ets/constants/constants.ets` | 修改 | 移除未使用的 tenAM、threePM、sevenPM、tenPM、fiveMinutes |
+
 ## 1.4.0
 
 ### Bug 修复

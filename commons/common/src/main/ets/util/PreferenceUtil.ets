@@ -16,6 +16,7 @@ export class PreferenceUtil {
       this.dataPreferences = preferences.getPreferencesSync(context, { name: fileName });
       TCLogger.info(TAG, `${fileName} init: ${this.dataPreferences !== null}`);
     } catch (err) {
+      TCLogger.error(TAG, `constructor error: ${JSON.stringify(err)}`);
     }
   }
 
@@ -71,8 +72,11 @@ export class PreferenceUtil {
       TCLogger.info(TAG, 'dataPreferences is null');
     }
     let array: Array<string> = this.get(key) as Array<string> || [];
-    array.splice(array.indexOf(value), 1);
-    this.put(key, array);
+    const idx = array.indexOf(value);
+    if (idx !== -1) {
+      array.splice(idx, 1);
+      this.put(key, array);
+    }
   }
 
   /**

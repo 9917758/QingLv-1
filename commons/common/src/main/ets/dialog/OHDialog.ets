@@ -5,7 +5,7 @@ import { BreakpointModel } from '../model/BreakpointModel';
 import { HMPromptAction } from '../util/HMPromptAction';
 import { OHDialogModel } from './OHDialogModel';
 
-const TAG: string = 'HMWeightDialog';
+const TAG: string = 'OHDialog';
 
 /**
  * 选择弹框

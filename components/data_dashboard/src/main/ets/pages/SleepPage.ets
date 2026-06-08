@@ -5,6 +5,7 @@ import { ThreeMonthsSleepChart } from '../cards/ThreeMonthsSleepChart';
 import { TimeRange as SleepTimeRange } from '../types/SleepTypes';
 import { SleepVM } from '../viewmodel/SleepVM';
 import { CommonHeader } from '../components/CommonHeader';
+import { TimeRangeButton } from '../components/TimeRangeButton';
 
 @Builder
 export function SleepPageBuilder() {
@@ -430,30 +431,6 @@ export struct SleepPage {
     .padding($r('app.float.vp_16'))
     .backgroundColor($r('sys.color.background_primary'))
     .borderRadius($r('sys.float.corner_radius_level8'))
-  }
-}
-
-
-@ComponentV2
-struct TimeRangeButton {
-  @Param label: string = '';
-  @Param isSelected: boolean = false;
-  @Param onTap: () => void = () => {
-  };
-
-  build() {
-    Row() {
-      Text(this.label)
-        .fontSize($r('sys.float.Body_M'))
-        .fontColor(this.isSelected ? $r('sys.color.font_on_primary') : $r('sys.color.font_primary'))
-    }
-    .justifyContent(FlexAlign.Center)
-    .alignItems(VerticalAlign.Center)
-    .height(40)
-    .layoutWeight(1)
-    .borderRadius($r('sys.float.corner_radius_level10'))
-    .backgroundColor(this.isSelected ? '#2B69FF' : Color.Transparent)
-    .onClick(this.onTap)
   }
 }
 

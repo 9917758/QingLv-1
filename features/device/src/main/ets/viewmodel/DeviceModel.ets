@@ -234,6 +234,7 @@ export class DeviceModel {
         this.scannedDevices = [];
       }
     } catch (err) {
+      TCLogger.error(TAG, `OnBluetoothStateChange error: ${JSON.stringify(err)}`);
     }
   }
 
@@ -279,6 +280,7 @@ export class DeviceModel {
         this.scannedDevices.push(scannedDevice);
       })
     } catch (err) {
+      TCLogger.error(TAG, `onBluetoothDeviceReceiveEvent error: ${JSON.stringify(err)}`);
     }
   }
   // 配对状态变化结果
@@ -315,6 +317,7 @@ export class DeviceModel {
 
       emitter.emit(Constants.onBluetoothScanningChange);
     } catch (err) {
+      TCLogger.error(TAG, `onBondStateChangeEvent error: ${JSON.stringify(err)}`);
     }
   }
 
@@ -380,6 +383,7 @@ export class DeviceModel {
         deviceVM.pairState = connection.getPairState(deviceVM.deviceId);
         deviceVM.deviceName = connection.getRemoteDeviceName(deviceVM.deviceId);
       } catch (err) {
+        TCLogger.error(TAG, `initPairedDevice error: ${JSON.stringify(err)}`);
       }
     }
   }
@@ -422,6 +426,7 @@ export class DeviceModel {
         phoneRouterControl.popPage();
       }
     } catch (err) {
+      TCLogger.error(TAG, `checkPairState error: ${JSON.stringify(err)}`);
     }
   }
 

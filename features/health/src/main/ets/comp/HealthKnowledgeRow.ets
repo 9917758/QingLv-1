@@ -156,9 +156,6 @@ export struct HealthKnowledgeRow {
       .padding($r('app.float.vp_16'))
       .clip(true)
     }
-    .padding({
-      left: $r('app.float.vp_12'),
-    })
-    .width('200%')
+    .width('100%')
   }
 }

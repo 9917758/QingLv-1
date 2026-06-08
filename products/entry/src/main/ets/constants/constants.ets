@@ -41,13 +41,3 @@ export const TAB_CONFIG: TabSingleItem[] = [
     component: wrapBuilder(MinePageBuilder),
   },
 ];
-
-export const tenAM = '10';
-
-export const threePM = '15';
-
-export const sevenPM = '19';
-
-export const tenPM = '22';
-
-export const fiveMinutes = 1000 * 60 * 5;

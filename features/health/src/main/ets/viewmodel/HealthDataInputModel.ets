@@ -17,7 +17,6 @@ export class HealthDataInputModel {
   @Trace hipCircumference = 0; // 臀围
 
   @Trace bloodSugar = 0; // 血糖
-  @Trace bloodSugarIndex: number | number[] = 0; // 血糖索引
   @Trace bloodSugarTime = '暂未录入数据'; // 血糖录入时间
   @Trace bloodPressureSystolic = 0; // 收缩压
   @Trace bloodPressureDiastolic = 0; // 舒张压

@@ -1,9 +1,8 @@
-import { PersistenceV2 } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
 import { CommonHeader, Constants } from 'common';
 import { DeviceConnect } from '../comp/DeviceConnect';
 import { DeviceModel } from '../viewmodel/DeviceModel';
-import { PairedDeviceMacList, PairedDeviceModel } from '../viewmodel/ScannedDevice';
+import { PairedDeviceModel } from '../viewmodel/ScannedDevice';
 import { DeviceRow } from '../comp/DeviceRow';
 import { OHPage } from 'oh_router';
 
@@ -29,7 +28,6 @@ export function DevicePageBuilder() {
 @ComponentV2
 export struct DevicePage {
   deviceModelVM: DeviceModel = DeviceModel.instance;
-  @Local macList: PairedDeviceMacList = PersistenceV2.connect(PairedDeviceMacList, () => new PairedDeviceMacList())!;
   @Local onReturnClick: () => void = () => {
 
   }
@@ -67,7 +65,7 @@ export struct DevicePage {
     })
 
     Column() {
-      ForEach(this.macList.pairedList, (item: PairedDeviceModel, _index: number) => {
+      ForEach(this.deviceModelVM.macList.pairedList, (item: PairedDeviceModel, _index: number) => {
         DeviceRow({
           pairedDeviceVM: item,
           onAgainConnectClick: () => {

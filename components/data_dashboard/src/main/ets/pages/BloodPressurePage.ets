@@ -5,6 +5,7 @@ import ThreeMonthsBloodPressureChart from '../cards/ThreeMonthsBloodPressureChar
 import { TimeRange } from '../types/BloodPressureTypes';
 import { BloodPressureVM } from '../viewmodel/BloodPressureVM';
 import { CommonHeader } from '../components/CommonHeader';
+import { TimeRangeButton } from '../components/TimeRangeButton';
 
 /**
  * @usage: 用于展示血压数据看板的主页面。包含自定义导航栏（返回按钮、标题、菜单按钮）、日期范围选择器、
@@ -240,29 +241,6 @@ export struct BloodPressurePage {
     .width('100%')
     .backgroundColor($r('sys.color.background_primary'))
     .borderRadius($r('sys.float.corner_radius_level7'))
-  }
-}
-
-@ComponentV2
-struct TimeRangeButton {
-  @Param label: string = '';
-  @Param isSelected: boolean = false;
-  @Param onTap: () => void = () => {
-  };
-
-  build() {
-    Row() {
-      Text(this.label)
-        .fontSize($r('sys.float.Body_M'))
-        .fontColor(this.isSelected ? $r('sys.color.font_on_primary') : $r('sys.color.font_primary'))
-    }
-    .justifyContent(FlexAlign.Center)
-    .alignItems(VerticalAlign.Center)
-    .height(40)
-    .layoutWeight(1)
-    .borderRadius($r('sys.float.corner_radius_level10'))
-    .backgroundColor(this.isSelected ? '#2B69FF' : Color.Transparent)
-    .onClick(this.onTap)
   }
 }
 

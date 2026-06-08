@@ -2,6 +2,9 @@ import { PersistenceV2 } from '@kit.ArkUI';
 import { LoginPageBuilder } from 'aggregated_login';
 import { GlobalContext, PreferenceConstant, PreferenceUtil, RouterMap, UserInfo } from 'common';
 import { FavoriteUtil, HealthFavoritesPageBuilder } from 'health';
+import { BmiCalculatorPageBuilder } from 'health/src/main/ets/views/BmiCalculatorPage';
+import { AchievementPageBuilder } from 'health/src/main/ets/views/AchievementPage';
+import { AnomalyHistoryPageBuilder } from 'health/src/main/ets/views/AnomalyHistoryPage';
 import { phoneRouterControl } from 'oh_router';
 import { PersonInfoInputPageBuilder, PrivacyAgreementPageBuilder } from 'person';
 import { IndexVM } from '../viewmodel/IndexVM';
@@ -23,6 +26,9 @@ struct Index {
     phoneRouterControl.createRouter(this.pageStack)
     // 预注册「我的收藏」路由（person 模块无法直接 import health，需在此注册）
     phoneRouterControl.registerPageBuilder(RouterMap.HEALTH_FAVORITES_PAGE, wrapBuilder(HealthFavoritesPageBuilder))
+    phoneRouterControl.registerPageBuilder(RouterMap.BMI_CALCULATOR_PAGE, wrapBuilder(BmiCalculatorPageBuilder))
+    phoneRouterControl.registerPageBuilder(RouterMap.ACHIEVEMENT_PAGE, wrapBuilder(AchievementPageBuilder))
+    phoneRouterControl.registerPageBuilder(RouterMap.ANOMALY_HISTORY_PAGE, wrapBuilder(AnomalyHistoryPageBuilder))
     this.vm.registerBreakpointListener(this.getUIContext());
     this.vm.displayOrientationListener();
     // 清理之前 bug 版本残留的收藏脏数据
@@ -93,6 +99,7 @@ struct Index {
 
   aboutToDisappear(): void {
     this.vm.unregisterBreakpointListener();
+    this.vm.unregisterDisplayListeners();
   }
 
   build() {

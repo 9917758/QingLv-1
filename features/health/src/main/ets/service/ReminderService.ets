@@ -163,7 +163,7 @@ export class ReminderService {
         }
       }
     } catch {
-      // ignore
+      TCLogger.error(TAG, 'getCheckedTodayIds error');
     }
     return ReminderService.checkedTodayIds;
   }
@@ -184,7 +184,7 @@ export class ReminderService {
       pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY,
         JSON.stringify({ date: today, ids: Array.from(ReminderService.checkedTodayIds) }));
     } catch {
-      // ignore
+      TCLogger.error(TAG, 'markPlanChecked error');
     }
   }
 
@@ -206,7 +206,7 @@ export class ReminderService {
       pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY,
         JSON.stringify({ date: ReminderService.checkedTodayDate, ids: [] }));
     } catch {
-      // ignore
+      TCLogger.error(TAG, 'resetCheckedToday error');
     }
     ReminderService.invalidateCache();
   }
@@ -235,7 +235,7 @@ export class ReminderService {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
       pref.delete(PreferenceConstant.REMINDER_PLANS);
     } catch (e) {
-      // ignore
+      TCLogger.error(TAG, `clearAll error: ${JSON.stringify(e)}`);
     }
   }
 }

@@ -1,12 +1,10 @@
-import { BreakpointModel, CommonHeader, RouterMap, BarVM } from 'common'
+import { CommonHeader, RouterMap, BarVM } from 'common'
 import { OHPage, phoneRouterControl } from 'oh_router'
 import { healthKnowledge } from '../constants/constants';
 import { HealthKnowledgeSingleModel } from '../viewmodel/HealthKnowledgeSingleModel';
 import { HealthKnowledgeSingleRow } from '../comp/HealthKnowledgeSingleRow';
 import { HealthKnowledgeDetailPageBuilder } from './HealthKnowledgeDetailPage';
 import { FavoriteUtil } from '../util/FavoriteUtil';
-import { AppStorageV2 } from '@kit.ArkUI';
-import { BreakpointNameEnum } from 'common/src/main/ets/constant/GridRowColSetting';
 
 @Builder
 export function HealthFavoritesPageBuilder() {
@@ -17,7 +15,6 @@ export function HealthFavoritesPageBuilder() {
 export struct HealthFavoritesPage {
   @Local allArticles: HealthKnowledgeSingleModel[] = healthKnowledge;
   @Local displayList: HealthKnowledgeSingleModel[] = [];
-  @Local breakPointModel: BreakpointModel = AppStorageV2.connect(BreakpointModel, () => new BreakpointModel())!;
   @Local onReturnClick: () => void = () => {
     phoneRouterControl.popPage()
   }
@@ -33,6 +30,17 @@ export struct HealthFavoritesPage {
     this.displayList = this.allArticles.filter((item) => item.isFavorited);
   }
 
+  navigateToDetail(item: HealthKnowledgeSingleModel): void {
+    phoneRouterControl.jumpPage({
+      pageName: RouterMap.HEALTH_KNOWLEDGE_DETAIL_PAGE,
+      builder: wrapBuilder(HealthKnowledgeDetailPageBuilder),
+      param: item,
+      onPop: () => {
+        this.refreshList();
+      }
+    })
+  }
+
   @Builder
   render() {
     Column() {
@@ -43,7 +51,6 @@ export struct HealthFavoritesPage {
       })
 
       if (this.displayList.length === 0) {
-        // 空状态
         Column() {
           Text('🤍')
             .fontSize(48)
@@ -62,22 +69,12 @@ export struct HealthFavoritesPage {
         .alignItems(HorizontalAlign.Center)
       } else {
         List({ space: 12 }) {
-          ForEach(this.displayList, (item: HealthKnowledgeSingleModel,
-            _index: number) => {
+          ForEach(this.displayList, (item: HealthKnowledgeSingleModel, _index: number) => {
             ListItem() {
               HealthKnowledgeSingleRow({
                 knowledgeSingleModelVM: item
               })
-                .onClick(() => {
-                  phoneRouterControl.jumpPage({
-                    pageName: RouterMap.HEALTH_KNOWLEDGE_DETAIL_PAGE,
-                    builder: wrapBuilder(HealthKnowledgeDetailPageBuilder),
-                    param: item,
-                    onPop: () => {
-                      this.refreshList();
-                    }
-                  })
-                })
+                .onClick(() => this.navigateToDetail(item))
             }
           }, (item: HealthKnowledgeSingleModel, index: number) => `${item.id}_${index}`)
 
@@ -86,7 +83,6 @@ export struct HealthFavoritesPage {
         .height('100%')
         .width('100%')
         .scrollBar(BarState.Off)
-        .lanes(this.getFoldShow ? 2 : 1, $r('app.float.vp_12'))
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       }
     }
@@ -103,14 +99,5 @@ export struct HealthFavoritesPage {
       },
       useSafePadding: true
     })
-  }
-
-  @Computed
-  get getFoldShow(): boolean {
-    if (this.breakPointModel.currentBreakpoint === BreakpointNameEnum.SM) {
-      return false;
-    } else {
-      return true;
-    }
   }
 }

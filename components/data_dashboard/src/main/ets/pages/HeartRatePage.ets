@@ -5,6 +5,7 @@ import ThreeMonthsHeartRateChart from '../cards/ThreeMonthsHeartRateChart';
 import { TimeRange } from '../types/HeartRateTypes';
 import { HeartRateVM } from '../viewmodel/HeartRateVM';
 import { CommonHeader } from '../components/CommonHeader';
+import { TimeRangeButton } from '../components/TimeRangeButton';
 
 @Builder
 export function HeartRatePageBuilder() {
@@ -342,29 +343,6 @@ export struct HeartRatePage {
       this.routerModule.pop('back')
       return true
     })
-  }
-}
-
-@ComponentV2
-struct TimeRangeButton {
-  @Param label: string = '';
-  @Param isSelected: boolean = false;
-  @Param onTap: () => void = () => {
-  };
-
-  build() {
-    Row() {
-      Text(this.label)
-        .fontSize($r('sys.float.Body_M'))
-        .fontColor(this.isSelected ? $r('sys.color.font_on_primary') : $r('sys.color.font_primary'))
-    }
-    .alignItems(VerticalAlign.Center)
-    .justifyContent(FlexAlign.Center)
-    .height(40)
-    .layoutWeight(1)
-    .borderRadius($r('sys.float.corner_radius_level10'))
-    .backgroundColor(this.isSelected ? '#2B69FF' : Color.Transparent)
-    .onClick(this.onTap)
   }
 }
 

@@ -542,7 +542,7 @@ export class TimeUtil {
    * 3天外 => MM-dd
    * 超过当年 YYYY-MM-dd
    */
-  static formatAppointment(time: number): string {
+  static formatAppointment(time: number, style: 'appointment' | 'comment' = 'appointment'): string {
     const currentTime = new Date().getTime()
     const diff = (currentTime - time) / 1000 / 60 // 分钟
     const diff1 = (currentTime - new Date().setHours(0, 0, 0, 0)) / 1000 / 60 //当前时间据凌晨分钟数
@@ -556,52 +556,30 @@ export class TimeUtil {
       return '昨天' +
       TimeUtil.formatDate(time, TimeUtil.PATTERN_TIME_COLON_WITHOUT_SECOND)
     } else if (diff > diff1 + 24 * 60 && diff <= diff1 + 24 * 60 * 2) {
-      return '两天前'
+      return style === 'comment' ? '2天前' : '两天前'
     } else {
-      return TimeUtil.formatDate(time, TimeUtil.PATTERN_DATE_SLASH_WITHOUT_YEAR)
+      const pattern = style === 'comment'
+        ? TimeUtil.PATTERN_DATE_SLASH_WITHOUT_YEAR_OTHER
+        : TimeUtil.PATTERN_DATE_SLASH_WITHOUT_YEAR
+      return TimeUtil.formatDate(time, pattern)
     }
   }
 
   /**
-   * 预约时间格式，与当前时间作比较
-   * 3分钟之内 => 刚刚
-   * 超过3分钟至1小时 => x分钟前
-   * 超过1小时至昨天 => x小时前
-   * 昨天 => 昨天 HH:mm
-   * 3天内 => 2天前
-   * 3天外 => MM-dd
-   * 超过当年 YYYY-MM-dd
+   * 评论时间格式，与当前时间作比较
+   * 委托给 formatAppointment，使用 'comment' 样式
    */
   static formatCommentData(time: number): string {
-    const currentTime = new Date().getTime()
-    const diff = (currentTime - time) / 1000 / 60 // 分钟
-    const diff1 = (currentTime - new Date().setHours(0, 0, 0, 0)) / 1000 / 60 //当前时间据凌晨分钟数
-    if (diff <= 3) {
-      return '刚刚'
-    } else if (diff > 3 && diff <= 60) {
-      return Math.floor(diff) + '分钟前'
-    } else if (diff > 60 && diff <= diff1) {
-      return Math.floor(diff / 60) + '小时前'
-    } else if (diff > diff1 && diff <= diff1 + 24 * 60) {
-      return '昨天' +
-      TimeUtil.formatDate(time, TimeUtil.PATTERN_TIME_COLON_WITHOUT_SECOND)
-    } else if (diff > diff1 + 24 * 60 && diff <= diff1 + 24 * 60 * 2) {
-      return '2天前'
-    } else {
-      return TimeUtil.formatDate(time, TimeUtil.PATTERN_DATE_SLASH_WITHOUT_YEAR_OTHER).replace('', '')
-    }
+    return TimeUtil.formatAppointment(time, 'comment')
   }
 
   // 定义一个函数用于将日期时间字符串转换为时间戳
   static convertDateTimeToTimestamp(dateTimeStr: string): number {
-    let date: Date;
-    try {
-      date = new Date(dateTimeStr);
-    } catch (e) {
+    const date = new Date(dateTimeStr);
+    if (isNaN(date.getTime())) {
       promptAction.showToast({ message: '日期时间格式不正确', duration: 2000 });
       return -1;
     }
-
     return date.getTime();
   }
 

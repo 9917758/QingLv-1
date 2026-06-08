@@ -41,7 +41,13 @@ export class PhoneRouterManager {
   public replacePage(page: NavPageInfo): void {
     if (this.checkPageInfo(page)) {
       this.getRouter(page.routerName).replacePathByName(page.pageName, page.param);
-      TCLogger.info(TAG + `jumpPage page list info= ${JSON.stringify(this.getNavPageInfoList())}`)
+      // 同步更新跟踪数组：移除栈顶，压入新页面
+      let navPageInfoList: NavPageInfo[] = this.getNavPageInfoList()
+      if (navPageInfoList.length > 0) {
+        navPageInfoList.pop()
+      }
+      navPageInfoList.push(page)
+      TCLogger.info(TAG + `replacePage page list info= ${JSON.stringify(navPageInfoList)}`)
     }
   }
 
@@ -68,12 +74,14 @@ export class PhoneRouterManager {
    * 页面出栈，但不返回页面
    * @param page 页面信息
    */
-  public deletePage(): void {
-    let navPageInfoList: NavPageInfo[] = this.getNavPageInfoList()
-    TCLogger.info(TAG + `popPage current pageInfo length = ${navPageInfoList.length}`)
+  public deletePage(routerName: string = this.defaultRouteName): void {
+    let navPageInfoList: NavPageInfo[] = this.getNavPageInfoList(routerName)
+    TCLogger.info(TAG + `deletePage current pageInfo length = ${navPageInfoList.length}`)
+    // 同步操作 NavPathStack
+    this.getRouter(routerName).pop()
     navPageInfoList.pop()
-    TCLogger.info(TAG + `popPage new pageInfo length = ${navPageInfoList.length}`)
-    TCLogger.info(TAG + `popPage new pageInfo list info = ${JSON.stringify(this.getNavPageInfoList())}`)
+    TCLogger.info(TAG + `deletePage new pageInfo length = ${navPageInfoList.length}`)
+    TCLogger.info(TAG + `deletePage new pageInfo list info = ${JSON.stringify(navPageInfoList)}`)
   }
 
   /**
@@ -142,12 +150,13 @@ export class PhoneRouterManager {
    * @param routerName 路由栈名称
    * @returns 路由栈中的所有页面信息
    */
-  public getNavPageInfoList(): NavPageInfo[] {
-    const navPageInfoList = this.navPageInfoMap.get(this.defaultRouteName)
+  public getNavPageInfoList(routerName: string = this.defaultRouteName): NavPageInfo[] {
+    const navPageInfoList = this.navPageInfoMap.get(routerName)
     if (!navPageInfoList) {
-      this.navPageInfoMap.set(this.defaultRouteName, [])
+      this.navPageInfoMap.set(routerName, [])
+      return []
     }
-    return navPageInfoList || []
+    return navPageInfoList
   }
 }
 

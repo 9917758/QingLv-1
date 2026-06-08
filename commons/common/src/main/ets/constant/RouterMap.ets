@@ -16,7 +16,7 @@ export class RouterMap {
   public static readonly DEVICE_PAIR_HELP_PAGE ='DevicePairHelpPage'
   // 设备-扫描
   public static readonly DEVICE_SCANNING_PAGE ='DeviceScanningPage'
-  // 设备-扫描
+  // 设备-信息
   public static readonly DEVICE_INFO_PAGE ='DeviceInfoPage'
   // 登录页面
   public static readonly LOGIN_PAGE ='LoginPage'
@@ -73,5 +73,11 @@ export class RouterMap {
   public static readonly REMINDER_PLAN_PAGE = 'ReminderPlanPage'
   // 我的收藏页面
   public static readonly HEALTH_FAVORITES_PAGE = 'HealthFavoritesPage'
+  // 健康异常事件历史页面
+  public static readonly ANOMALY_HISTORY_PAGE = 'AnomalyHistoryPage'
+  // BMI 计算器页面
+  public static readonly BMI_CALCULATOR_PAGE = 'BmiCalculatorPage'
+  // 成就徽章页面
+  public static readonly ACHIEVEMENT_PAGE = 'AchievementPage'
 }
 

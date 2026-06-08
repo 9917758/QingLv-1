@@ -78,23 +78,6 @@ export const weightRange: string[] = [
   '250.0'
 ];
 
-export const bloodSugarLeftRange: string[] = [
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
-
-  '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
-
-  '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
-
-  '31', '32', '33'
-];
-
-export const bloodSugarRightRange: string[] = [
-  '0', '1', '2', '3'
-];
-
-export const healthInfoTip: string = '身体信息是测量心率，卡路里消耗/步幅距离、配速等数据的重要依据，' +
-  '为确保提供给您的结果准备，请正确信息。';
-
 export const healthCard: HealthCardModel[] = [
   {
     img: $r('app.media.health_data_icon'),

@@ -57,6 +57,7 @@ export default class EntryAbility extends UIAbility {
       TCLogger.info(TAG, 'Ability onForeground');
       emitter.emit(Constants.onForegroundChange);
     } catch (err) {
+      TCLogger.error(TAG, `onForeground error: ${JSON.stringify(err)}`);
     }
   }
 
@@ -66,6 +67,7 @@ export default class EntryAbility extends UIAbility {
       TCLogger.info(TAG, 'Ability onBackground');
       emitter.emit(Constants.onBackgroundChange);
     } catch (err) {
+      TCLogger.error(TAG, `onBackground error: ${JSON.stringify(err)}`);
     }
   }
 }

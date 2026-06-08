@@ -147,7 +147,7 @@ export struct MinePage {
                       })
                     }
                   })
-              }, (item: MineItem) => JSON.stringify(item))
+              }, (item: MineItem) => item.titleName)
             }
             .width('100%')
             .height('auto')
