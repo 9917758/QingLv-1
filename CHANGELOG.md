@@ -1,5 +1,153 @@
 # 版本记录
 
+## 1.3.1
+
+### Bug 修复
+
+**打卡状态跨应用重启丢失**
+- 将打卡状态管理从 `HomeModel` 迁移至 `ReminderService`，作为唯一数据源。
+- `ReminderService` 新增内存缓存层（`checkedTodayIds` + `checkedTodayDate`），优先读内存，首次从存储加载。
+- 新增 `markPlanChecked()`、`isPlanCheckedToday()`、`resetCheckedToday()` 方法，统一打卡读写入口。
+- `HomeModel.checkAndRemind()` 和 `HomePage.handleCheckIn()` 均委托 `ReminderService` 处理打卡，避免多处读写导致的状态不一致。
+
+**饮水计划打卡未同步喝水杯数**
+- `HomePage.handleCheckIn()` 中，当打卡的计划为饮水类型（type=0）时，自动调用 `WaterIntakeService.instance.drink()` 增加杯数。
+- `HealthPage` 新增 `onReminderCheckIn` 事件监听，弹窗打卡后自动刷新喝水进度显示。
+
+**喝水"+1"无上限**
+- `WaterIntakeService.drink()` 新增每日上限 20 杯，达到后不再增加。
+- `HealthPage` 的"+1"按钮达到上限后显示"✓"并置灰禁用。
+
+**弹窗打卡后不自动关闭**
+- 用户点击"打卡"后，弹窗延迟 1.2 秒自动关闭（让用户看到"✅ 已完成"反馈），无需再手动点"知道了"。
+
+### ArkTS 编译修复
+
+**PreferenceUtil API 修正**
+- 三个服务（`HealthDataService`、`WaterIntakeService`、`HealthGoalService`）的 `PreferenceUtil` 调用从不存在的 `getPreference()` 改为正确的 `getInstance()` 同步 API。
+- 所有 async/await 改为同步调用（`PreferenceUtil` 的 `put`/`get` 均为同步方法）。
+
+**ArkTS 严格模式类型修复**
+- 移除所有 `any`/`unknown` 类型，使用显式类型声明。
+- `WeeklyReportModel`/`MonthlyReportModel` 中的图表数据点对象字面量改为显式 `ChartDataPoint` 类型声明。
+- `HealthDataInputPage.saveCurrentAsRecord()` 的参数从对象字面量改为逐参数传递。
+
+**ForEach Key 修复**
+- `HealthPage` 中 ForEach key 生成器末尾多余的 `}` 字符已移除。
+
+### 修改文件
+
+| 文件 | 变更类型 | 说明 |
+|------|---------|------|
+| `features/health/src/main/ets/service/ReminderService.ets` | 修改 | 新增打卡状态管理（`markPlanChecked`/`getCheckedTodayIds`/`resetCheckedToday`） |
+| `features/health/src/main/ets/service/HealthDataService.ets` | 修改 | PreferenceUtil API 修正，sync 替代 async |
+| `features/health/src/main/ets/service/WaterIntakeService.ets` | 修改 | API 修正 + 喝水上限 20 杯 |
+| `features/health/src/main/ets/service/HealthGoalService.ets` | 修改 | PreferenceUtil API 修正 |
+| `features/health/src/main/ets/viewmodel/WeeklyReportModel.ets` | 修改 | ChartDataPoint 显式类型声明 |
+| `features/health/src/main/ets/viewmodel/MonthlyReportModel.ets` | 修改 | ChartDataPoint 显式类型声明 |
+| `features/health/src/main/ets/viewmodel/HealthHistoryModel.ets` | 修改 | loadHistory 改为同步 |
+| `features/health/src/main/ets/views/HealthPage.ets` | 修改 | 喝水上限按钮状态 + 打卡事件监听刷新 |
+| `features/health/src/main/ets/views/HealthHistoryPage.ets` | 修改 | aboutToAppear 改为同步 |
+| `features/health/src/main/ets/views/HealthDataInputPage.ets` | 修改 | saveCurrentAsRecord 参数修复 |
+| `products/entry/src/main/ets/viewmodel/HomeModel.ets` | 修改 | 打卡逻辑委托 ReminderService，移除本地状态管理 |
+| `products/entry/src/main/ets/pages/HomePage.ets` | 修改 | 饮水打卡联动 + 弹窗自动关闭 |
+
+## 1.3.0
+
+### Bug 修复
+
+**体重范围数据修正**
+- 修复 `weightRange` 中 `'330.0'`/`'335.0'` 的拼写错误，更正为 `'230.0'`/`'235.0'`。
+- 此 bug 会导致 230-235 斤区间的用户 BMI 选择器出现数值跳跃。
+
+**健康知识文章去重**
+- 文章 id='3'（原"轻断食"）与 id='1'（"健康饮食"）内容完全相同，现已替换为全新文章"轻食主义"。
+
+**占位符文字清理**
+- 删除账号弹窗中的 `'xxxx'` 占位文字更正为 `'清律'`。
+
+**周报/月报日期修正**
+- 周报日期选项从硬编码 2024 年改为基于当前日期动态生成最近 5 周。
+- 月报日期选项从硬编码 2024 年改为基于当前日期动态生成最近 5 个月。
+
+### 核心功能：健康数据历史系统
+
+**HealthDataService 服务**
+- 新增 `HealthDataService`，管理健康数据记录的持久化和查询。
+- 支持按时间范围查询（`getRecordsByDateRange`）、获取最近 N 条（`getRecentRecords`）。
+- 最多保留 500 条记录，超出自动裁剪。
+- Mock 模式下自动生成 60 天的模拟历史数据，包含体重下降、血压改善等真实趋势。
+
+**HealthDataRecord 类型**
+- 新增 `HealthDataRecord` 接口，包含体重、BMI、体脂率、血糖、血压、心率、腰围、臀围等全量指标。
+- 每次用户在健康数据录入页面修改任何指标，自动保存一条完整记录。
+
+**历史数据接入报告系统**
+- `WeeklyReportModel` 改为从历史数据动态聚合：按周筛选记录，计算体重/体脂趋势、血压/心率均值。
+- `MonthlyReportModel` 改为从历史数据动态聚合：按月筛选记录，生成图表数据点。
+- 选择不同日期/月份时，报告数据实时从历史记录重新计算。
+- 无数据时优雅降级，使用原始 mock 数据。
+
+**HealthHistoryModel 升级**
+- `loadHistory()` 方法从 `HealthDataService` 加载数据，与 mock 数据合并去重。
+- 按月份自动分组，支持多月份浏览。
+
+### 新增功能
+
+**💧 今日喝水进度**
+- 新增 `WaterIntakeService` 服务，管理每日喝水打卡次数（基于日期 key 自动重置）。
+- 健康页面新增喝水进度卡片：显示当前杯数/目标杯数、进度条、"+1"打卡按钮。
+- 达成目标时显示 🎉 已达成提示。
+- 默认每日目标 8 杯，支持自定义。
+- 数据基于 Preferences 持久化，跨会话保留。
+
+**🎯 健康目标设定**
+- 新增 `HealthGoalService` 服务，管理目标体重设定和进度计算。
+- 健康页面新增目标卡片（仅在设定目标体重后显示），显示"距目标还差 X 斤"或"🎉 已达成目标！"。
+
+**🔍 健康知识搜索**
+- 健康知识列表页新增搜索栏，支持按标题、副标题、标签关键词过滤。
+- 搜索无结果时显示友好空状态提示（🔍 + "没有找到相关文章"）。
+
+**📋 空状态优化**
+- 健康历史记录页面：无数据时显示"还没有记录哦，去健康数据页面录入第一条数据吧"。
+- 健康知识搜索：无匹配结果时显示"试试其他关键词吧"。
+- 我的收藏页面已有空状态（保留原有设计）。
+
+**📤 数据导出**
+- 新增 `HealthDataExportUtil` 工具类，支持将健康数据导出为 JSON 文件。
+- 使用系统文件选择器让用户选择保存位置。
+
+### 单元测试
+
+- 新增 `HealthGoalService.test.ets`：测试目标差距计算、进度百分比、目标描述生成等 9 个用例。
+- 新增 `HealthDataRecord.test.ets`：测试 mock 数据生成、聚合计算（均值/极值/变化量）、日期过滤、BMI 计算、喝水进度等 12 个用例。
+- 使用 `@ohos/hypium` 测试框架，可直接在 DevEco Studio 中运行。
+
+### 修改文件
+
+| 文件 | 变更类型 | 说明 |
+|------|---------|------|
+| `features/health/src/main/ets/service/HealthDataService.ets` | 新增 | 健康数据记录管理服务 |
+| `features/health/src/main/ets/service/WaterIntakeService.ets` | 新增 | 喝水打卡服务 |
+| `features/health/src/main/ets/service/HealthGoalService.ets` | 新增 | 健康目标管理服务 |
+| `features/health/src/main/ets/types/HealthDataRecordTypes.ets` | 新增 | 健康数据记录类型定义 |
+| `features/health/src/main/ets/mock/HealthDataRecordMockData.ets` | 新增 | 60 天 mock 历史数据生成 |
+| `features/health/src/main/ets/util/HealthDataExportUtil.ets` | 新增 | 数据导出工具 |
+| `features/health/src/main/test/HealthGoalService.test.ets` | 新增 | 目标服务单元测试 |
+| `features/health/src/main/test/HealthDataRecord.test.ets` | 新增 | 数据记录逻辑单元测试 |
+| `features/health/src/main/test/List.test.ets` | 新增 | 测试套件入口 |
+| `features/health/src/main/ets/viewmodel/WeeklyReportModel.ets` | 重写 | 从历史数据动态聚合周报 |
+| `features/health/src/main/ets/viewmodel/MonthlyReportModel.ets` | 重写 | 从历史数据动态聚合月报 |
+| `features/health/src/main/ets/viewmodel/HealthHistoryModel.ets` | 重写 | 从 HealthDataService 加载并合并历史数据 |
+| `features/health/src/main/ets/views/HealthPage.ets` | 修改 | 新增喝水进度卡片、健康目标卡片 |
+| `features/health/src/main/ets/views/HealthKnowledgeListPage.ets` | 修改 | 新增搜索栏和空搜索结果提示 |
+| `features/health/src/main/ets/views/HealthHistoryPage.ets` | 修改 | 接入真实数据加载、新增空状态 |
+| `features/health/src/main/ets/views/HealthDataInputPage.ets` | 修改 | 每次输入自动保存历史记录 |
+| `features/health/src/main/ets/constants/constants.ets` | 修改 | 修复体重范围数据、替换重复文章 |
+| `features/health/Index.ets` | 修改 | 导出新增的三个服务和数据类型 |
+| `commons/common/src/main/ets/dialog/OHDialogModel.ets` | 修改 | 占位符 'xxxx' → '清律' |
+
 ## 1.2.0
 
 ### 架构优化

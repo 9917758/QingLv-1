@@ -30,6 +30,7 @@ import {
   weightRange
 } from '../constants/constants';
 import { HealthModel } from '../viewmodel/HealthModel';
+import { HealthDataService } from '../service/HealthDataService';
 
 @Builder
 export function HealthDataInputPageBuilder() {
@@ -94,6 +95,24 @@ export struct HealthDataInputPage {
     this.vm.fatWeight = (Math.round(this.vm.weight * (this.vm.bodyFatPercentage / 100) * 10)) / 10;
   }
 
+  /**
+   * 将当前输入数据保存为一条历史记录
+   */
+  saveCurrentAsRecord(): void {
+    HealthDataService.instance.saveFromInput(
+      this.vm.weight,
+      this.vm.bmiValue,
+      this.vm.bodyFatPercentage,
+      this.vm.fatWeight,
+      this.vm.bloodSugar,
+      this.vm.bloodPressureSystolic,
+      this.vm.bloodPressureDiastolic,
+      this.vm.heartRate,
+      this.vm.waistCircumference,
+      this.vm.hipCircumference
+    );
+  }
+
   bloodPreCalculator() {
     const dateStr = TimeUtil.formatDate(new Date().getTime(), TimeUtil.PATTERN_DATE_CN_WITHOUT_YEAR);
     if ((Number(this.vm.bloodPressureDiastolic) > bloodPressureDiastolicMaxNormalValue ||
@@ -156,6 +175,7 @@ export struct HealthDataInputPage {
                 this.vm.weightIndex = dialogModel.changeIndex;
                 this.healthModelVM.initDeviceData();
                 this.bmiCalculator();
+                this.saveCurrentAsRecord();
               }
               model.childBuilder = this.weightDialogBuilder
               OHDialog.ShowPopup(model)
@@ -221,6 +241,7 @@ export struct HealthDataInputPage {
                 const dateStr = TimeUtil.formatDate(new Date().getTime(), TimeUtil.PATTERN_DATE_TIME_CN_MONTH);
                 this.vm.bloodSugarTime = dateStr + ' 餐后数据'
                 this.healthModelVM.initHealthData();
+                this.saveCurrentAsRecord();
                 // todo 录入血糖在正常值范围外，弹框提醒血糖异常
                 if (this.vm.bloodSugar > bloodSugarMaxNormalValue ||
                   this.vm.bloodSugar < bloodSugarMinNormalValue) {
@@ -249,6 +270,7 @@ export struct HealthDataInputPage {
                 let tempHeartRate = Math.floor(dialogModel.value / 10);
                 this.vm.heartRateTime = `心率范围${tempHeartRate * 10}-${(tempHeartRate + 1) * 10}次/分钟`
                 this.healthModelVM.initHealthData();
+                this.saveCurrentAsRecord();
                 // todo 录入心率在正常值范围外，弹框提醒心率异常
                 if (Number(this.vm.heartRate) > heartRateMaxNormalValue ||
                   Number(this.vm.heartRate) < heartRateMinNormalValue) {
@@ -276,6 +298,7 @@ export struct HealthDataInputPage {
               model.onValueConfirmClick = (dialogModel: HealthDataInputDialogModel) => {
                 this.vm.bloodPressureSystolic = dialogModel.value;
                 this.bloodPreCalculator();
+                this.saveCurrentAsRecord();
                 // todo 录入收缩压在正常值范围外，弹框提醒血压异常
                 if (Number(this.vm.bloodPressureSystolic) > bloodPressureSystolicMaxNormalValue ||
                   Number(this.vm.bloodPressureSystolic) < bloodPressureSystolicMinNormalValue) {
@@ -303,6 +326,7 @@ export struct HealthDataInputPage {
               model.onValueConfirmClick = (dialogModel: HealthDataInputDialogModel) => {
                 this.vm.bloodPressureDiastolic = dialogModel.value;
                 this.bloodPreCalculator();
+                this.saveCurrentAsRecord();
                 // todo 录入舒张压在正常值范围外，弹框提醒血压异常
                 if (Number(this.vm.bloodPressureDiastolic) > bloodPressureDiastolicMaxNormalValue ||
                   Number(this.vm.bloodPressureDiastolic) < bloodPressureDiastolicMinNormalValue) {

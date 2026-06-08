@@ -10,6 +10,8 @@ import { phoneRouterControl } from 'oh_router';
 import { MessageCenterPageBuilder } from 'person';
 import { HealthRunningFoldRow } from '../comp/HealthRunningFoldRow';
 import { ReminderPlanPageBuilder } from './ReminderPlanPage';
+import { WaterIntakeService } from '../service/WaterIntakeService';
+import { HealthGoalService } from '../service/HealthGoalService';
 
 @Builder
 export function HealthPageBuilder() {
@@ -33,6 +35,8 @@ export function HealthPageBuilder() {
 @ComponentV2
 export struct HealthPage {
   healthModelVM: HealthModel = HealthModel.instance;
+  waterService: WaterIntakeService = WaterIntakeService.instance;
+  goalService: HealthGoalService = HealthGoalService.instance;
   @Local breakPointModel: BreakpointModel = AppStorageV2.connect(BreakpointModel, () => new BreakpointModel())!;
   @Local onReturnClick: () => void = () => {
   }
@@ -49,16 +53,27 @@ export struct HealthPage {
     this.healthModelVM.initHealthData();
   }
 
+  // 监听打卡事件，刷新喝水数据（弹窗打卡可能在 HomePage 触发）
+  private onReminderCheckIn: () => void = () => {
+    this.waterService.loadToday();
+  }
+
   aboutToAppear(): void {
     try {
       emitter.on(Constants.onHealthDataChange, this.onHealthDataChange);
+      emitter.on(Constants.onReminderCheckIn, this.onReminderCheckIn);
     } catch (err) {
     }
+    // 加载喝水和目标数据
+    this.waterService.loadToday();
+    this.waterService.loadGoal();
+    this.goalService.loadGoal();
   }
 
   aboutToDisappear(): void {
     try {
       emitter.off(Constants.onHealthDataChange.eventId, this.onHealthDataChange);
+      emitter.off(Constants.onReminderCheckIn.eventId, this.onReminderCheckIn);
     } catch (err) {
     }
   }
@@ -181,7 +196,7 @@ export struct HealthPage {
                 ListItem() {
                   HealthCardRow({ healthCardModelVM: this.getCardModel(item.type) })
                 }
-              }, (item: HealthCardModel, index: number) => `${item.title}_${index}}`)
+              }, (item: HealthCardModel, index: number) => `${item.title}_${index}`)
 
               ListItem() {
                 HealthKnowledgeRow({ healthModelVM: this.healthModelVM })
@@ -223,6 +238,95 @@ export struct HealthPage {
               }
               .padding({ left: $r('app.float.vp_12') })
               .width('200%')
+
+              // 今日喝水进度
+              ListItem() {
+                Row() {
+                  Text('💧')
+                    .fontSize(20)
+                    .margin({ right: 10 })
+                  Column({ space: 4 }) {
+                    Row() {
+                      Text('今日饮水')
+                        .fontColor($r('sys.color.font_primary'))
+                        .fontSize($r('sys.float.Body_L'))
+                        .fontWeight(FontWeight.Medium)
+                      Blank()
+                      Text(`${this.waterService.todayCount}/${this.waterService.todayGoal} 杯`)
+                        .fontColor($r('sys.color.font_secondary'))
+                        .fontSize($r('sys.float.Caption_S'))
+                    }
+                    .width('100%')
+
+                    Progress({
+                      value: this.waterService.todayCount,
+                      total: this.waterService.todayGoal,
+                      type: ProgressType.Linear
+                    })
+                      .width('100%')
+                      .height(8)
+                      .color(this.waterService.isGoalReached() ? '#4CAF50' : '#2196F3')
+                      .backgroundColor('#E0E0E0')
+
+                    if (this.waterService.isGoalReached()) {
+                      Text('🎉 已达成今日目标！')
+                        .fontColor('#4CAF50')
+                        .fontSize($r('sys.float.Caption_S'))
+                    }
+                  }
+                  .layoutWeight(1)
+                  .alignItems(HorizontalAlign.Start)
+
+                  Button(this.waterService.todayCount >= 20 ? '✓' : '+1')
+                    .width(56)
+                    .height(32)
+                    .fontSize(14)
+                    .fontWeight(FontWeight.Bold)
+                    .backgroundColor(this.waterService.todayCount >= 20 ? '#CCCCCC' : '#2196F3')
+                    .borderRadius(16)
+                    .enabled(this.waterService.todayCount < 20)
+                    .onClick(() => {
+                      this.waterService.drink();
+                    })
+                }
+                .width('100%')
+                .padding(14)
+                .backgroundColor(Color.White)
+                .borderRadius($r('sys.float.corner_radius_level7'))
+              }
+              .padding({ left: $r('app.float.vp_12') })
+              .width('200%')
+
+              // 健康目标（仅在有目标体重时显示）
+              if (this.goalService.goalWeight > 0) {
+                ListItem() {
+                  Row() {
+                    Text('🎯')
+                      .fontSize(20)
+                      .margin({ right: 10 })
+                    Column({ space: 2 }) {
+                      Text('健康目标')
+                        .fontColor($r('sys.color.font_primary'))
+                        .fontSize($r('sys.float.Body_L'))
+                        .fontWeight(FontWeight.Medium)
+                      Text(this.goalService.getGoalDescription(this.healthModelVM.inputVM.weight))
+                        .fontColor($r('sys.color.font_secondary'))
+                        .fontSize($r('sys.float.Caption_S'))
+                    }
+                    .alignItems(HorizontalAlign.Start)
+                    .layoutWeight(1)
+                    Text(`目标 ${this.goalService.goalWeight}斤`)
+                      .fontColor('#FF9800')
+                      .fontSize($r('sys.float.Caption_S'))
+                  }
+                  .width('100%')
+                  .padding(14)
+                  .backgroundColor(Color.White)
+                  .borderRadius($r('sys.float.corner_radius_level7'))
+                }
+                .padding({ left: $r('app.float.vp_12') })
+                .width('200%')
+              }
             }
           }
           .height('100%')

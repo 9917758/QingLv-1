@@ -4,3 +4,7 @@ export { FavoriteUtil } from './src/main/ets/util/FavoriteUtil';
 export { ReminderService } from './src/main/ets/service/ReminderService';
 export { ReminderPlanItem } from './src/main/ets/model/ReminderPlanModel';
 export { HealthFavoritesPageBuilder } from './src/main/ets/views/HealthFavoritesPage';
+export { HealthDataService } from './src/main/ets/service/HealthDataService';
+export { WaterIntakeService } from './src/main/ets/service/WaterIntakeService';
+export { HealthGoalService } from './src/main/ets/service/HealthGoalService';
+export { HealthDataRecord } from './src/main/ets/types/HealthDataRecordTypes';

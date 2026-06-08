@@ -15,6 +15,11 @@ export function HealthHistoryPageBuilder() {
 @ComponentV2
 export struct HealthHistoryPage {
   private vm: HealthHistoryModel = HealthHistoryModel.instance;
+
+  aboutToAppear(): void {
+    this.vm.loadHistory();
+  }
+
   handleBack = (): void => {
     phoneRouterControl.popPage();
   }
@@ -96,6 +101,22 @@ export struct HealthHistoryPage {
 
         // 列表卡片容器 - 整体白色卡片
         Column() {
+          if (this.vm.getCurrentMonthData().length === 0) {
+            // 空状态提示
+            Column({ space: 8 }) {
+              Text('📋')
+                .fontSize(48)
+              Text('还没有记录哦')
+                .fontColor('#999999')
+                .fontSize(16)
+              Text('去健康数据页面录入第一条数据吧')
+                .fontColor('#BBBBBB')
+                .fontSize(14)
+            }
+            .width('100%')
+            .height('100%')
+            .justifyContent(FlexAlign.Center)
+          } else {
           List({ space: 0 }) {
             ForEach(this.vm.getCurrentMonthData(), (item: HealthHistoryItem, index: number) => {
               ListItem() {
@@ -145,6 +166,7 @@ export struct HealthHistoryPage {
           .borderRadius($r('sys.float.corner_radius_level7'))
           .clip(true)
           .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+          }
         }
         .width('100%')
         .layoutWeight(1)

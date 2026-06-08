@@ -1,6 +1,6 @@
 import { PersistenceV2 } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
-import { Constants, GlobalContext, OHDialog, OHDialogModel, PreferenceConstant, PreferenceUtil, TimeUtil, USE_MOCK_DATA } from 'common';
+import { Constants, OHDialog, OHDialogModel, TimeUtil, USE_MOCK_DATA } from 'common';
 import { PairedDeviceMacList } from 'device';
 import { SkipStepModel } from 'person';
 import { ReminderPlanItem, ReminderService } from 'health';
@@ -61,34 +61,9 @@ export class HomeModel {
     return ReminderService.loadPlans();
   }
 
-  /** 获取今天已打卡的计划ID集合 */
-  private getCheckedToday(): Set<string> {
-    const today = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
-    try {
-      const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      const stored = pref.get(PreferenceConstant.REMINDER_CHECKED_TODAY, '{}') as string;
-      const data: Record<string, Object> = JSON.parse(stored) as Record<string, Object>;
-      if (data['date'] === today) {
-        return new Set((data['ids'] as string[]) ?? []);
-      }
-    } catch {
-      // ignore
-    }
-    return new Set();
-  }
-
-  /** 标记今天已打卡 */
-  private markChecked(planId: string): void {
-    const today = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
-    const checked = this.getCheckedToday();
-    checked.add(planId);
-    const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-    pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY, JSON.stringify({ date: today, ids: Array.from(checked) }));
-  }
-
   /** 公开方法：供弹窗"已完成"按钮调用，标记指定计划已打卡（#10） */
   public markPlanChecked(planId: string): void {
-    this.markChecked(planId);
+    ReminderService.markPlanChecked(planId);
   }
 
   /** 公开方法：根据计划名称查找计划ID（供弹窗打卡用） */
@@ -113,9 +88,8 @@ export class HomeModel {
     const currentDate = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
 
     // 跨天重置打卡记录
-    if (this.lastCheckedDate && this.lastCheckedDate !== currentDate) {
-      const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-      pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY, JSON.stringify({ date: currentDate, ids: [] }));
+    if (this.lastCheckedDate.length > 0 && this.lastCheckedDate !== currentDate) {
+      ReminderService.resetCheckedToday();
     }
     this.lastCheckedDate = currentDate;
 
@@ -123,7 +97,8 @@ export class HomeModel {
     const tzOffset: number = now.getTimezoneOffset();
     const nowMinutes: number = (now.getUTCHours() * 60 + now.getUTCMinutes()) - tzOffset;
     const plans = this.loadPlans();
-    const checkedToday = this.getCheckedToday();
+    // 确保今日打卡ID已从存储加载到内存
+    const checkedToday: Set<string> = ReminderService.getCheckedTodayIds();
     let matchedPlanName: string = '';
     let matchedPlanTime: string = '';
     let matchedPlanType: number = -1;
@@ -133,8 +108,7 @@ export class HomeModel {
       if (!plan.isEnabled) {
         continue;
       }
-      const alreadyChecked: boolean = checkedToday.has(plan.id);
-      if (alreadyChecked) {
+      if (checkedToday.has(plan.id)) {
         continue;
       }
       const parts: string[] = plan.time.split(':');
@@ -147,7 +121,7 @@ export class HomeModel {
         matchedPlanName = plan.name;
         matchedPlanTime = plan.time;
         matchedPlanType = plan.type;
-        this.markChecked(plan.id);
+        ReminderService.markPlanChecked(plan.id);
       }
     }
 

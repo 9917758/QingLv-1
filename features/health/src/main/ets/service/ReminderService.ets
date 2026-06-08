@@ -11,6 +11,9 @@ const TAG = 'ReminderService';
  */
 export class ReminderService {
   private static cachedPlans: ReminderPlanItem[] | null = null;
+  // 今日已打卡计划ID缓存（内存级，同步持久化到 Preferences）
+  private static checkedTodayIds: Set<string> = new Set();
+  private static checkedTodayDate: string = '';
 
   /**
    * 校验解析后的对象是否为合法的 ReminderPlanItem（#7）
@@ -132,21 +135,80 @@ export class ReminderService {
   }
 
   /**
-   * 获取今天已打卡的计划 ID 集合（供 ReminderPlanPage 同步状态用）
+   * 获取今天已打卡的计划 ID 集合（内存缓存 + 存储双层）
    */
   static getCheckedTodayIds(): Set<string> {
     const today = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
+    // 跨天清空
+    if (ReminderService.checkedTodayDate !== today) {
+      ReminderService.checkedTodayIds = new Set();
+      ReminderService.checkedTodayDate = today;
+    }
+    // 内存已有数据直接返回
+    if (ReminderService.checkedTodayIds.size > 0) {
+      return ReminderService.checkedTodayIds;
+    }
+    // 从存储加载
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
       const stored = pref.get(PreferenceConstant.REMINDER_CHECKED_TODAY, '{}') as string;
       const data: Record<string, Object> = JSON.parse(stored) as Record<string, Object>;
       if (data['date'] === today) {
-        return new Set((data['ids'] as string[]) ?? []);
+        const ids = data['ids'];
+        if (ids !== undefined && ids !== null) {
+          const arr = ids as string[];
+          for (let i = 0; i < arr.length; i++) {
+            ReminderService.checkedTodayIds.add(arr[i]);
+          }
+        }
       }
     } catch {
       // ignore
     }
-    return new Set();
+    return ReminderService.checkedTodayIds;
+  }
+
+  /**
+   * 标记指定计划今日已打卡（内存 + 持久化）
+   */
+  static markPlanChecked(planId: string): void {
+    const today = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
+    ReminderService.getCheckedTodayIds(); // 确保已加载
+    if (ReminderService.checkedTodayIds.has(planId)) {
+      return; // 已打过
+    }
+    ReminderService.checkedTodayIds.add(planId);
+    ReminderService.checkedTodayDate = today;
+    try {
+      const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
+      pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY,
+        JSON.stringify({ date: today, ids: Array.from(ReminderService.checkedTodayIds) }));
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * 检查指定计划今日是否已打卡
+   */
+  static isPlanCheckedToday(planId: string): boolean {
+    return ReminderService.getCheckedTodayIds().has(planId);
+  }
+
+  /**
+   * 跨天重置打卡记录（清空内存缓存和存储）
+   */
+  static resetCheckedToday(): void {
+    ReminderService.checkedTodayIds = new Set();
+    ReminderService.checkedTodayDate = TimeUtil.getCurTime(TimeUtil.PATTERN_DATE_HYPHEN);
+    try {
+      const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
+      pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY,
+        JSON.stringify({ date: ReminderService.checkedTodayDate, ids: [] }));
+    } catch {
+      // ignore
+    }
+    ReminderService.invalidateCache();
   }
 
   /**

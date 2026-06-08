@@ -3,6 +3,7 @@ import { BusinessError, emitter } from '@kit.BasicServicesKit';
 import { TCLogger, BarVM, Constants } from 'common';
 import { HomeModel } from '../viewmodel/HomeModel';
 import { TabSingleItem } from '../viewmodel/TabSingleItem';
+import { WaterIntakeService } from 'health';
 
 @Builder
 export function HomePageBuilder() {
@@ -87,13 +88,24 @@ export struct HomePage {
 
   /** #10 弹窗打卡 */
   private handleCheckIn(): void {
+    if (this.checkedIn) {
+      return; // 防止重复打卡
+    }
     const planId = this.vm.findPlanIdByName(this.reminderTitle);
     if (planId.length > 0) {
       this.vm.markPlanChecked(planId);
+      // 饮水计划打卡时，同步增加喝水杯数
+      if (this.reminderIconType === 0) {
+        WaterIntakeService.instance.drink();
+      }
     }
     this.checkedIn = true;
     // 通知 ReminderPlanPage 刷新打卡状态
     emitter.emit(Constants.onReminderCheckIn);
+    // 1.2秒后自动关闭弹窗，让用户看到"已完成"反馈
+    setTimeout(() => {
+      this.reminderVisible = false;
+    }, 1200);
   }
 
   /** 关闭弹窗 */
