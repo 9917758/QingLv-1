@@ -52,7 +52,9 @@ export struct BloodPressurePage {
             this.renderDateAndRange();
             this.renderChartSection();
             PulseCard({
-              avgPulse: this.vm.statistics.avgPulse
+              avgPulse: this.vm.statistics.avgPulse,
+              avgSystolic: this.vm.statistics.avgSystolic,
+              avgDiastolic: this.vm.statistics.avgDiastolic
             })
 
           }
@@ -268,13 +270,15 @@ struct TimeRangeButton {
 // 脉搏卡片组件
 @ComponentV2
 struct PulseCard {
-  @Param avgPulse: number = 128;
+  @Param avgPulse: number = 75;
+  @Param avgSystolic: number = 128;
+  @Param avgDiastolic: number = 88;
 
   build() {
     Row({ space: 16 }) {
       Column({ space: 6 }) {
         Row({ space: 6 }) {
-          Text(`128/88`)
+          Text(`${this.avgSystolic}/${this.avgDiastolic}`)
             .fontSize($r('sys.float.Title_M'))
             .fontWeight(FontWeight.Bold)
             .fontColor($r('sys.color.font_primary'))
@@ -283,7 +287,7 @@ struct PulseCard {
             .fontColor($r('sys.color.mask_secondary'))
         }
 
-        Text('平均血压平均值')
+        Text('平均血压')
           .fontSize($r('sys.float.Body_S'))
           .fontColor($r('sys.color.mask_secondary'))
       }
@@ -296,7 +300,7 @@ struct PulseCard {
 
       Column({ space: 6 }) {
         Row({ space: 6 }) {
-          Text('-- ')
+          Text(this.avgPulse.toString())
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Bold)
             .fontColor($r('sys.color.font_primary'))

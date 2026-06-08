@@ -155,6 +155,6 @@ export const HEART_RATE_DETAIL_RECORDS: HeartRateRecord[] = [
   { value: '63次/分钟', time: '09:00' },
   { value: '100次/分钟', time: '08:34' },
   { value: '99次/分钟', time: '08:12' },
-  { value: '00次/分钟', time: '07:34' }
+  { value: '72次/分钟', time: '07:34' }
 ];
 

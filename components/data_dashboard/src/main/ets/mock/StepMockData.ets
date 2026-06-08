@@ -15,8 +15,8 @@ export const STEP_RANGE_OPTIONS: Record<TimeRange, StepRangeOption[]> = {
       steps: [1800, 6000, 2700, 900, 7500, 2500, 4600],
       labels: ['06月24日', '06月25日', '06月26日', '06月27日', '06月28日', '06月29日', '06月30日'],
       statistics: {
-        total: 8000,
-        average: 1398,
+        total: 26000,
+        average: 3714,
         calories: 230,
         distance: 0.98
       }
@@ -26,10 +26,10 @@ export const STEP_RANGE_OPTIONS: Record<TimeRange, StepRangeOption[]> = {
       period: '06月20日(周四)',
       currentSteps: 5120,
       steps: [2200, 5500, 3400, 1600, 6800, 3100, 5200],
-      labels: [],
+      labels: ['06月17日', '06月18日', '06月19日', '06月20日', '06月21日', '06月22日', '06月23日'],
       statistics: {
-        total: 9100,
-        average: 1300,
+        total: 27800,
+        average: 3971,
         calories: 250,
         distance: 1.10
       }
@@ -39,10 +39,10 @@ export const STEP_RANGE_OPTIONS: Record<TimeRange, StepRangeOption[]> = {
       period: '06月13日(周五)',
       currentSteps: 4980,
       steps: [2000, 4800, 3600, 1400, 6200, 2800, 5000],
-      labels: [],
+      labels: ['06月10日', '06月11日', '06月12日', '06月13日', '06月14日', '06月15日', '06月16日'],
       statistics: {
-        total: 8600,
-        average: 1228,
+        total: 25800,
+        average: 3686,
         calories: 240,
         distance: 1.02
       }
@@ -50,7 +50,7 @@ export const STEP_RANGE_OPTIONS: Record<TimeRange, StepRangeOption[]> = {
   ],
   [TimeRange.MONTH]: [
     {
-      label: '2026年4月',
+      label: '2026年6月',
       period: '06月19日',
       currentSteps: 1200,
       steps: [4800, 6200, 3600, 5900, 7100, 4750, 3400, 8300, 5950, 6050, 4700, 8400, 4800, 3600, 7200, 5900, 7100,
@@ -65,7 +65,7 @@ export const STEP_RANGE_OPTIONS: Record<TimeRange, StepRangeOption[]> = {
       }
     },
     {
-      label: '2026年3月',
+      label: '2026年5月',
       period: '05月15日',
       currentSteps: 1420,
       steps: [1100, 600, 900, 500, 700, 800, 1400, 500, 600, 300, 800, 900, 600],
@@ -78,7 +78,7 @@ export const STEP_RANGE_OPTIONS: Record<TimeRange, StepRangeOption[]> = {
       }
     },
     {
-      label: '2026年2月',
+      label: '2026年4月',
       period: '04月12日',
       currentSteps: 1630,
       steps: [1200, 800, 700, 600, 900, 700, 1300, 700, 500, 400, 1000, 800, 700],
@@ -140,7 +140,7 @@ export const STEP_RANGE_OPTIONS: Record<TimeRange, StepRangeOption[]> = {
  */
 export const STEP_HISTORY_MONTHS: MonthGroup[] = [
   {
-    monthTitle: '2026年4月',
+    monthTitle: '2026年6月',
     records: [
       {
         steps: 12130,
@@ -193,7 +193,7 @@ export const STEP_HISTORY_MONTHS: MonthGroup[] = [
     ]
   },
   {
-    monthTitle: '2026年3月',
+    monthTitle: '2026年5月',
     records: [
       {
         steps: 11020,
@@ -258,7 +258,7 @@ export const STEP_HISTORY_MONTHS: MonthGroup[] = [
     ]
   },
   {
-    monthTitle: '2026年2月',
+    monthTitle: '2026年4月',
     records: [
       {
         steps: 10560,

@@ -1,6 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
-import { BreakpointModel, CommonHeader, Constants, RouterMap } from 'common';
+import { BreakpointModel, CommonHeader, Constants, OHDialog, OHDialogModel, RouterMap } from 'common';
 import { HealthCardRow } from '../comp/HealthCardRow';
 import { HealthRunningRow } from '../comp/HealthRunningRow';
 import { HealthModel } from '../viewmodel/HealthModel';
@@ -94,6 +94,26 @@ export struct HealthPage {
       return this.healthModelVM.heartRateVM;
     } else {
       return this.healthModelVM.bloodSugarVM;
+    }
+  }
+
+  @Builder
+  waterGoalPickerBuilder(model: OHDialogModel) {
+    Column() {
+      TextPicker({
+        range: ['4', '5', '6', '7', '8', '9', '10', '12', '15', '20'],
+        selected: ['4', '5', '6', '7', '8', '9', '10', '12', '15', '20'].indexOf(model.changeValue as string),
+        value: model.changeValue as string
+      })
+        .height(200)
+        .width('100%')
+        .onChange((value: string | string[], index: number | number[]) => {
+          model.changeValue = value as string;
+        })
+      Text('杯/天')
+        .fontSize($r('sys.float.Body_L'))
+        .fontColor($r('sys.color.font_emphasize'))
+        .margin({ top: 8 })
     }
   }
 
@@ -255,6 +275,19 @@ export struct HealthPage {
                       Text(`${this.waterService.todayCount}/${this.waterService.todayGoal} 杯`)
                         .fontColor($r('sys.color.font_secondary'))
                         .fontSize($r('sys.float.Caption_S'))
+                        .onClick(() => {
+                          let goalPicker = new OHDialogModel();
+                          goalPicker.title = '设置每日饮水目标';
+                          goalPicker.changeValue = this.waterService.todayGoal.toString();
+                          goalPicker.onValueConfirmClick = (model: OHDialogModel) => {
+                            const newGoal = Number(model.changeValue);
+                            if (newGoal > 0 && newGoal <= 20) {
+                              this.waterService.setGoal(newGoal);
+                            }
+                          };
+                          goalPicker.childBuilder = this.waterGoalPickerBuilder;
+                          OHDialog.ShowPopup(goalPicker);
+                        })
                     }
                     .width('100%')
 

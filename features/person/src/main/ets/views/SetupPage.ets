@@ -1,4 +1,4 @@
-import { CommonHeader, RouterMap, BarVM, OHDialog, OHDialogModel } from 'common';
+import { CommonHeader, RouterMap, BarVM, OHDialog, OHDialogModel, USE_MOCK_DATA } from 'common';
 import { OHPage, phoneRouterControl } from 'oh_router';
 import { UserInfoRow } from '../comp/UserInfoRow';
 import { PrivacySettingsPageBuilder } from './PrivacySettingsPage';
@@ -126,6 +126,45 @@ export struct SetUpPage {
                 })
               }
             })
+          }
+
+          if (USE_MOCK_DATA) {
+            SetUpGenericCard() {
+              Row() {
+                Text('🧪')
+                  .fontSize(16)
+                  .margin({ right: 8 })
+                Text('开发者选项')
+                  .fontSize($r('sys.float.Body_L'))
+                  .fontColor($r('sys.color.font_primary'))
+                  .fontWeight(FontWeight.Medium)
+                Blank()
+                Text('Mock 模式')
+                  .fontSize($r('sys.float.Body_S'))
+                  .fontColor('#FF6B00')
+                  .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+                  .borderRadius(4)
+                  .backgroundColor('#FFF3E0')
+              }
+              .width('100%')
+              .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+
+              this.line()
+
+              Column({ space: 8 }) {
+                Text('当前应用使用模拟数据运行，所有健康数据、设备连接均为虚拟数据。')
+                  .fontSize($r('sys.float.Body_S'))
+                  .fontColor($r('sys.color.font_secondary'))
+                  .lineHeight(20)
+                Text('• 健康数据基于模拟趋势生成\n• 设备扫描返回虚拟设备\n• 登录状态自动填充')
+                  .fontSize($r('sys.float.Body_S'))
+                  .fontColor($r('sys.color.font_secondary'))
+                  .lineHeight(20)
+              }
+              .width('100%')
+              .padding({ left: 16, right: 16, top: 8, bottom: 14 })
+              .alignItems(HorizontalAlign.Start)
+            }
           }
 
           Blank().layoutWeight(1)

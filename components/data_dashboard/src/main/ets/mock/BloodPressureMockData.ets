@@ -23,8 +23,8 @@ export const BLOOD_PRESSURE_RANGE_OPTIONS: Record<BloodPressureTimeRange, BloodP
       statistics: { avgSystolic: 128, avgDiastolic: 98, avgPulse: 75 }
     },
     {
-      label: '2024年02月20日 - 02月26日',
-      period: '02月22日(周四)',
+      label: '2026年06月17日 - 06月23日',
+      period: '06月20日(周四)',
       currentSystolic: 125,
       currentDiastolic: 98,
       systolicValues: [132, 128, 125, 130, 127, 135, 120],
@@ -49,7 +49,7 @@ export const BLOOD_PRESSURE_RANGE_OPTIONS: Record<BloodPressureTimeRange, BloodP
       statistics: { avgSystolic: 128, avgDiastolic: 96, avgPulse: 75 }
     },
     {
-      label: '2024年11月',
+      label: '2026年5月',
       period: '近一个月',
       currentSystolic: 122,
       currentDiastolic: 98,
@@ -81,7 +81,7 @@ export const BLOOD_PRESSURE_RANGE_OPTIONS: Record<BloodPressureTimeRange, BloodP
       statistics: { avgSystolic: 128, avgDiastolic: 96, avgPulse: 75 }
     },
     {
-      label: '2024年10月 - 12月',
+      label: '2026年4月 - 06月',
       period: '11月平均值',
       currentSystolic: 123,
       currentDiastolic: 96,

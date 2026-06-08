@@ -276,7 +276,7 @@ export struct HeartRatePage {
               .fontColor($r('sys.color.mask_secondary'))
 
             Row({ space: 6 }) {
-              Text(this.vm.statistics.restingLow.toString())
+              Text(Math.round((this.vm.statistics.avgHigh + this.vm.statistics.avgLow) / 2).toString())
                 .fontSize($r('sys.float.Title_S'))
                 .fontWeight(FontWeight.Bold)
                 .fontColor($r('sys.color.font_primary'))

@@ -1,5 +1,69 @@
 # 版本记录
 
+## 1.4.0
+
+### Bug 修复
+
+**打卡状态重启丢失**
+- 移除 `Index.ets` 启动时无条件清除 `REMINDER_CHECKED_TODAY` 的调试残留代码。
+
+**历史记录身高/年龄硬编码**
+- `HealthHistoryModel` 转换记录时 height=167/age=28 写死，改为从 `UserInfo` 动态读取用户实际身高和根据生日计算年龄。
+
+**历史列表刷新失效**
+- `historyGroups` 属性缺少 `@Trace` 装饰器，从详情页返回时数据不会更新，已添加。
+
+**周报日期显示错误**
+- `WeeklyReportModel` 中同一月份起止日期的三元表达式两个分支完全相同，现正确省略重复月份。
+
+**年龄计算误差**
+- 体脂率公式中年龄计算使用 360 天/年，改为 365.25 天/年，消除 ~1.5% 偏差。
+
+**血压脉搏卡片硬编码**
+- `PulseCard` 组件接收了 avgPulse 参数却显示写死的 "128/88"，改为接收 avgSystolic/avgDiastolic/avgPulse 三个参数，正确显示实际数据。
+
+**心率页"平均心率"显示错误**
+- 标签"平均心率"实际显示的是 `restingLow`（静息低值），改为 `(avgHigh + avgLow) / 2` 的真实平均值。
+
+### Mock 数据修正
+
+- **步数统计不一致**：周步数数组和为 26000 但 statistics.total 显示 8000，已修正。
+- **血压数据混用年份**：Mock 数据中混用 2024 和 2026 年份，统一为 2026。
+- **心率记录异常值**：详情记录中出现 "00次/分钟"，修正为 "72次/分钟"。
+- **睡眠数据跨月异常**：周数据条目标注跨 3 个月，修正为合理的一周范围。
+- **月份标签与日期不匹配**：步数/血压/睡眠的历史记录月份标题与实际日期对应关系全部修正。
+- **步数历史月份错位**：monthTitle 与 dateTime 月份差 2 个月，已全部对齐。
+- **补充缺失标签**：第二周步数选项的 labels 空数组已补充完整日期。
+
+### 新增功能
+
+**BMI 异常提醒**
+- 录入体重后自动计算 BMI，偏瘦（<18.5）、偏胖（25-30）、肥胖（≥30）时弹出 Toast 提示。
+
+**饮水目标自定义**
+- 点击健康页饮水进度的杯数文字，弹出 TextPicker 选择每日目标杯数（4-20 杯可选），目标持久化存储。
+
+**开发者选项面板**
+- 设置页在 Mock 模式下自动显示"🧪 开发者选项"卡片，标注 Mock 模式状态，说明模拟数据、虚拟设备、自动登录等特性。
+
+### 修改文件
+
+| 文件 | 变更类型 | 说明 |
+|------|---------|------|
+| `products/entry/src/main/ets/pages/Index.ets` | 修改 | 移除启动时清除打卡状态的调试代码 |
+| `features/health/src/main/ets/viewmodel/HealthHistoryModel.ets` | 修改 | 动态读取用户身高/年龄，historyGroups 添加 @Trace |
+| `features/health/src/main/ets/viewmodel/WeeklyReportModel.ets` | 修改 | 修复死三元表达式 |
+| `features/health/src/main/ets/viewmodel/HealthDataInputModel.ets` | 修改 | 年龄计算 360→365.25 天/年 |
+| `features/health/src/main/ets/views/HealthDataInputPage.ets` | 修改 | 新增 BMI 异常 Toast 提醒 |
+| `features/health/src/main/ets/views/HealthPage.ets` | 修改 | 新增饮水目标自定义弹窗 |
+| `features/person/src/main/ets/views/SetupPage.ets` | 修改 | 新增 Mock 模式开发者选项面板 |
+| `components/data_dashboard/src/main/ets/pages/BloodPressurePage.ets` | 修改 | PulseCard 改用实际数据 |
+| `components/data_dashboard/src/main/ets/pages/HeartRatePage.ets` | 修改 | 平均心率显示修正 |
+| `components/data_dashboard/src/main/ets/mock/StepMockData.ets` | 修改 | 修正统计不一致、月份错位、缺失标签 |
+| `components/data_dashboard/src/main/ets/mock/BloodPressureMockData.ets` | 修改 | 统一年份为 2026 |
+| `components/data_dashboard/src/main/ets/mock/HeartRateMockData.ets` | 修改 | 修正 00 次/分钟 |
+| `components/data_dashboard/src/main/ets/mock/SleepMockData.ets` | 修改 | 修正跨月数据和年份 |
+
 ## 1.3.1
 
 ### Bug 修复

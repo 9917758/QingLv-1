@@ -27,9 +27,6 @@ struct Index {
     this.vm.displayOrientationListener();
     // 清理之前 bug 版本残留的收藏脏数据
     FavoriteUtil.init();
-    // 清理提醒打卡记录（避免上次运行的 markChecked 残留干扰新测试）
-    const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
-    pref.put(PreferenceConstant.REMINDER_CHECKED_TODAY, '{}');
     //读取状态值，如果为空设置为true
     let isFirstLaunch = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext())
       .get(PreferenceConstant.FIRST_LAUNCH, true) as boolean

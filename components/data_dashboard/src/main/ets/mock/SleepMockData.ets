@@ -109,8 +109,8 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
       }
     },
     {
-      label: '2026年03月27日 - 06月02日',
-      currentDate: '03月30日(周日)',
+      label: '2026年01月27日 - 02月02日',
+      currentDate: '01月30日(周四)',
       totalHour: 7,
       totalMinute: 50,
       sleepData: [
@@ -201,7 +201,7 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
       }
     },
     {
-      label: '2024年09月',
+      label: '2026年1月',
       currentDate: '09月18日',
       totalHour: 0,
       totalMinute: 0,
@@ -221,7 +221,7 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
       }
     },
     {
-      label: '2024年08月',
+      label: '2025年12月',
       currentDate: '08月22日',
       totalHour: 0,
       totalMinute: 0,
@@ -264,7 +264,7 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
       }
     },
     {
-      label: '2024年1月 - 03月',
+      label: '2025年10月 - 12月',
       currentDate: '总时长',
       totalHour: 225,
       totalMinute: 0,
@@ -285,7 +285,7 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
       }
     },
     {
-      label: '2023年12月 - 2024年02月',
+      label: '2025年7月 - 9月',
       currentDate: '总时长',
       totalHour: 235,
       totalMinute: 0,
@@ -306,7 +306,7 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
       }
     },
     {
-      label: '2023年11月 - 2024年01月',
+      label: '2025年4月 - 6月',
       currentDate: '总时长',
       totalHour: 228,
       totalMinute: 0,
@@ -327,7 +327,7 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
       }
     },
     {
-      label: '2023年10月 - 2023年12月',
+      label: '2025年1月 - 3月',
       currentDate: '总时长',
       totalHour: 232,
       totalMinute: 0,

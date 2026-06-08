@@ -50,7 +50,7 @@ export class HealthDataInputModel {
   getBodyFatPercentage(bir: string, bmi: number, sex: string) {
     const birthday = TimeUtil.parseDate(bir, TimeUtil.PATTERN_DATE_HYPHEN);
     const currentTime = new Date().getTime()
-    const currentAge = (currentTime - birthday)/(3600 * 24 * 30 * 12 * 1000);
+    const currentAge = (currentTime - birthday)/(3600 * 24 * 365.25 * 1000);
     const age = (Math.round(currentAge * 10)) / 10;
     if (sex === '男') {
       let per = ((1.2 * bmi) + (0.23 * age) - 16.2);

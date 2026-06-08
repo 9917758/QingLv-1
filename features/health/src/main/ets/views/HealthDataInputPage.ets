@@ -176,6 +176,25 @@ export struct HealthDataInputPage {
                 this.healthModelVM.initDeviceData();
                 this.bmiCalculator();
                 this.saveCurrentAsRecord();
+                // BMI 异常提醒
+                if (this.vm.bmiValue > 0) {
+                  if (this.vm.bmiValue >= 30) {
+                    this.getUIContext().getPromptAction().showToast({
+                      message: `BMI ${this.vm.bmiValue}（肥胖），建议控制饮食并增加运动`,
+                      duration: 3000
+                    });
+                  } else if (this.vm.bmiValue >= 25) {
+                    this.getUIContext().getPromptAction().showToast({
+                      message: `BMI ${this.vm.bmiValue}（偏胖），注意保持健康体重`,
+                      duration: 3000
+                    });
+                  } else if (this.vm.bmiValue < 18.5) {
+                    this.getUIContext().getPromptAction().showToast({
+                      message: `BMI ${this.vm.bmiValue}（偏瘦），建议适当增加营养摄入`,
+                      duration: 3000
+                    });
+                  }
+                }
               }
               model.childBuilder = this.weightDialogBuilder
               OHDialog.ShowPopup(model)

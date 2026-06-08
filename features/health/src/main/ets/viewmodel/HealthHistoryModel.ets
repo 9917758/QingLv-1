@@ -4,13 +4,14 @@
 import { HealthHistoryItem, MonthGroup } from '../types/HealthHistoryTypes';
 import { HEALTH_HISTORY_GROUPS } from '../mock/HealthHistoryMockData';
 import { HealthDataService } from '../service/HealthDataService';
-import { USE_MOCK_DATA } from 'common';
+import { GlobalContext, USE_MOCK_DATA, UserInfo } from 'common';
+import { PersistenceV2 } from '@kit.ArkUI';
 
 @ObservedV2
 export class HealthHistoryModel {
   private static _instance: HealthHistoryModel;
 
-  historyGroups: MonthGroup[] = [];
+  @Trace historyGroups: MonthGroup[] = [];
   @Trace selectedMonth: string = '';
   @Trace showMonthPicker: boolean = false;
 
@@ -44,10 +45,33 @@ export class HealthHistoryModel {
   }
 
   /**
+   * 从用户信息中获取身高
+   */
+  private getUserHeight(): number {
+    const userInfo = PersistenceV2.connect(UserInfo, () => new UserInfo());
+    return userInfo ? userInfo.height : 172;
+  }
+
+  /**
+   * 从用户生日计算年龄
+   */
+  private getUserAge(): number {
+    const userInfo = PersistenceV2.connect(UserInfo, () => new UserInfo());
+    if (userInfo && userInfo.birthday) {
+      const birthday = new Date(userInfo.birthday).getTime();
+      const age = (Date.now() - birthday) / (3600 * 24 * 365.25 * 1000);
+      return Math.round(age);
+    }
+    return 28;
+  }
+
+  /**
    * 将 HealthDataRecord 转换为按月分组的历史记录
    */
   private convertRecordsToGroups(records: import('../types/HealthDataRecordTypes').HealthDataRecord[]): MonthGroup[] {
     const groupMap = new Map<string, HealthHistoryItem[]>();
+    const userHeight = this.getUserHeight();
+    const userAge = this.getUserAge();
 
     for (const r of records) {
       const d = new Date(r.timestamp);
@@ -60,8 +84,8 @@ export class HealthHistoryModel {
         date: dateStr,
         weight: r.weight,
         fullDate: fullDateStr,
-        height: 167, // 默认身高
-        age: 28,
+        height: userHeight,
+        age: userAge,
         bmi: r.bmi,
         bodyFat: r.bodyFatPercentage,
         fatMass: r.fatWeight,

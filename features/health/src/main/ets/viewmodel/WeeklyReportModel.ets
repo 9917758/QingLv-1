@@ -39,7 +39,7 @@ export class WeeklyReportModel {
       const endDay = endDate.getDate();
       const startStr = `${startDate.getFullYear()}年${startMonth}月${startDay}日`;
       const endStr = startMonth === endMonth ?
-        `${endMonth}月${endDay}日` :
+        `${endDay}日` :
         `${endMonth}月${endDay}日`;
       options.push(`${startStr} - ${endStr}`);
     }
