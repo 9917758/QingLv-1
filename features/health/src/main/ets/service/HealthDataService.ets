@@ -23,6 +23,8 @@ interface HealthRecordPayload {
   heart_rate: number;
   waist_circumference: number;
   hip_circumference: number;
+  step_count: number;
+  sleep_hours: number;
 }
 
 @ObservedV2
@@ -58,7 +60,6 @@ export class HealthDataService {
   /** 同步加载（兼容旧调用） */
   public loadRecords(): HealthDataRecord[] {
     const userId = HealthDataService.getUserId();
-    // 用户切换时自动清除缓存
     if (this._loadedUserId.length > 0 && this._loadedUserId !== userId) {
       this.clearCache();
     }
@@ -99,13 +100,16 @@ export class HealthDataService {
   }
 
   /** 保存一条新记录（同步本地 + 异步 API） */
-  public saveRecord(record: HealthDataRecord): void {
+  public async saveRecord(record: HealthDataRecord): Promise<void> {
     this._records.unshift(record);
     if (this._records.length > MAX_RECORDS) {
       this._records = this._records.slice(0, MAX_RECORDS);
     }
     if (AuthToken.isLoggedIn()) {
-      HttpUtil.post<HealthRecordPayload>('/api/health/records', this.toApiPayload(record));
+      const resp = await HttpUtil.post<object>('/api/health/records', this.toApiPayload(record));
+      if (resp.error.length > 0) {
+        console.error(`[HealthDataService] sync failed: ${resp.error}`);
+      }
     }
     this.persistLocal();
   }
@@ -113,12 +117,14 @@ export class HealthDataService {
   public saveFromInput(weight: number, bmiValue: number, bodyFatPercentage: number,
     fatWeight: number, bloodSugar: number, bloodPressureSystolic: number,
     bloodPressureDiastolic: number, heartRate: number,
-    waistCircumference: number, hipCircumference: number): void {
+    waistCircumference: number, hipCircumference: number,
+    stepCount: number = 0, sleepHours: number = 0): void {
     const record: HealthDataRecord = {
       id: `rec_${Date.now()}`, timestamp: Date.now(),
       weight, bmi: bmiValue, bodyFatPercentage, fatWeight,
       bloodSugar, bloodPressureSystolic, bloodPressureDiastolic,
-      heartRate, waistCircumference, hipCircumference
+      heartRate, waistCircumference, hipCircumference,
+      stepCount, sleepHours
     };
     this.saveRecord(record);
   }
@@ -157,7 +163,8 @@ export class HealthDataService {
       bloodPressureSystolic: r.blood_pressure_systolic,
       bloodPressureDiastolic: r.blood_pressure_diastolic,
       heartRate: r.heart_rate, waistCircumference: r.waist_circumference,
-      hipCircumference: r.hip_circumference
+      hipCircumference: r.hip_circumference,
+      stepCount: r.step_count || 0, sleepHours: r.sleep_hours || 0
     };
   }
 
@@ -170,7 +177,9 @@ export class HealthDataService {
       blood_pressure_diastolic: record.bloodPressureDiastolic,
       heart_rate: record.heartRate,
       waist_circumference: record.waistCircumference,
-      hip_circumference: record.hipCircumference
+      hip_circumference: record.hipCircumference,
+      step_count: record.stepCount || 0,
+      sleep_hours: record.sleepHours || 0
     };
   }
 }

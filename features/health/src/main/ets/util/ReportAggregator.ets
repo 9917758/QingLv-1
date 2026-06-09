@@ -26,7 +26,7 @@ export interface AggregatedReport {
  * 从健康记录中聚合报告数据
  */
 export function aggregateRecords(records: HealthDataRecord[]): AggregatedReport {
-  const weights = records.map(r => r.weight / 2);
+  const weights = records.map(r => r.weight);
   const bodyFats = records.map(r => r.bodyFatPercentage);
   const systolics = records.map(r => r.bloodPressureSystolic);
   const diastolics = records.map(r => r.bloodPressureDiastolic);
@@ -39,7 +39,7 @@ export function aggregateRecords(records: HealthDataRecord[]): AggregatedReport 
 
   const weightChartData: ChartDataPoint[] = records.map(r => {
     const d = new Date(r.timestamp);
-    const point: ChartDataPoint = { date: `${d.getMonth() + 1}/${d.getDate()}`, value: Math.round(r.weight / 2) };
+    const point: ChartDataPoint = { date: `${d.getMonth() + 1}/${d.getDate()}`, value: Math.round(r.weight) };
     return point;
   });
   const bodyFatChartData: ChartDataPoint[] = records.map(r => {

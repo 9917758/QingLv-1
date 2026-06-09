@@ -96,7 +96,8 @@ export struct HealthPage {
       this.waterService.todayGoal
     );
     this.achievementService.generateMock();
-    this.anomalyService.generateMock();
+    // 基于实际健康数据检测异常（非 mock）
+    this.anomalyService.generate(this.healthModelVM.inputVM);
 
     // 异步从后端 API 刷新数据（不阻塞 UI 渲染）
     this.refreshFromApi();
@@ -339,7 +340,7 @@ export struct HealthPage {
         }
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
-        Text(`目标 ${this.goalService.goalWeight}斤`)
+        Text(`目标 ${this.goalService.goalWeight}公斤`)
           .fontColor('#FF9800')
           .fontSize($r('sys.float.Caption_S'))
       }

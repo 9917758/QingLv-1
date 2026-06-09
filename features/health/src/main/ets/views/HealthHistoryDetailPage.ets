@@ -69,7 +69,7 @@ export struct HealthHistoryDetailPage {
                 .fontWeight(FontWeight.Bold)
                 .fontColor($r('sys.color.black'))
                 .fontFamily('HarmonyOS Sans SC')
-              Text('体重(斤)')
+              Text('体重(公斤)')
                 .fontSize($r('sys.float.Body_S'))
                 .fontColor($r('sys.color.font_secondary'))
                 .fontFamily('HarmonyOS Sans SC')

@@ -28,9 +28,9 @@ export interface WeeklyReportData {
  * 体重趋势数据
  */
 export interface WeightTrendData {
-  maxWeight: number; // 最高体重（斤）
-  minWeight: number; // 最低体重（斤）
-  change: number; // 变化（斤）
+  maxWeight: number; // 最高体重（公斤）
+  minWeight: number; // 最低体重（公斤）
+  change: number; // 变化（公斤）
   chartData: ChartDataPoint[]; // 图表数据点
 }
 

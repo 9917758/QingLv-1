@@ -1,5 +1,29 @@
 # Changelog
 
+## v2.1.0 - 2026-06-09
+
+### 新增
+
+- **体重目标 API**: 新增 `/api/health/goal/weight` 端点，支持云端同步体重目标
+- **睡眠记录 API**: 新增 `/api/health/sleep` 端点，支持录入和查询睡眠数据
+- **异常事件持久化**: 异常历史记录保存到 Preferences，按用户隔离，重启不丢失
+- **数据库迁移脚本**: `init_v2.sql`（新表）、`init_v3.sql`（体重单位统一）
+
+### 改动
+
+- **体重单位统一为公斤**: 移除所有 `斤` 相关的转换逻辑（ReportAggregator、图表、目标、建议等）
+- **异常检测基于实际数据**: AnomalyHistoryService 从硬编码 mock 改为基于 HealthDataInputModel 的规则检测
+- **后端 AI 分析**: 所有体重输出从 `斤` 改为 `公斤`，移除 `/2` 转换
+- **后端 mock 数据**: 体重不再 `*2`，与前端单位一致
+
+### 修复
+
+- **血压历史页面崩溃**: 移除 HealthCardRow 中 `onPop: deletePage()` 回调，防止导航栈损坏
+- **AI 聊天历史加载**: `aboutToAppear` 中 `loadSessions()` 改为 `await`，修复异步时序问题
+- **异常数据与主页不一致**: 异常服务现在读取实际健康数据，只在指标超阈值时生成事件
+
+---
+
 ## v2.0.0 - 2026-06-08
 
 ### 新增

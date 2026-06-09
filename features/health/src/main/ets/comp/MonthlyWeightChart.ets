@@ -30,7 +30,7 @@ export struct MonthlyWeightChart {
 
   aboutToAppear() {
     const config = createMonthlyChartConfig();
-    config.markerUnit = '斤'; // 体重单位
+    config.markerUnit = '公斤'; // 体重单位
     this.chartBuilder = new ChartBuilder(this.model, config);
     this.chartBuilder.initialize(this.chartData);
   }

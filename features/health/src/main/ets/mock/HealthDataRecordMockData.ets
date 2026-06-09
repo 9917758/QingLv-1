@@ -13,7 +13,7 @@ export function generateMockHealthRecords(days: number): HealthDataRecord[] {
   const now = new Date();
 
   // 基准值（模拟一个正在减重、血压偏高的用户）
-  const baseWeight = 120; // 斤
+  const baseWeight = 60; // 公斤
   const baseSystolic = 132;
   const baseDiastolic = 88;
   const baseHeartRate = 76;
@@ -35,9 +35,9 @@ export function generateMockHealthRecords(days: number): HealthDataRecord[] {
     const trendFactor = i / days; // 0（今天）→ ~1（N天前）
 
     const weight = Math.round((baseWeight + trendFactor * 2.5 + baseWeight * jitter()) * 10) / 10;
-    const bmi = Math.round((weight / 2 / ((height / 100) * (height / 100))) * 10) / 10;
+    const bmi = Math.round((weight / ((height / 100) * (height / 100))) * 10) / 10;
     const bodyFat = Math.round((1.2 * bmi + 0.23 * age - 5.4 + (Math.random() - 0.5) * 1.5) * 10) / 10;
-    const fatWeight = Math.round((weight / 2 * bodyFat / 100) * 10) / 10;
+    const fatWeight = Math.round((weight * bodyFat / 100) * 10) / 10;
 
     const systolic = Math.round(baseSystolic + trendFactor * 6 + (Math.random() - 0.5) * 8);
     const diastolic = Math.round(baseDiastolic + trendFactor * 4 + (Math.random() - 0.5) * 6);
@@ -58,7 +58,9 @@ export function generateMockHealthRecords(days: number): HealthDataRecord[] {
       bloodPressureDiastolic: diastolic,
       heartRate: heartRate,
       waistCircumference: waist,
-      hipCircumference: hip
+      hipCircumference: hip,
+      stepCount: Math.floor(3000 + Math.random() * 9000),
+      sleepHours: Math.round((6.5 + Math.random() * 2.5) * 10) / 10
     };
     records.push(record);
   }

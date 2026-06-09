@@ -39,10 +39,10 @@ export struct AiAgentPage {
   @Local showSessionList: boolean = false;
   @Local statusBarHeight: number = 48;
 
-  aboutToAppear(): void {
+  async aboutToAppear(): Promise<void> {
     this.getStatusBarHeight();
-    this.loadSessions();
-    this.initSession();
+    await this.loadSessions();
+    await this.initSession();
   }
 
   private getStatusBarHeight(): void {

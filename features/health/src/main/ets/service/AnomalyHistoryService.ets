@@ -1,25 +1,34 @@
 /**
- * 健康异常事件历史服务
- * 记录所有触发异常提醒的事件，形成健康事件时间线
+ * 健康异常事件服务
+ * 基于实际健康数据检测异常，记录异常历史
+ * 本地存储按用户ID隔离
  */
+import { GlobalContext, PreferenceUtil, UserInfo } from 'common';
+import { PersistenceV2 } from '@kit.ArkUI';
+import { HealthDataInputModel } from '../viewmodel/HealthDataInputModel';
 
+// 单条异常事件
 export interface AnomalyEvent {
   id: string;
-  type: string;
+  type: string;          // 'heartrate' | 'bloodpressure' | 'bloodsugar' | 'bmi'
   icon: string;
   title: string;
   detail: string;
   value: string;
-  severity: string;
+  severity: string;      // 'warning' | 'danger' | 'info'
   timestamp: number;
   dateStr: string;
   timeStr: string;
 }
 
+const ANOMALY_HISTORY_KEY_PREFIX = 'health_anomaly_history_';
+
 @ObservedV2
 export class AnomalyHistoryService {
   private static _instance: AnomalyHistoryService;
   @Trace events: AnomalyEvent[] = [];
+  @Trace totalCount: number = 0;
+  private _loadedUserId: string = '';
 
   public static get instance(): AnomalyHistoryService {
     if (!AnomalyHistoryService._instance) {
@@ -28,112 +37,194 @@ export class AnomalyHistoryService {
     return AnomalyHistoryService._instance;
   }
 
+  private static getUserId(): string {
+    const userInfo = PersistenceV2.connect(UserInfo, () => new UserInfo());
+    return userInfo ? userInfo.id : 'anonymous';
+  }
+
+  private getHistoryKey(): string {
+    return `${ANOMALY_HISTORY_KEY_PREFIX}${AnomalyHistoryService.getUserId()}`;
+  }
+
   /** 清除内存缓存 */
   public clearCache(): void {
     this.events = [];
+    this.totalCount = 0;
+    this._loadedUserId = '';
   }
 
-  /**
-   * 记录异常事件
-   */
-  public record(type: string, icon: string, title: string, detail: string, value: string, severity: string): void {
-    const now = new Date();
-    const event: AnomalyEvent = {
-      id: `anomaly_${now.getTime()}`,
-      type,
-      icon,
-      title,
-      detail,
-      value,
-      severity,
-      timestamp: now.getTime(),
-      dateStr: `${now.getMonth()+1}月${now.getDate()}日`,
-      timeStr: `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`
-    };
-    this.events.unshift(event);
-    if (this.events.length > 50) {
-      this.events = this.events.slice(0, 50);
+  /** 用户切换时自动清除缓存 */
+  private checkUserSwitch(): void {
+    const userId = AnomalyHistoryService.getUserId();
+    if (this._loadedUserId.length > 0 && this._loadedUserId !== userId) {
+      this.clearCache();
+    }
+    this._loadedUserId = userId;
+  }
+
+  /** 加载历史异常记录 */
+  public loadHistory(): void {
+    this.checkUserSwitch();
+    try {
+      const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
+      const raw = pref.get(this.getHistoryKey(), '[]') as string;
+      this.events = JSON.parse(raw) as AnomalyEvent[];
+      this.totalCount = this.events.length;
+    } catch {
+      this.events = [];
+      this.totalCount = 0;
     }
   }
 
-  /**
-   * 生成 Mock 异常历史数据
-   */
-  public generateMock(): void {
+  /** 基于实际健康数据检测异常并记录 */
+  public generate(inputVM: HealthDataInputModel): void {
+    this.loadHistory();
     const now = new Date();
-    this.events = [];
-    const mockEvents: AnomalyEvent[] = [];
+    const today = now.toDateString();
+    const newEvents: AnomalyEvent[] = [];
 
-    for (let i = 0; i < 15; i++) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - Math.floor(i / 2));
-      d.setHours(8 + Math.floor(Math.random() * 12), Math.floor(Math.random() * 60));
-      const types = ['heartrate', 'bloodpressure', 'bloodsugar', 'bmi'];
-      const type = types[i % 4];
-      let event: AnomalyEvent;
+    // 检查今日是否已记录过同类异常（避免重复）
+    const todayEvents = this.events.filter(e =>
+      new Date(e.timestamp).toDateString() === today
+    );
+    const todayTypes = new Set(todayEvents.map(e => e.type));
 
-      if (type === 'heartrate') {
-        const hr = 100 + Math.floor(Math.random() * 20);
-        event = {
-          id: `mock_anomaly_${i}`, type, icon: '💓',
-          title: '心率偏高', detail: `静息心率 ${hr} 次/分，超过正常范围（60-100次/分）`,
-          value: `${hr}次/分`, severity: hr > 110 ? 'warning' : 'info',
-          timestamp: d.getTime(),
-          dateStr: `${d.getMonth()+1}月${d.getDate()}日`,
-          timeStr: `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`
-        };
-      } else if (type === 'bloodpressure') {
-        const sys = 140 + Math.floor(Math.random() * 20);
-        event = {
-          id: `mock_anomaly_${i}`, type, icon: '❤️',
-          title: '血压偏高', detail: `收缩压 ${sys} mmHg，超过正常范围（<140mmHg）`,
-          value: `${sys}/90`, severity: sys > 150 ? 'warning' : 'info',
-          timestamp: d.getTime(),
-          dateStr: `${d.getMonth()+1}月${d.getDate()}日`,
-          timeStr: `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`
-        };
-      } else if (type === 'bloodsugar') {
-        const bs = (7.0 + Math.random() * 2).toFixed(1);
-        event = {
-          id: `mock_anomaly_${i}`, type, icon: '🩸',
-          title: '血糖偏高', detail: `血糖 ${bs} mmol/L，超过正常范围（3.9-7.8mmol/L）`,
-          value: `${bs}mmol/L`, severity: Number(bs) > 8.0 ? 'warning' : 'info',
-          timestamp: d.getTime(),
-          dateStr: `${d.getMonth()+1}月${d.getDate()}日`,
-          timeStr: `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`
-        };
-      } else {
-        const bmi = (25 + Math.random() * 3).toFixed(1);
-        event = {
-          id: `mock_anomaly_${i}`, type, icon: '⚖️',
-          title: 'BMI 偏高', detail: `BMI ${bmi}，属于偏胖范围（25-30）`,
-          value: `${bmi}`, severity: 'info',
-          timestamp: d.getTime(),
-          dateStr: `${d.getMonth()+1}月${d.getDate()}日`,
-          timeStr: `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`
-        };
+    // 心率异常检测
+    if (inputVM.heartRate > 0 && !todayTypes.has('heartrate')) {
+      if (inputVM.heartRate > 100) {
+        newEvents.push(this.createEvent(
+          'heartrate', '💓', '心率偏快',
+          `静息心率 ${inputVM.heartRate} 次/分，超过正常范围（60-100）`,
+          `${inputVM.heartRate}次/分`,
+          inputVM.heartRate > 120 ? 'danger' : 'warning'
+        ));
+      } else if (inputVM.heartRate < 50) {
+        newEvents.push(this.createEvent(
+          'heartrate', '💓', '心率偏慢',
+          `静息心率 ${inputVM.heartRate} 次/分，低于正常范围（60-100）`,
+          `${inputVM.heartRate}次/分`,
+          'warning'
+        ));
       }
-      mockEvents.push(event);
     }
 
-    this.events = mockEvents.sort((a, b) => b.timestamp - a.timestamp);
+    // 血压异常检测
+    if (inputVM.bloodPressureSystolic > 0 && !todayTypes.has('bloodpressure')) {
+      const sys = inputVM.bloodPressureSystolic;
+      const dia = inputVM.bloodPressureDiastolic;
+      if (sys >= 140 || dia >= 90) {
+        newEvents.push(this.createEvent(
+          'bloodpressure', '❤️', '血压偏高',
+          `血压 ${sys}/${dia} mmHg，达到高血压标准（≥140/90）`,
+          `${sys}/${dia}mmHg`,
+          sys >= 160 || dia >= 100 ? 'danger' : 'warning'
+        ));
+      } else if (sys < 90 || dia < 60) {
+        newEvents.push(this.createEvent(
+          'bloodpressure', '❤️', '血压偏低',
+          `血压 ${sys}/${dia} mmHg，低于正常范围（90/60）`,
+          `${sys}/${dia}mmHg`,
+          'warning'
+        ));
+      }
+    }
+
+    // 血糖异常检测
+    if (inputVM.bloodSugar > 0 && !todayTypes.has('bloodsugar')) {
+      if (inputVM.bloodSugar > 7.0) {
+        newEvents.push(this.createEvent(
+          'bloodsugar', '🩸', '血糖偏高',
+          `空腹血糖 ${inputVM.bloodSugar} mmol/L，超过正常范围（3.9-6.1）`,
+          `${inputVM.bloodSugar}mmol/L`,
+          inputVM.bloodSugar > 11.1 ? 'danger' : 'warning'
+        ));
+      } else if (inputVM.bloodSugar < 3.9) {
+        newEvents.push(this.createEvent(
+          'bloodsugar', '🩸', '血糖偏低',
+          `空腹血糖 ${inputVM.bloodSugar} mmol/L，低于正常范围（3.9-6.1）`,
+          `${inputVM.bloodSugar}mmol/L`,
+          'warning'
+        ));
+      }
+    }
+
+    // BMI 异常检测
+    if (inputVM.bmiValue > 0 && !todayTypes.has('bmi')) {
+      if (inputVM.bmiValue >= 28) {
+        newEvents.push(this.createEvent(
+          'bmi', '⚖️', 'BMI 肥胖',
+          `BMI ${inputVM.bmiValue}，超过肥胖标准（≥28）`,
+          `${inputVM.bmiValue}`,
+          'danger'
+        ));
+      } else if (inputVM.bmiValue >= 24) {
+        newEvents.push(this.createEvent(
+          'bmi', '⚖️', 'BMI 偏胖',
+          `BMI ${inputVM.bmiValue}，超过正常范围（18.5-24）`,
+          `${inputVM.bmiValue}`,
+          'warning'
+        ));
+      } else if (inputVM.bmiValue < 18.5) {
+        newEvents.push(this.createEvent(
+          'bmi', '⚖️', 'BMI 偏瘦',
+          `BMI ${inputVM.bmiValue}，低于正常范围（18.5-24）`,
+          `${inputVM.bmiValue}`,
+          'warning'
+        ));
+      }
+    }
+
+    // 合并新事件并持久化
+    if (newEvents.length > 0) {
+      this.events = [...newEvents, ...this.events].slice(0, 100);
+      this.totalCount = this.events.length;
+      this.persistHistory();
+    }
   }
 
-  /**
-   * 获取指定类型的事件数量
-   */
+  /** 创建异常事件对象 */
+  private createEvent(
+    type: string, icon: string, title: string,
+    detail: string, value: string, severity: string
+  ): AnomalyEvent {
+    const now = new Date();
+    return {
+      id: `anomaly_${now.getTime()}_${type}`,
+      type, icon, title, detail, value, severity,
+      timestamp: now.getTime(),
+      dateStr: `${now.getMonth() + 1}月${now.getDate()}日`,
+      timeStr: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
+    };
+  }
+
+  /** 记录单条异常事件（供外部调用） */
+  public record(type: string, icon: string, title: string, detail: string, value: string, severity: string): void {
+    this.loadHistory();
+    const event = this.createEvent(type, icon, title, detail, value, severity);
+    this.events = [event, ...this.events].slice(0, 100);
+    this.totalCount = this.events.length;
+    this.persistHistory();
+  }
+
+  /** 获取指定类型的事件数量 */
   public getCountByType(type: string): number {
     return this.events.filter(e => e.type === type).length;
   }
 
-  /**
-   * 获取本周事件数量
-   */
+  /** 获取本周异常事件数 */
   public getThisWeekCount(): number {
     const now = new Date();
-    const weekStart = new Date(now);
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-    weekStart.setHours(0, 0, 0, 0);
-    return this.events.filter(e => e.timestamp >= weekStart.getTime()).length;
+    const weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    return this.events.filter(e => e.timestamp >= weekAgo).length;
+  }
+
+  /** 持久化异常历史 */
+  private persistHistory(): void {
+    try {
+      const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());
+      pref.put(this.getHistoryKey(), JSON.stringify(this.events));
+    } catch {
+      // ignore
+    }
   }
 }

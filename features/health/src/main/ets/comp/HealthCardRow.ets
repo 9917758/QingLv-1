@@ -245,11 +245,7 @@ export struct HealthCardRow {
   gotoBloodPressure() {
     phoneRouterControl.jumpPage({
       pageName: RouterMap.BLOOD_PRESSURE_PAGE,
-      builder: wrapBuilder(BloodPressurePageBuilder),
-      onPop: (_popInfo: PopInfo) => {
-        // 删除栈，但无需pop页面
-        phoneRouterControl.deletePage()
-      }
+      builder: wrapBuilder(BloodPressurePageBuilder)
     })
   }
 
@@ -257,22 +253,14 @@ export struct HealthCardRow {
   gotoBloodGlucose() {
     phoneRouterControl.jumpPage({
       pageName: RouterMap.BLOOD_GLUCOSE_PAGE,
-      builder: wrapBuilder(BloodGlucosePageBuilder),
-      onPop: (_popInfo: PopInfo) => {
-        // 删除栈，但无需pop页面
-        phoneRouterControl.deletePage()
-      }
+      builder: wrapBuilder(BloodGlucosePageBuilder)
     })
   }
 
   gotoHeartRate() {
     phoneRouterControl.jumpPage({
       pageName: RouterMap.HEART_RATE_PAGE,
-      builder: wrapBuilder(HeartRatePageBuilder),
-      onPop: (_popInfo: PopInfo) => {
-        // 删除栈，但无需pop页面
-        phoneRouterControl.deletePage()
-      }
+      builder: wrapBuilder(HeartRatePageBuilder)
     })
   }
 
@@ -280,11 +268,7 @@ export struct HealthCardRow {
   gotoSleep() {
     phoneRouterControl.jumpPage({
       pageName: RouterMap.SLEEP_PAGE,
-      builder: wrapBuilder(SleepPageBuilder),
-      onPop: (_popInfo: PopInfo) => {
-        // 删除栈，但无需pop页面
-        phoneRouterControl.deletePage()
-      }
+      builder: wrapBuilder(SleepPageBuilder)
     })
   }
 

@@ -141,12 +141,12 @@ export struct BaseReportPage {
       Row({ space: 0 }) {
         this.buildStatColumn(
           this.vm.reportData.weightTrend.maxWeight.toString(),
-          '最高体重(斤)',
+          '最高体重(公斤)',
           $r('sys.float.Title_M')
         )
         this.buildStatColumn(
           this.vm.reportData.weightTrend.minWeight.toString(),
-          '最低体重(斤)',
+          '最低体重(公斤)',
           $r('sys.float.Title_M')
         )
         this.buildStatColumn(

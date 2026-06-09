@@ -5,10 +5,10 @@
 ## 功能特性
 
 ### 健康数据管理
-- 体重、BMI、体脂率、血压、心率、血糖等指标录入与追踪
+- 体重（公斤）、BMI、体脂率、血压、心率、血糖等指标录入与追踪
 - 周度/月度健康报告，含趋势图表
 - 健康评分系统（0-100 分，多维度综合评估）
-- 健康异常事件记录与告警历史
+- 健康异常事件检测（基于实际数据：心率、血压、血糖、BMI 阈值判断）
 
 ### AI 健康顾问
 - 基于用户健康数据的个性化 AI 问答
@@ -108,12 +108,14 @@ QingLv-1/
 ## 数据隔离
 
 所有本地数据按用户 ID 隔离，切换账号不会互相影响：
+
 - 健康记录: `health_data_records_${userId}`
 - 饮水数据: `water_intake_${userId}_YYYYMMDD`
 - 提醒计划: `reminder_plans_${userId}`
 - 打卡记录: `checkin_streak_${userId}`
 - 收藏文章: `fav_${userId}`
 - 健康目标: `health_goal_weight_${userId}`
+- 异常历史: `health_anomaly_history_${userId}`
 
 ## 版本历史
 

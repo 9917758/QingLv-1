@@ -213,7 +213,7 @@ export struct HealthReportEmptyPage {
       .width('100%')
 
       Row({ space: 0 }) {
-        this.renderStatItem('--', '体重(斤)')
+        this.renderStatItem('--', '体重(公斤)')
 
         Divider()
           .vertical(true)

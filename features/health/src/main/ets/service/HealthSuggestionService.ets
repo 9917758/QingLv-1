@@ -32,7 +32,7 @@ export class HealthSuggestionService {
     const list: HealthSuggestion[] = [];
 
     if (inputVM.bmiValue >= 28) {
-      list.push({ icon: '⚖️', title: '体重管理', content: `BMI ${inputVM.bmiValue}（肥胖），建议控制每日热量摄入，增加有氧运动，每周减重 0.5-1 斤为宜。`, color: '#F44336', priority: 10 });
+      list.push({ icon: '⚖️', title: '体重管理', content: `BMI ${inputVM.bmiValue}（肥胖），建议控制每日热量摄入，增加有氧运动，每周减重 0.5-1 公斤为宜。`, color: '#F44336', priority: 10 });
     } else if (inputVM.bmiValue >= 24) {
       list.push({ icon: '⚖️', title: '体重管理', content: `BMI ${inputVM.bmiValue}（偏胖），建议减少高热量食物，每天保持 30 分钟以上运动。`, color: '#FF9800', priority: 8 });
     } else if (inputVM.bmiValue > 0 && inputVM.bmiValue < 18.5) {

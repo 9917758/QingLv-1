@@ -9,7 +9,7 @@
 export interface HealthDataRecord {
   id: string;                      // 记录ID
   timestamp: number;               // 记录时间戳
-  weight: number;                  // 体重（斤）
+  weight: number;                  // 体重（公斤）
   bmi: number;                     // BMI
   bodyFatPercentage: number;       // 体脂率
   fatWeight: number;               // 脂肪重量
@@ -19,4 +19,6 @@ export interface HealthDataRecord {
   heartRate: number;               // 心率
   waistCircumference: number;      // 腰围
   hipCircumference: number;        // 臀围
+  stepCount: number;               // 步数
+  sleepHours: number;              // 睡眠时长(h)
 }
