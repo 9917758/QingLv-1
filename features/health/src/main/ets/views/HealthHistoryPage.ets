@@ -20,9 +20,13 @@ export struct HealthHistoryPage {
     return ThemeUtil.instance.currentColors;
   }
 
-  aboutToAppear(): void {
+  async aboutToAppear(): Promise<void> {
     this.vm.loadHistory();
-    this.vm.loadFromApi();
+    try {
+      await this.vm.loadFromApi();
+    } catch (err) {
+      console.error(`HealthHistoryPage loadFromApi error: ${JSON.stringify(err)}`);
+    }
   }
 
   handleBack = (): void => {

@@ -33,8 +33,12 @@ function buildWeeklyBodyFatChart(chartData: ChartDataPoint[]) {
 export struct WeeklyReportPage {
   private vm: WeeklyReportModel = WeeklyReportModel.instance;
 
-  aboutToAppear(): void {
-    this.vm.loadFromApi();
+  async aboutToAppear(): Promise<void> {
+    try {
+      await this.vm.loadFromApi();
+    } catch (err) {
+      console.error(`WeeklyReportPage loadFromApi error: ${JSON.stringify(err)}`);
+    }
   }
 
   build() {

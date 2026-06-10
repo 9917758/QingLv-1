@@ -30,8 +30,12 @@ function buildMonthlyBodyFatChart(chartData: ChartDataPoint[]) {
 export struct MonthlyReportPage {
   private vm: MonthlyReportModel = MonthlyReportModel.instance;
 
-  aboutToAppear(): void {
-    this.vm.loadFromApi();
+  async aboutToAppear(): Promise<void> {
+    try {
+      await this.vm.loadFromApi();
+    } catch (err) {
+      console.error(`MonthlyReportPage loadFromApi error: ${JSON.stringify(err)}`);
+    }
   }
 
   build() {

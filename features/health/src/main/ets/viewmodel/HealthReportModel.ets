@@ -10,7 +10,25 @@ import { PersistenceV2 } from '@kit.ArkUI';
 @ObservedV2
 export class HealthReportModel {
   private static _instance: HealthReportModel;
-  @Trace reportData: HealthReportData = {} as HealthReportData;
+  @Trace reportData: HealthReportData = {
+    userName: '',
+    score: 0,
+    percentile: 0,
+    reportDate: '',
+    weight: 0,
+    height: 0,
+    age: 0,
+    bmi: 0,
+    bmiLevel: BMILevel.NORMAL,
+    bodyFat: 0,
+    fatMass: 0,
+    heartRate: 0,
+    bloodPressureSystolic: 0,
+    bloodPressureDiastolic: 0,
+    bloodGlucose: 0,
+    bmiTarget: 0,
+    bmiAdvice: ''
+  } as HealthReportData;
   @Trace showReportMenu: boolean = false;
   private healthDataInputModel: HealthDataInputModel | null = null;
   private userInfo: UserInfo | null = null;

@@ -38,11 +38,15 @@ export struct HealthReportPage {
   }
   @Local breakPointModel: BreakpointModel = AppStorageV2.connect(BreakpointModel, () => new BreakpointModel())!;
 
-  aboutToAppear(): void {
+  async aboutToAppear(): Promise<void> {
     // 刷新本地数据
     this.vm.refreshHealthData();
     // 异步从后端刷新报告数据
-    this.vm.loadFromApi();
+    try {
+      await this.vm.loadFromApi();
+    } catch (err) {
+      console.error(`HealthReportPage loadFromApi error: ${JSON.stringify(err)}`);
+    }
   }
 
   @Computed
