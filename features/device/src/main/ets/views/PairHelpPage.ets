@@ -37,7 +37,7 @@ export struct PairHelpPage {
 
       Text($r('app.string.pair_help_offline_tip'))
         .fontSize($r('sys.float.Body_L'))
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
 
       Blank().height($r('app.float.vp_12'))
 
@@ -51,7 +51,7 @@ export struct PairHelpPage {
 
       Text($r('app.string.pair_help_again_tip'))
         .fontSize($r('sys.float.Body_L'))
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
 
       Blank().height($r('app.float.vp_12'))
 

@@ -3,8 +3,8 @@
  * 使用 FastAPI 后端的 /api/auth/login 和 /api/auth/register 接口
  */
 import { PersistenceV2 } from '@kit.ArkUI';
-import { AuthToken, HttpUtil, NetworkConfig, UserInfo, TCLogger } from 'common';
-import type { ApiResponse, ApiTokenResponse } from 'common';
+import { AuthToken, HttpUtil, NetworkConfig, UserInfo, TCLogger, ThemeUtil } from 'common';
+import type { ApiResponse, ApiTokenResponse, ThemeColors } from 'common';
 import { phoneRouterControl } from 'oh_router';
 
 interface LoginPayload {
@@ -27,6 +27,9 @@ export struct BackendLoginPage {
   @Local isRegister: boolean = false;
   @Local isLoading: boolean = false;
   @Local errorMsg: string = '';
+  @Computed get themeColors(): ThemeColors {
+    return ThemeUtil.instance.currentColors;
+  }
 
   aboutToAppear(): void {
     NetworkConfig.load();
@@ -78,31 +81,34 @@ export struct BackendLoginPage {
         // Logo
         Text('🏃')
           .fontSize(48)
-        Text('清律')
+        Text($r('app.string.app_name_qinglv'))
           .fontSize(28)
           .fontWeight(FontWeight.Bold)
+          .fontColor(this.themeColors.textPrimary)
           .margin({ top: 8 })
-        Text('您的私人健康助手')
+        Text($r('app.string.app_private_health_assistant'))
           .fontSize(14)
-          .fontColor('#999999')
+          .fontColor(this.themeColors.textTertiary)
           .margin({ top: 4 })
 
         Blank().height(40)
 
         // 用户名
-        TextInput({ placeholder: '请输入用户名', text: $$this.username })
+        TextInput({ placeholder: $r('app.string.login_username_placeholder'), text: $$this.username })
           .width('85%')
           .height(48)
           .borderRadius(8)
-          .backgroundColor('#F5F5F5')
+          .backgroundColor(this.themeColors.backgroundInput)
+          .fontColor(this.themeColors.textPrimary)
           .margin({ bottom: 12 })
 
         // 密码
-        TextInput({ placeholder: '请输入密码', text: $$this.password })
+        TextInput({ placeholder: $r('app.string.login_password_placeholder'), text: $$this.password })
           .width('85%')
           .height(48)
           .borderRadius(8)
-          .backgroundColor('#F5F5F5')
+          .backgroundColor(this.themeColors.backgroundInput)
+          .fontColor(this.themeColors.textPrimary)
           .type(InputType.Password)
           .margin({ bottom: 8 })
 
@@ -110,7 +116,7 @@ export struct BackendLoginPage {
         if (this.errorMsg.length > 0) {
           Text(this.errorMsg)
             .fontSize(13)
-            .fontColor('#F44336')
+            .fontColor(this.themeColors.danger)
             .width('85%')
             .margin({ bottom: 8 })
         }
@@ -122,20 +128,20 @@ export struct BackendLoginPage {
           .borderRadius(24)
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
-          .backgroundColor('#4ECDC4')
-          .fontColor(Color.White)
+          .backgroundColor(this.themeColors.accent)
+          .fontColor(this.themeColors.textOnAccent)
           .enabled(!this.isLoading)
           .onClick(() => this.doLogin())
           .margin({ top: 12 })
 
         // 切换登录/注册
         Row() {
-          Text(this.isRegister ? '已有账号？' : '没有账号？')
+          Text(this.isRegister ? $r('app.string.login_has_account') : $r('app.string.login_no_account'))
             .fontSize(13)
-            .fontColor('#999999')
-          Text(this.isRegister ? '去登录' : '去注册')
+            .fontColor(this.themeColors.textTertiary)
+          Text(this.isRegister ? $r('app.string.login_go_login') : $r('app.string.login_go_register'))
             .fontSize(13)
-            .fontColor('#4ECDC4')
+            .fontColor(this.themeColors.accent)
             .margin({ left: 4 })
             .onClick(() => {
               this.isRegister = !this.isRegister;
@@ -149,11 +155,11 @@ export struct BackendLoginPage {
         // 服务器地址显示
         Text(`服务器: ${NetworkConfig.serverUrl}`)
           .fontSize(11)
-          .fontColor('#CCCCCC')
+          .fontColor(this.themeColors.textTertiary)
       }
       .width('100%')
       .height('100%')
-      .backgroundColor(Color.White)
+      .backgroundColor(this.themeColors.backgroundPrimary)
     }
     .hideTitleBar(true)
     .onBackPressed(() => {

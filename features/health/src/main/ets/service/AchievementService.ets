@@ -86,16 +86,6 @@ export class AchievementService {
    */
   public generateMock(): void {
     this.init();
-    const today = `${new Date().getMonth()+1}/${new Date().getDate()}`;
-    // 解锁前 5 个成就，模拟用户已达成部分目标
-    for (let i = 0; i < 5; i++) {
-      this.achievements[i].isUnlocked = true;
-      this.achievements[i].progress = this.achievements[i].target;
-      this.achievements[i].unlockedDate = today;
-    }
-    // 后 3 个设置部分进度
-    this.achievements[5].progress = 7500;
-    this.achievements[6].progress = 6;
-    this.achievements[7].progress = 1;
+    // 新用户无任何解锁，仅展示成就定义
   }
 }

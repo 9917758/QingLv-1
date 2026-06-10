@@ -60,7 +60,7 @@ export struct ReminderCheckInDialog {
           .height(40)
           .layoutWeight(1)
           .backgroundColor('#117CFF')
-          .fontColor(Color.White)
+          .fontColor($r('sys.color.font_on_primary'))
           .borderRadius($r('sys.float.corner_radius_level6'))
           .onClick(() => this.onCheckIn())
       }

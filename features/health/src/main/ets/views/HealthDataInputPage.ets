@@ -7,7 +7,9 @@ import {
   BarVM,
   TimeUtil,
   OHDialog,
-  OHDialogModel
+  OHDialogModel,
+  HttpUtil,
+  AuthToken
 } from 'common'
 import { OHPage, phoneRouterControl } from 'oh_router'
 import { HealthDataActivityRow } from '../comp/HealthDataActivityRow';
@@ -113,6 +115,22 @@ export struct HealthDataInputPage {
     );
   }
 
+  /**
+   * 同步用户身高体重到后端
+   */
+  async syncProfileToApi(): Promise<void> {
+    if (!AuthToken.isLoggedIn()) return;
+    interface ProfileBody {
+      height: number;
+      weight: number;
+    }
+    const body: ProfileBody = {
+      height: this.userInfoVM.height,
+      weight: this.userInfoVM.weight
+    };
+    await HttpUtil.put<ProfileBody>('/api/auth/me', body);
+  }
+
   bloodPreCalculator() {
     const dateStr = TimeUtil.formatDate(new Date().getTime(), TimeUtil.PATTERN_DATE_CN_WITHOUT_YEAR);
     if ((Number(this.vm.bloodPressureDiastolic) > bloodPressureDiastolicMaxNormalValue ||
@@ -176,6 +194,7 @@ export struct HealthDataInputPage {
                 this.healthModelVM.initDeviceData();
                 this.bmiCalculator();
                 this.saveCurrentAsRecord();
+                this.syncProfileToApi();
                 // BMI 异常提醒
                 if (this.vm.bmiValue > 0) {
                   if (this.vm.bmiValue >= 30) {
@@ -236,7 +255,7 @@ export struct HealthDataInputPage {
               HealthDataInputDialog.ShowInputPopup(model);
             })
           }
-          .backgroundColor(Color.White)
+          .backgroundColor($r('sys.color.comp_background_list_card'))
           .width('100%')
           .borderRadius($r('sys.float.corner_radius_level7'))
           .clip(true)
@@ -357,7 +376,7 @@ export struct HealthDataInputPage {
               HealthDataInputDialog.ShowInputPopup(model);
             })
           }
-          .backgroundColor(Color.White)
+          .backgroundColor($r('sys.color.comp_background_list_card'))
           .width('100%')
           .borderRadius($r('sys.float.corner_radius_level7'))
           .clip(true)

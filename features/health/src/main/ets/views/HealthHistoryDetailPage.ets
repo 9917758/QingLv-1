@@ -1,6 +1,7 @@
 //健康历史详情页面
 import { phoneRouterControl } from 'oh_router';
-import { TValueType, UnitConverter, BarVM } from 'common';
+import { TValueType, UnitConverter, BarVM, ThemeUtil } from 'common';
+import type { ThemeColors } from 'common';
 import { HealthHistoryItem } from '../types/HealthHistoryTypes';
 
 @Builder
@@ -14,6 +15,9 @@ export function HealthHistoryDetailPageBuilder(value: TValueType) {
 @ComponentV2
 export struct HealthHistoryDetailPage {
   @Param @Require value: TValueType;
+  @Computed get themeColors(): ThemeColors {
+    return ThemeUtil.instance.currentColors;
+  }
   @Local historyData: HealthHistoryItem = {
     id: '1',
     date: '9月12日',
@@ -53,7 +57,7 @@ export struct HealthHistoryDetailPage {
             .margin({ top: 32 })
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(700)
-            .fontColor($r('sys.color.black'))
+            .fontColor(this.themeColors.textPrimary)
 
           Blank().layoutWeight(1)
         }
@@ -67,11 +71,11 @@ export struct HealthHistoryDetailPage {
               Text(this.historyData.weight.toFixed(1))
                 .fontSize($r('sys.float.Title_M'))
                 .fontWeight(FontWeight.Bold)
-                .fontColor($r('sys.color.black'))
+                .fontColor(this.themeColors.textPrimary)
                 .fontFamily('HarmonyOS Sans SC')
-              Text('体重(公斤)')
+              Text($r('app.string.health_weight_kg_label'))
                 .fontSize($r('sys.float.Body_S'))
-                .fontColor($r('sys.color.font_secondary'))
+                .fontColor(this.themeColors.textSecondary)
                 .fontFamily('HarmonyOS Sans SC')
             }
             .layoutWeight(1)
@@ -79,18 +83,18 @@ export struct HealthHistoryDetailPage {
             Divider()
               .vertical(true)
               .height(42)
-              .color($r('sys.color.comp_divider'))
+              .color(this.themeColors.divider)
               .strokeWidth('1px')
 
             Column({ space: 6 }) {
               Text(this.historyData.height.toString())
                 .fontSize($r('sys.float.Title_M'))
                 .fontWeight(FontWeight.Bold)
-                .fontColor($r('sys.color.black'))
+                .fontColor(this.themeColors.textPrimary)
                 .fontFamily('HarmonyOS Sans SC')
-              Text('身高(厘米)')
+              Text($r('app.string.health_height_cm_label'))
                 .fontSize($r('sys.float.Body_S'))
-                .fontColor($r('sys.color.font_secondary'))
+                .fontColor(this.themeColors.textSecondary)
                 .fontFamily('HarmonyOS Sans SC')
             }
             .layoutWeight(1)
@@ -98,18 +102,18 @@ export struct HealthHistoryDetailPage {
             Divider()
               .vertical(true)
               .height(42)
-              .color($r('sys.color.comp_divider'))
+              .color(this.themeColors.divider)
               .strokeWidth('1px')
 
             Column({ space: 6 }) {
               Text(this.historyData.age.toString())
                 .fontSize($r('sys.float.Title_M'))
                 .fontWeight(FontWeight.Bold)
-                .fontColor($r('sys.color.black'))
+                .fontColor(this.themeColors.textPrimary)
                 .fontFamily('HarmonyOS Sans SC')
-              Text('年龄')
+              Text($r('app.string.health_age_label'))
                 .fontSize($r('sys.float.Body_S'))
-                .fontColor($r('sys.color.font_secondary'))
+                .fontColor(this.themeColors.textSecondary)
                 .fontFamily('HarmonyOS Sans SC')
             }
             .layoutWeight(1)
@@ -121,28 +125,28 @@ export struct HealthHistoryDetailPage {
             top: 24,
             bottom: 24
           })
-          .backgroundColor(Color.White)
+          .backgroundColor(this.themeColors.backgroundCard)
           .borderRadius($r('sys.float.corner_radius_level7'))
           .clip(true)
 
           Column({ space: 0 }) {
             this.renderDataRow('BMI', this.historyData.bmi.toFixed(1), false)
-            this.renderDataRow('体脂率', `${this.historyData.bodyFat.toFixed(1)}%`, false)
-            this.renderDataRow('脂肪重量', this.historyData.fatMass.toFixed(1), false)
+            this.renderDataRow($r('app.string.health_body_fat_rate'), `${this.historyData.bodyFat.toFixed(1)}%`, false)
+            this.renderDataRow($r('app.string.health_fat_weight'), this.historyData.fatMass.toFixed(1), false)
           }
           .width('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor(this.themeColors.backgroundCard)
           .borderRadius($r('sys.float.corner_radius_level7'))
           .clip(true)
 
           Column({ space: 0 }) {
-            this.renderDataRow('心率', `${this.historyData.heartRate}次/分`, false)
-            this.renderDataRow('血压',
+            this.renderDataRow($r('app.string.health_heartrate'), `${this.historyData.heartRate}次/分`, false)
+            this.renderDataRow($r('app.string.health_bloodpressure'),
               `${this.historyData.bloodPressureSystolic}/${this.historyData.bloodPressureDiastolic}mmHg`, false)
-            this.renderDataRow('血糖', `${this.historyData.bloodGlucose.toFixed(1)}mmol/L`, false)
+            this.renderDataRow($r('app.string.health_blood_glucose'), `${this.historyData.bloodGlucose.toFixed(1)}mmol/L`, false)
           }
           .width('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor(this.themeColors.backgroundCard)
           .borderRadius($r('sys.float.corner_radius_level7'))
           .clip(true)
         }
@@ -157,24 +161,24 @@ export struct HealthHistoryDetailPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor($r('sys.color.comp_background_gray'))
+      .backgroundColor(this.themeColors.backgroundSecondary)
     }
     .hideTitleBar(true)
   }
 
   @Builder
-  private renderDataRow(label: string, value: string, showDivider: boolean) {
+  private renderDataRow(label: ResourceStr, value: string, showDivider: boolean) {
     Column() {
       Row() {
         Text(label)
           .fontSize($r('sys.float.Body_L'))
-          .fontColor($r('sys.color.black'))
+          .fontColor(this.themeColors.textPrimary)
           .fontFamily('HarmonyOS Sans SC')
           .layoutWeight(1)
 
         Text(value)
           .fontSize($r('sys.float.Body_L'))
-          .fontColor($r('sys.color.black'))
+          .fontColor(this.themeColors.textPrimary)
           .fontFamily('HarmonyOS Sans SC')
       }
       .width('100%')
@@ -187,7 +191,7 @@ export struct HealthHistoryDetailPage {
 
       if (showDivider) {
         Divider()
-          .color($r('sys.color.comp_divider'))
+          .color(this.themeColors.divider)
           .strokeWidth('1px')
       }
     }

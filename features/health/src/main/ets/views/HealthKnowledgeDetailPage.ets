@@ -106,7 +106,7 @@ export struct HealthKnowledgeDetailPage {
                 .maxLines(-1)
             }
           }
-          .backgroundColor(Color.White)
+          .backgroundColor($r('sys.color.comp_background_list_card'))
           .width('100%')
           .borderRadius($r('sys.float.corner_radius_level7'))
           .padding($r('app.float.vp_12'))

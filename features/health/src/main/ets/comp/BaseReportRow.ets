@@ -1,6 +1,7 @@
 // 健康报告页面基础组件
 import { phoneRouterControl } from 'oh_router';
-import { UnitConverter, BarVM } from 'common';
+import { UnitConverter, BarVM, ThemeUtil } from 'common';
+import type { ThemeColors } from 'common';
 
 // 图表数据点类型
 export interface ChartDataPoint {
@@ -15,6 +16,20 @@ export interface ReportViewModel {
   getWeightChangeText(): string;
 
   getBodyFatChangeText(): string;
+
+  getComparisonWeightText(): string;
+
+  getComparisonBodyFatText(): string;
+}
+
+/** 周期对比数据 */
+export interface PeriodComparison {
+  weightDelta: number;
+  bodyFatDelta: number;
+  systolicDelta: number;
+  diastolicDelta: number;
+  heartRateDelta: number;
+  previousLabel: string;
 }
 
 export interface ReportData {
@@ -23,6 +38,7 @@ export interface ReportData {
   bodyFatTrend: BodyFatTrendData;
   bloodPressure: BloodPressureData;
   heartRate: HeartRateData;
+  comparison?: PeriodComparison;
 }
 
 export interface WeightTrendData {
@@ -61,6 +77,9 @@ export class ReportPageConfig {
 export struct BaseReportPage {
   @Require @Param vm: ReportViewModel;
   @Require @Param config: ReportPageConfig;
+  @Computed get themeColors(): ThemeColors {
+    return ThemeUtil.instance.currentColors;
+  }
   private handleBack = (): void => {
     phoneRouterControl.popPage();
   }
@@ -119,7 +138,7 @@ export struct BaseReportPage {
         .margin({ top: 24 })
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(700)
-        .fontColor($r('sys.color.black'))
+        .fontColor(this.themeColors.textPrimary)
 
       Blank().layoutWeight(1)
     }
@@ -131,12 +150,23 @@ export struct BaseReportPage {
   @Builder
   private buildWeightTrendCard() {
     Column({ space: 12 }) {
-      Text('体重趋势')
-        .fontSize($r('sys.float.Body_L'))
-        .fontWeight(FontWeight.Medium)
-        .fontColor($r('sys.color.black'))
-        .width('100%')
-        .padding({ left: 20, right: 20, top: 16 })
+      Row() {
+        Text($r('app.string.health_weight_trend'))
+          .fontSize($r('sys.float.Body_L'))
+          .fontWeight(FontWeight.Medium)
+          .fontColor(this.themeColors.textPrimary)
+        Blank()
+        if (this.vm.getComparisonWeightText().length > 0) {
+          Text(this.vm.getComparisonWeightText())
+            .fontSize(12)
+            .fontColor(this.vm.reportData.comparison !== undefined && this.vm.reportData.comparison!.weightDelta > 0 ? this.themeColors.danger : this.themeColors.success)
+            .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+            .borderRadius(10)
+            .backgroundColor(this.vm.reportData.comparison !== undefined && this.vm.reportData.comparison!.weightDelta > 0 ? '#FFF3E0' : '#E8F5E9')
+        }
+      }
+      .width('100%')
+      .padding({ left: 20, right: 20, top: 16 })
 
       Row({ space: 0 }) {
         this.buildStatColumn(
@@ -151,7 +181,7 @@ export struct BaseReportPage {
         )
         this.buildStatColumn(
           this.vm.getWeightChangeText(),
-          '变化',
+          $r('app.string.health_change'),
           24
         )
       }
@@ -163,7 +193,7 @@ export struct BaseReportPage {
       }
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor(this.themeColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level7'))
     .padding({ bottom: 16 })
     .clip(true)
@@ -172,27 +202,38 @@ export struct BaseReportPage {
   @Builder
   private buildBodyFatTrendCard() {
     Column({ space: 12 }) {
-      Text('体脂率趋势')
-        .fontSize($r('sys.float.Body_L'))
-        .fontWeight(FontWeight.Medium)
-        .fontColor($r('sys.color.black'))
-        .width('100%')
-        .padding({ left: 20, right: 20, top: 16 })
+      Row() {
+        Text($r('app.string.health_bodyfat_trend'))
+          .fontSize($r('sys.float.Body_L'))
+          .fontWeight(FontWeight.Medium)
+          .fontColor(this.themeColors.textPrimary)
+        Blank()
+        if (this.vm.getComparisonBodyFatText().length > 0) {
+          Text(this.vm.getComparisonBodyFatText())
+            .fontSize(12)
+            .fontColor(this.vm.reportData.comparison !== undefined && this.vm.reportData.comparison!.bodyFatDelta > 0 ? this.themeColors.danger : this.themeColors.success)
+            .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+            .borderRadius(10)
+            .backgroundColor(this.vm.reportData.comparison !== undefined && this.vm.reportData.comparison!.bodyFatDelta > 0 ? '#FFF3E0' : '#E8F5E9')
+        }
+      }
+      .width('100%')
+      .padding({ left: 20, right: 20, top: 16 })
 
       Row({ space: 0 }) {
         this.buildStatColumn(
           this.vm.reportData.bodyFatTrend.maxBodyFat.toFixed(1),
-          '最高',
+          $r('app.string.health_max'),
           24
         )
         this.buildStatColumn(
           this.vm.reportData.bodyFatTrend.minBodyFat.toFixed(1),
-          '最低',
+          $r('app.string.health_min'),
           24
         )
         this.buildStatColumn(
           this.vm.getBodyFatChangeText(),
-          '变化',
+          $r('app.string.health_change'),
           24
         )
       }
@@ -204,7 +245,7 @@ export struct BaseReportPage {
       }
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor(this.themeColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level7'))
     .padding({ bottom: 16 })
     .clip(true)
@@ -213,10 +254,10 @@ export struct BaseReportPage {
   @Builder
   private buildBloodPressureCard() {
     Column() {
-      Text('血压')
+      Text($r('app.string.health_bloodpressure'))
         .fontSize($r('sys.float.Body_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('sys.color.black'))
+        .fontColor(this.themeColors.textPrimary)
         .width('100%')
         .padding({
           left: 20,
@@ -232,18 +273,18 @@ export struct BaseReportPage {
               Span(`${this.vm.reportData.bloodPressure.systolic}/`)
                 .fontSize(28)
                 .fontWeight(FontWeight.Bold)
-                .fontColor($r('sys.color.black'))
+                .fontColor(this.themeColors.textPrimary)
                 .fontFamily('HarmonyOS Sans SC Medium')
               Span(`${this.vm.reportData.bloodPressure.diastolic}`)
                 .fontSize(28)
                 .fontWeight(FontWeight.Bold)
-                .fontColor($r('sys.color.black'))
+                .fontColor(this.themeColors.textPrimary)
                 .fontFamily('HarmonyOS Sans SC Medium')
             }
 
             Text('mmHg')
               .fontSize($r('sys.float.Body_S'))
-              .fontColor($r('sys.color.font_secondary'))
+              .fontColor(this.themeColors.textSecondary)
               .fontFamily('HarmonyOS Sans SC')
               .margin({ top: 6 })
           }
@@ -251,7 +292,7 @@ export struct BaseReportPage {
 
           Text('平均血压平均值')
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .fontFamily('HarmonyOS Sans SC')
         }
         .alignItems(HorizontalAlign.Center)
@@ -260,7 +301,7 @@ export struct BaseReportPage {
         Divider()
           .vertical(true)
           .height(45)
-          .color($r('sys.color.comp_divider'))
+          .color(this.themeColors.divider)
           .strokeWidth('1px')
           .margin({ left: 8, right: 8 })
 
@@ -269,12 +310,12 @@ export struct BaseReportPage {
             Text('- -')
               .fontSize(28)
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('sys.color.black'))
+              .fontColor(this.themeColors.textPrimary)
               .fontFamily('HarmonyOS Sans SC Medium')
 
             Text('/分钟')
               .fontSize($r('sys.float.Body_S'))
-              .fontColor($r('sys.color.font_secondary'))
+              .fontColor(this.themeColors.textSecondary)
               .fontFamily('HarmonyOS Sans SC')
               .margin({ top: 6 })
           }
@@ -282,7 +323,7 @@ export struct BaseReportPage {
 
           Text('平均脉搏')
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .fontFamily('HarmonyOS Sans SC')
         }
         .alignItems(HorizontalAlign.Center)
@@ -292,7 +333,7 @@ export struct BaseReportPage {
       .padding({ left: 20, right: 20, bottom: 20 })
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor(this.themeColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level7'))
     .clip(true)
   }
@@ -300,10 +341,10 @@ export struct BaseReportPage {
   @Builder
   private buildHeartRateCard() {
     Column() {
-      Text('心率')
+      Text($r('app.string.health_heartrate'))
         .fontSize($r('sys.float.Body_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('sys.color.black'))
+        .fontColor(this.themeColors.textPrimary)
         .width('100%')
         .padding({
           left: 20,
@@ -327,21 +368,21 @@ export struct BaseReportPage {
       .padding({ left: 20, right: 20, bottom: 20 })
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor(this.themeColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level7'))
     .clip(true)
   }
 
   @Builder
-  private buildStatColumn(value: string, label: string, fontSize: number | Resource) {
+  private buildStatColumn(value: string, label: string | Resource, fontSize: number | Resource) {
     Column({ space: 4 }) {
       Text(value)
         .fontSize(fontSize)
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('sys.color.black'))
+        .fontColor(this.themeColors.textPrimary)
       Text(label)
         .fontSize($r('sys.float.Body_S'))
-        .fontColor($r('sys.color.font_secondary'))
+        .fontColor(this.themeColors.textSecondary)
     }
     .layoutWeight(1)
   }
@@ -351,11 +392,11 @@ export struct BaseReportPage {
     Column({ space: 0 }) {
       Row({ space: 6 }) {
         Circle({ width: 8, height: 8 })
-          .fill($r('sys.color.warning'))
+          .fill(this.themeColors.warning)
 
         Text(label)
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('sys.color.font_secondary'))
+          .fontColor(this.themeColors.textSecondary)
           .fontFamily('HarmonyOS Sans SC')
       }
       .margin({ bottom: 8 })
@@ -364,13 +405,13 @@ export struct BaseReportPage {
         Text(`${value}`)
           .fontSize(28)
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('sys.color.black'))
+          .fontColor(this.themeColors.textPrimary)
           .fontFamily('HarmonyOS Sans SC Medium')
           .margin({ left: 14 })
 
         Text('次/分')
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('sys.color.font_secondary'))
+          .fontColor(this.themeColors.textSecondary)
           .fontFamily('HarmonyOS Sans SC')
           .margin({ top: 6 })
       }

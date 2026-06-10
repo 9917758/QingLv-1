@@ -1,5 +1,36 @@
 # Changelog
 
+## v2.2.0 - 2026-06-10
+
+### 新增
+
+- **深色模式**: 新增 ThemeUtil 工具类，支持浅色/深色/跟随系统三种主题模式，设置页可切换
+- **多语言基础设施**: 新增 I18nUtil 工具类，自动检测系统语言，为 Service 层提供多语言字符串
+- **英文资源文件**: 所有 11 个模块创建 `en_US/element/string.json` 翻译文件
+- **数据导出**: 健康报告页新增 CSV/JSON 导出功能（DataExportService）
+- **数据趋势对比**: 周报/月报新增与上一周期的对比指标（体重、体脂、血压、心率变化标签）
+- **身高体重持久化**: HealthDataInputPage 修改体重时自动同步到后端 API
+- **启动时主题恢复**: EntryAbility.onCreate 加载保存的主题设置
+
+### 改动
+
+- **主题响应式**: 所有页面使用 `@Computed get themeColors()` 替代静态属性，主题切换即时生效
+- **异常检测基于实际数据**: AnomalyHistoryService 从硬编码 mock 改为基于 HealthDataInputModel 的阈值检测
+- **字符串资源化**: HealthPage、HealthReportPage、HealthHistoryPage、BackendLoginPage、ReminderPlanPage、BmiCalculatorPage、AnomalyHistoryPage、AchievementPage 等页面的硬编码中文替换为 `$r('app.string.xxx')`
+- **健康报告数据同步**: HealthReportPage 打开时先 refreshHealthData 再 loadFromApi
+- **ThemeUtil 单例引用修复**: 每次 applyMode 创建新 ThemeColors 对象，避免引用相等问题
+- **ThemeColors 不再使用共享单例**: 修复切换同一主题两次可能不触发更新的问题
+
+### 修复
+
+- **主题切换无效**: `@Computed` 无法追踪 getter 中的 `@Trace` 属性 → 改为 `@Trace currentColors`
+- **EntryAbility 覆盖主题**: 移除硬编码 `COLOR_MODE_LIGHT`，改为根据保存的主题设置
+- **HealthCardRow 导航崩溃**: 移除 `onPop: deletePage()` 回调
+- **AI 聊天历史加载**: `aboutToAppear` 改为 async，先 await loadSessions 再 initSession
+- **体重单位不一致**: 前后端统一为公斤，移除所有 `斤` 和 `/2` 转换
+
+---
+
 ## v2.1.0 - 2026-06-09
 
 ### 新增
@@ -8,19 +39,12 @@
 - **睡眠记录 API**: 新增 `/api/health/sleep` 端点，支持录入和查询睡眠数据
 - **异常事件持久化**: 异常历史记录保存到 Preferences，按用户隔离，重启不丢失
 - **数据库迁移脚本**: `init_v2.sql`（新表）、`init_v3.sql`（体重单位统一）
+- **AI 上下文优化**: AI 对话现在包含用户个人信息、体重目标、饮水进度等上下文
 
 ### 改动
 
-- **体重单位统一为公斤**: 移除所有 `斤` 相关的转换逻辑（ReportAggregator、图表、目标、建议等）
-- **异常检测基于实际数据**: AnomalyHistoryService 从硬编码 mock 改为基于 HealthDataInputModel 的规则检测
-- **后端 AI 分析**: 所有体重输出从 `斤` 改为 `公斤`，移除 `/2` 转换
-- **后端 mock 数据**: 体重不再 `*2`，与前端单位一致
-
-### 修复
-
-- **血压历史页面崩溃**: 移除 HealthCardRow 中 `onPop: deletePage()` 回调，防止导航栈损坏
-- **AI 聊天历史加载**: `aboutToAppear` 中 `loadSessions()` 改为 `await`，修复异步时序问题
-- **异常数据与主页不一致**: 异常服务现在读取实际健康数据，只在指标超阈值时生成事件
+- **体重单位统一为公斤**: 移除所有 `斤` 相关的转换逻辑
+- **后端 AI 分析**: 所有体重输出从 `斤` 改为 `公斤`
 
 ---
 

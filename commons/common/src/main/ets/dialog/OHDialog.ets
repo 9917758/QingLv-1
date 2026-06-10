@@ -58,7 +58,7 @@ struct popup {
       Text(this.info.title)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .width('100%')
         .height($r('app.float.vp_56'))
         .textAlign(TextAlign.Center)
@@ -107,7 +107,7 @@ struct popup {
 
       Blank().height($r('app.float.vp_16'))
     }
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .width(this.breakpointModel.dialogWidth)
     .borderRadius($r('sys.float.corner_radius_level12'))
   }

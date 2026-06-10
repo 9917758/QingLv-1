@@ -27,7 +27,7 @@ export class HealthScoreService {
   @Trace bsScore: number = 0;
   @Trace exerciseScore: number = 0;
   @Trace scoreHistory: ScoreHistory[] = [];
-  @Trace scoreLevel: string = '无数据';
+  @Trace scoreLevel: string = '';
   @Trace scoreColor: string = '#999999';
 
   public static get instance(): HealthScoreService {
@@ -46,7 +46,7 @@ export class HealthScoreService {
     this.bsScore = 0;
     this.exerciseScore = 0;
     this.scoreHistory = [];
-    this.scoreLevel = '无数据';
+    this.scoreLevel = '暂无数据';
     this.scoreColor = '#999999';
   }
 
@@ -125,7 +125,7 @@ export class HealthScoreService {
     if (this.todayScore >= 90) { this.scoreLevel = '优秀'; this.scoreColor = '#4CAF50'; }
     else if (this.todayScore >= 80) { this.scoreLevel = '良好'; this.scoreColor = '#8BC34A'; }
     else if (this.todayScore >= 70) { this.scoreLevel = '一般'; this.scoreColor = '#FFC107'; }
-    else if (this.todayScore >= 60) { this.scoreLevel = '偏差'; this.scoreColor = '#FF9800'; }
+    else if (this.todayScore >= 60) { this.scoreLevel = '较差'; this.scoreColor = '#FF9800'; }
     else { this.scoreLevel = '需关注'; this.scoreColor = '#F44336'; }
   }
 

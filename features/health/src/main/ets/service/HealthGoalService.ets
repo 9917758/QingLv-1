@@ -75,9 +75,9 @@ export class HealthGoalService {
   public getGoalDescription(currentWeight: number): string {
     if (this.goalWeight <= 0) return '';
     const diff = this.getWeightDiff(currentWeight);
-    if (diff > 0) return `距目标还差 ${diff.toFixed(1)} 公斤`;
-    else if (diff < 0) return `已超过目标 ${Math.abs(diff).toFixed(1)} 公斤`;
-    else return '🎉 已达成目标！';
+    if (diff > 0) return `距离目标还差 ${diff.toFixed(1)} kg`;
+    else if (diff < 0) return `已超出目标 ${Math.abs(diff).toFixed(1)} kg`;
+    else return '已达成目标';
   }
 
   public getProgress(startWeight: number, currentWeight: number): number {

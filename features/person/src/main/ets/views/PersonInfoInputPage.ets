@@ -37,7 +37,7 @@ export struct PersonInfoInputPage {
       Blank().height($r('app.float.vp_38'));
 
       Text('请选择你的性别')
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .fontSize($r('sys.float.Body_L'))
       Blank().height($r('app.float.vp_16'));
       Row() {
@@ -86,7 +86,7 @@ export struct PersonInfoInputPage {
 
       Blank().height($r('app.float.vp_50'));
       Text('请输入你的身高')
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .fontSize($r('sys.float.Body_L'))
       Blank().height($r('app.float.vp_12'));
 
@@ -97,7 +97,7 @@ export struct PersonInfoInputPage {
         })
           .type(InputType.NUMBER_DECIMAL)
           .fontSize($r('sys.float.Body_L'))
-          .fontColor(Color.Black)
+          .fontColor($r('sys.color.font_primary'))
           .placeholderFont({ size: $r('sys.float.Body_L') })
           .placeholderColor($r('sys.color.font_secondary'))
           .backgroundColor(Color.Transparent)
@@ -126,7 +126,7 @@ export struct PersonInfoInputPage {
 
       Blank().height($r('app.float.vp_50'));
       Text('请输入你的体重')
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .fontSize($r('sys.float.Body_L'))
       Blank().height($r('app.float.vp_12'));
 
@@ -137,7 +137,7 @@ export struct PersonInfoInputPage {
         })
           .type(InputType.NUMBER_DECIMAL)
           .fontSize($r('sys.float.Body_L'))
-          .fontColor(Color.Black)
+          .fontColor($r('sys.color.font_primary'))
           .placeholderFont({ size: $r('sys.float.Body_L') })
           .placeholderColor($r('sys.color.font_secondary'))
           .backgroundColor(Color.Transparent)
@@ -230,7 +230,7 @@ export struct PersonInfoInputPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .padding({
       left: this.breakPointModel.pagePadding,
       right: this.breakPointModel.pagePadding

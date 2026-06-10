@@ -89,7 +89,7 @@ export struct HealthFavoritesPage {
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Start)
-    .backgroundColor('#FFF1F3F5')
+    .backgroundColor($r('sys.color.comp_background_list_card'))
   }
 
   build() {

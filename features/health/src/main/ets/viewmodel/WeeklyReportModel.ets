@@ -4,7 +4,9 @@
 import { WeeklyReportData } from '../types/WeeklyReportTypes';
 import { WEEKLY_REPORT_DATA } from '../mock/WeeklyReportMockData';
 import { HealthDataService } from '../service/HealthDataService';
-import { aggregateRecords, getChangeText } from '../util/ReportAggregator';
+import { aggregateRecords, getChangeText, comparePeriods, formatDelta } from '../util/ReportAggregator';
+import type { PeriodComparison } from '../types/WeeklyReportTypes';
+import { I18nUtil } from 'common';
 
 @ObservedV2
 export class WeeklyReportModel {
@@ -34,10 +36,10 @@ export class WeeklyReportModel {
       const startDay = startDate.getDate();
       const endMonth = endDate.getMonth() + 1;
       const endDay = endDate.getDate();
-      const startStr = `${startDate.getFullYear()}年${startMonth}月${startDay}日`;
+      const startStr = I18nUtil.formatFullDate(startDate.getFullYear(), startMonth, startDay);
       const endStr = startMonth === endMonth ?
-        `${endDay}日` :
-        `${endMonth}月${endDay}日`;
+        `${endDay}${I18nUtil.t('date.day_suffix')}` :
+        I18nUtil.formatDate(endMonth, endDay);
       options.push(`${startStr} - ${endStr}`);
     }
     return options;
@@ -56,8 +58,8 @@ export class WeeklyReportModel {
     startDate.setDate(startDate.getDate() - 6);
 
     const records = HealthDataService.instance.getRecordsByDateRange(startDate.getTime(), endDate.getTime());
-    const startStr = `${startDate.getFullYear()}年${startDate.getMonth() + 1}月${startDate.getDate()}日`;
-    const endStr = `${endDate.getMonth() + 1}月${endDate.getDate()}日`;
+    const startStr = I18nUtil.formatFullDate(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDate());
+    const endStr = I18nUtil.formatDate(endDate.getMonth() + 1, endDate.getDate());
 
     if (records.length === 0) {
       return {
@@ -70,12 +72,34 @@ export class WeeklyReportModel {
     }
 
     const agg = aggregateRecords(records);
+
+    // 计算上一周期对比
+    let comparison: PeriodComparison | undefined;
+    const prevEnd = new Date(startDate);
+    prevEnd.setDate(prevEnd.getDate() - 1);
+    const prevStart = new Date(prevEnd);
+    prevStart.setDate(prevStart.getDate() - 6);
+    const prevRecords = HealthDataService.instance.getRecordsByDateRange(prevStart.getTime(), prevEnd.getTime());
+    if (prevRecords.length > 0) {
+      const prevAgg = aggregateRecords(prevRecords);
+      const deltas = comparePeriods(agg, prevAgg);
+      comparison = {
+        weightDelta: deltas.weightDelta,
+        bodyFatDelta: deltas.bodyFatDelta,
+        systolicDelta: deltas.systolicDelta,
+        diastolicDelta: deltas.diastolicDelta,
+        heartRateDelta: deltas.heartRateDelta,
+        previousLabel: I18nUtil.t('report.previous_week')
+      };
+    }
+
     return {
       startDate: startStr, endDate: endStr, dateRange: this.dateOptions[weekIndex],
       weightTrend: { maxWeight: agg.maxWeight, minWeight: agg.minWeight, change: agg.weightChange, chartData: agg.weightChartData },
       bodyFatTrend: { maxBodyFat: agg.maxBodyFat, minBodyFat: agg.minBodyFat, change: agg.bodyFatChange, chartData: agg.bodyFatChartData },
       bloodPressure: { systolic: agg.avgSystolic, diastolic: agg.avgDiastolic, pulse: 0 },
-      heartRate: { maxHeartRate: agg.maxHeartRate, minHeartRate: agg.minHeartRate, restingHeartRate: agg.avgHeartRate, averageHeartRate: agg.avgHeartRate }
+      heartRate: { maxHeartRate: agg.maxHeartRate, minHeartRate: agg.minHeartRate, restingHeartRate: agg.avgHeartRate, averageHeartRate: agg.avgHeartRate },
+      comparison
     };
   }
 
@@ -95,5 +119,15 @@ export class WeeklyReportModel {
 
   public getBodyFatChangeText(): string {
     return getChangeText(this.reportData.bodyFatTrend.change);
+  }
+
+  public getComparisonWeightText(): string {
+    if (!this.reportData.comparison) return '';
+    return formatDelta(this.reportData.comparison.weightDelta, '公斤');
+  }
+
+  public getComparisonBodyFatText(): string {
+    if (!this.reportData.comparison) return '';
+    return formatDelta(this.reportData.comparison.bodyFatDelta, '%');
   }
 }

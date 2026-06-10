@@ -46,7 +46,7 @@ export struct DeviceScanRow {
 
       Text(this.scannedDeviceVM.deviceName)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .layoutWeight(1)
         .textAlign(TextAlign.Start)
 

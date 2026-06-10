@@ -38,4 +38,7 @@ export { USE_MOCK_DATA } from './src/main/ets/constant/MockConfig';
 export { HttpUtil, ApiResponse } from './src/main/ets/util/HttpUtil';
 export { NetworkConfig } from './src/main/ets/util/NetworkConfig';
 export { AuthToken } from './src/main/ets/util/AuthToken';
+export { ThemeUtil } from './src/main/ets/util/ThemeUtil';
+export type { ThemeMode, ThemeOption, ThemeColors } from './src/main/ets/util/ThemeUtil';
+export { I18nUtil } from './src/main/ets/util/I18nUtil';
 export * from './src/main/ets/util/ApiTypes';

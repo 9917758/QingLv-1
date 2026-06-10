@@ -53,11 +53,11 @@ export struct AnomalyHistoryPage {
     return '#117CFF';
   }
 
-  private getSeverityLabel(severity: string): string {
+  private getSeverityLabel(severity: string): ResourceStr {
     if (severity === 'warning') {
-      return '警告';
+      return $r('app.string.anomaly_severity_warning');
     }
-    return '提示';
+    return $r('app.string.anomaly_severity_info');
   }
 
   @Builder
@@ -77,7 +77,7 @@ export struct AnomalyHistoryPage {
           Text('📋')
             .fontSize(48)
           Blank().height(12)
-          Text('暂无异常记录，继续保持！')
+          Text($r('app.string.anomaly_no_records'))
             .fontColor($r('sys.color.font_tertiary'))
             .fontSize($r('sys.float.Body_M'))
         }
@@ -124,7 +124,7 @@ export struct AnomalyHistoryPage {
                           .fontColor($r('sys.color.font_primary'))
                         Text(this.getSeverityLabel(event.severity))
                           .fontSize(10)
-                          .fontColor(Color.White)
+                          .fontColor($r('sys.color.font_on_primary'))
                           .padding({ left: 5, right: 5, top: 1, bottom: 1 })
                           .backgroundColor(this.getSeverityColor(event.severity))
                           .borderRadius($r('sys.float.corner_radius_level2'))
@@ -167,7 +167,7 @@ export struct AnomalyHistoryPage {
                   }
                 }
                 .width('100%')
-                .backgroundColor(Color.White)
+                .backgroundColor($r('sys.color.comp_background_list_card'))
               }
             }, (event: AnomalyEvent) => `${event.id}`)
 
@@ -175,7 +175,7 @@ export struct AnomalyHistoryPage {
             ListItem() {
               Divider()
                 .strokeWidth('8px')
-                .color('#FFF1F3F5')
+                .color($r('sys.color.comp_background_list_card'))
             }
           }, (group: DateGroup) => `group_${group.dateStr}`)
 
@@ -191,7 +191,7 @@ export struct AnomalyHistoryPage {
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Start)
-    .backgroundColor('#FFF1F3F5')
+    .backgroundColor($r('sys.color.comp_background_list_card'))
   }
 
   build() {

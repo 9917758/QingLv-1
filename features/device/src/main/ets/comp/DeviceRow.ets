@@ -39,7 +39,7 @@ export struct DeviceRow {
         Text(this.pairedDeviceVM.deviceName)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor(Color.Black)
+          .fontColor($r('sys.color.font_primary'))
 
         Blank().height($r('app.float.vp_6'))
 
@@ -69,7 +69,7 @@ export struct DeviceRow {
               Span(this.pairedDeviceVM.battery + '%')
                 .fontSize($r('sys.float.Body_S'))
                 .fontWeight(FontWeight.Medium)
-                .fontColor(Color.Black)
+                .fontColor($r('sys.color.font_primary'))
             }
             .visibility(this.pairedDeviceVM.pairState === 2 ? Visibility.Visible : Visibility.None)
           }
@@ -84,7 +84,7 @@ export struct DeviceRow {
     }
     .height($r('app.float.vp_88'))
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .clip(true)
     .borderRadius($r('sys.float.corner_radius_level8'))
     .alignItems(VerticalAlign.Center)

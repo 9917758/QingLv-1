@@ -98,7 +98,7 @@ export struct HealthReportEmptyPage {
             .strokeWidth('1px')
             .margin({ left: 16, right: 16 })
         }
-      }, (item: MenuItemType) => item.value)
+      }, (item: MenuItemType, index: number) => index.toString())
     }
     .width(160)
     .borderRadius($r('sys.float.corner_radius_level10'))
@@ -122,7 +122,7 @@ export struct HealthReportEmptyPage {
           .margin({ left: 16, top: 24, right: 8 })
           .onClick(this.handleBack)
 
-        Text('健康报告')
+        Text($r('app.string.health_report_title'))
           .size({ height: 27 })
           .margin({ left: 16, top: 24 })
           .fontSize($r('sys.float.Title_S'))
@@ -156,7 +156,7 @@ export struct HealthReportEmptyPage {
   }
 
   @Builder
-  private renderStatItem(value: string, label: string) {
+  private renderStatItem(value: string, label: ResourceStr) {
     Column({ space: 6 }) {
       Text(value)
         .fontSize($r('sys.float.Title_M'))
@@ -182,9 +182,9 @@ export struct HealthReportEmptyPage {
             .clip(true)
 
           Column({ space: 6 }) {
-            Text('目前暂无数据')
+            Text($r('app.string.health_no_data_yet'))
               .fontSize($r('sys.float.Body_L'))
-              .fontColor(Color.White)
+              .fontColor($r('sys.color.font_on_primary'))
               .fontWeight(FontWeight.Medium)
           }
           .width('100%')
@@ -213,7 +213,7 @@ export struct HealthReportEmptyPage {
       .width('100%')
 
       Row({ space: 0 }) {
-        this.renderStatItem('--', '体重(公斤)')
+        this.renderStatItem('--', $r('app.string.health_weight_kg_label'))
 
         Divider()
           .vertical(true)
@@ -221,7 +221,7 @@ export struct HealthReportEmptyPage {
           .color($r('sys.color.comp_divider'))
           .strokeWidth('1px')
 
-        this.renderStatItem('--', '身高(厘米)')
+        this.renderStatItem('--', $r('app.string.health_height_cm_label'))
 
         Divider()
           .vertical(true)
@@ -229,7 +229,7 @@ export struct HealthReportEmptyPage {
           .color($r('sys.color.comp_divider'))
           .strokeWidth('1px')
 
-        this.renderStatItem('--', '年龄')
+        this.renderStatItem('--', $r('app.string.health_age_label'))
       }
       .width('100%')
       .margin({ top: -85 })
@@ -257,7 +257,7 @@ export struct HealthReportEmptyPage {
   }
 
   @Builder
-  private renderMetricItem(icon: ResourceStr, title: string) {
+  private renderMetricItem(icon: ResourceStr, title: ResourceStr) {
     GridItem() {
       Column({ space: 8 }) {
         Row({ space: 8 }) {
@@ -277,7 +277,7 @@ export struct HealthReportEmptyPage {
         }
         .width('100%')
 
-        Text('暂无数据')
+        Text($r('app.string.health_no_data'))
           .fontSize($r('sys.float.Body_M'))
           .fontColor($r('sys.color.font_secondary'))
           .fontFamily('HarmonyOS Sans SC')
@@ -300,12 +300,12 @@ export struct HealthReportEmptyPage {
   @Builder
   private renderMetricsGrid() {
     Grid() {
-      this.renderMetricItem($r('app.media.health_bmi'), 'BMI')
-      this.renderMetricItem($r('app.media.health_bmi_fatPercentage'), '体脂率')
-      this.renderMetricItem($r('app.media.health_bmi_fatWeight'), '脂肪重量')
-      this.renderMetricItem($r('app.media.health_bmi_heart'), '心率')
-      this.renderMetricItem($r('app.media.health_bmi_bloodpressure'), '血压')
-      this.renderMetricItem($r('app.media.health_bmi_bloodglucose'), '血糖')
+      this.renderMetricItem($r('app.media.health_bmi'), $r('app.string.health_bmi_title'))
+      this.renderMetricItem($r('app.media.health_bmi_fatPercentage'), $r('app.string.health_body_fat_rate'))
+      this.renderMetricItem($r('app.media.health_bmi_fatWeight'), $r('app.string.health_fat_weight'))
+      this.renderMetricItem($r('app.media.health_bmi_heart'), $r('app.string.health_heartrate'))
+      this.renderMetricItem($r('app.media.health_bmi_bloodpressure'), $r('app.string.health_bloodpressure'))
+      this.renderMetricItem($r('app.media.health_bmi_bloodglucose'), $r('app.string.health_blood_sugar'))
     }
     .columnsTemplate('1fr 1fr')
     .rowsTemplate('1fr 1fr 1fr')

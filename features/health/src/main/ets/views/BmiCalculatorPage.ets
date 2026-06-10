@@ -90,10 +90,10 @@ export struct BmiCalculatorPage {
         .fontWeight(FontWeight.Medium)
         .fontColor(this.getCategoryColor())
         .padding({ left: 16, right: 16, top: 4, bottom: 4 })
-        .backgroundColor('#FFF5F5F5')
+        .backgroundColor($r('sys.color.comp_background_list_card'))
         .borderRadius($r('sys.float.corner_radius_level4'))
 
-      Text('健康体重范围')
+      Text($r('app.string.bmi_healthy_range'))
         .fontSize($r('sys.float.Body_M'))
         .fontColor($r('sys.color.font_secondary'))
         .margin({ top: 8 })
@@ -106,19 +106,19 @@ export struct BmiCalculatorPage {
       // 可视化条形指示器
       Column({ space: 4 }) {
         Row() {
-          Text('偏瘦')
+          Text($r('app.string.health_bmi_type_underweight'))
             .fontSize(10)
             .fontColor('#4ECDC4')
           Blank()
-          Text('正常')
+          Text($r('app.string.health_bmi_type_normal'))
             .fontSize(10)
             .fontColor('#4CAF50')
           Blank()
-          Text('偏胖')
+          Text($r('app.string.health_bmi_type_overweight'))
             .fontSize(10)
             .fontColor('#FF9800')
           Blank()
-          Text('肥胖')
+          Text($r('app.string.health_bmi_type_obesity'))
             .fontSize(10)
             .fontColor('#F44336')
         }
@@ -152,7 +152,7 @@ export struct BmiCalculatorPage {
           Column()
             .width(3)
             .height(16)
-            .backgroundColor(Color.White)
+            .backgroundColor($r('sys.color.comp_background_list_card'))
             .borderRadius(1.5)
             .shadow({ radius: 2, color: '#33000000' })
             .offset({ x: `${this.getBarPercent()}%`, y: -4 })
@@ -166,7 +166,7 @@ export struct BmiCalculatorPage {
     }
     .width('100%')
     .padding({ top: 20, bottom: 20 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .borderRadius($r('sys.float.corner_radius_level7'))
     .alignItems(HorizontalAlign.Center)
   }
@@ -184,7 +184,7 @@ export struct BmiCalculatorPage {
           Column({ space: 16 }) {
             // 身高选择卡片
             Column({ space: 8 }) {
-              Text('身高 (cm)')
+              Text($r('app.string.bmi_height_label'))
                 .fontSize($r('sys.float.Body_L'))
                 .fontWeight(FontWeight.Medium)
                 .fontColor($r('sys.color.font_primary'))
@@ -200,12 +200,12 @@ export struct BmiCalculatorPage {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor(Color.White)
+            .backgroundColor($r('sys.color.comp_background_list_card'))
             .borderRadius($r('sys.float.corner_radius_level7'))
 
             // 体重选择卡片
             Column({ space: 8 }) {
-              Text('体重 (kg)')
+              Text($r('app.string.bmi_weight_label'))
                 .fontSize($r('sys.float.Body_L'))
                 .fontWeight(FontWeight.Medium)
                 .fontColor($r('sys.color.font_primary'))
@@ -221,17 +221,17 @@ export struct BmiCalculatorPage {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor(Color.White)
+            .backgroundColor($r('sys.color.comp_background_list_card'))
             .borderRadius($r('sys.float.corner_radius_level7'))
 
             // 计算按钮
-            Button('计算 BMI')
+            Button($r('app.string.bmi_calculate_btn'))
               .width('100%')
               .height(48)
               .fontSize($r('sys.float.Body_L'))
               .fontWeight(FontWeight.Medium)
               .backgroundColor('#117CFF')
-              .fontColor(Color.White)
+              .fontColor($r('sys.color.font_on_primary'))
               .borderRadius($r('sys.float.corner_radius_level6'))
               .onClick(() => this.calculateBmi())
 
@@ -250,7 +250,7 @@ export struct BmiCalculatorPage {
       .width('100%')
       .height('100%')
       .justifyContent(FlexAlign.Start)
-      .backgroundColor('#FFF1F3F5')
+      .backgroundColor($r('sys.color.comp_background_list_card'))
     }
     .hideTitleBar(true)
     .onBackPressed(() => {

@@ -7,7 +7,7 @@
  */
 export interface HealthMetricItem {
   icon: ResourceStr;
-  label: string;
+  label: ResourceStr;
   value: string;
   unit: string;
   backgroundColor: ResourceColor;
@@ -50,7 +50,7 @@ export interface HealthReportData {
  * 报告类型菜单项
  */
 export interface ReportMenuItem {
-  label: string;
+  label: ResourceStr;
   value: string;
 }
 
@@ -58,7 +58,7 @@ export interface ReportMenuItem {
  * 菜单项类型（用于bindMenu）
  */
 export interface MenuItemType {
-  value: string;
+  value: ResourceStr;
   action: () => void;
   disabled?: boolean;
 }

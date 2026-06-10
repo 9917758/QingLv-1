@@ -62,7 +62,7 @@ export struct PersonInfoBirthdayPage {
 
       Blank().height($r('app.float.vp_38'));
       Text('请选择你的出生年月')
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .fontSize($r('sys.float.Body_L'))
       Blank().height($r('app.float.vp_24'));
 
@@ -96,13 +96,13 @@ export struct PersonInfoBirthdayPage {
 
       Blank().height($r('app.float.vp_38'));
       Text('你的年龄')
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .fontSize($r('sys.float.Body_L'))
       Blank().height($r('app.float.vp_12'));
 
       Row() {
         Text(this.userInfo.age.length > 0 ? this.userInfo.age : '0')
-          .fontColor(Color.Black)
+          .fontColor($r('sys.color.font_primary'))
           .fontSize($r('sys.float.Body_L'))
           .fontWeight(FontWeight.Medium)
         Blank().width($r('app.float.vp_4'));
@@ -162,7 +162,7 @@ export struct PersonInfoBirthdayPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .padding({
       left: this.breakPointModel.pagePadding,
       right: this.breakPointModel.pagePadding

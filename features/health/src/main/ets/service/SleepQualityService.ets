@@ -142,30 +142,30 @@ export class SleepQualityService {
       totalHours: 7.5,
       level: '良好',
       levelColor: '#8BC34A',
-      advice: '深睡比例良好，建议保持规律作息时间。'
+      advice: '深睡比例不错，继续保持规律作息'
     };
   }
 
   private getAdvice(score: number, deepRatio: number, awakeRatio: number, totalHours: number): string {
     if (deepRatio < 0.15) {
-      return '深睡比例偏低，建议睡前避免使用电子设备，保持卧室温度适宜。';
+      return '深睡比例偏低，建议睡前减少使用电子设备';
     }
     if (awakeRatio > 0.10) {
-      return '夜间清醒次数较多，建议减少晚间饮水，避免咖啡因。';
+      return '夜间清醒次数较多，建议改善睡眠环境';
     }
     if (totalHours < 7) {
-      return '睡眠时间不足，建议提前入睡，保证 7-8 小时睡眠。';
+      return '睡眠时长不足，建议每天保证 7-9 小时睡眠';
     }
     if (score >= 85) {
-      return '睡眠质量优秀，继续保持规律的作息习惯！';
+      return '睡眠质量优秀，继续保持！';
     }
-    return '睡眠质量良好，建议保持固定的入睡和起床时间。';
+    return '睡眠质量良好，继续保持规律作息';
   }
 
   private getDefaultResult(): SleepQualityResult {
     return {
       score: 0, deepRatio: 0, lightRatio: 0, remRatio: 0, awakeRatio: 0,
-      totalHours: 0, level: '无数据', levelColor: '#999', advice: '暂无睡眠数据'
+      totalHours: 0, level: '暂无数据', levelColor: '#999', advice: '暂无睡眠数据，请记录睡眠信息'
     };
   }
 }

@@ -48,7 +48,7 @@ struct popup {
       Blank().height($r('app.float.vp_36'))
       Text(this.dialogVM.message)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .lineHeight($r('app.float.vp_22'))
         .maxLines(-1)
         .padding({ left: $r('app.float.vp_24'), right: $r('app.float.vp_24') })
@@ -96,7 +96,7 @@ struct popup {
 
       Blank().height($r('app.float.vp_16'))
     }
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .alignItems(HorizontalAlign.Center)
     .width(this.breakpointModel.currentDisplayWidth > 400 ?
       376 :

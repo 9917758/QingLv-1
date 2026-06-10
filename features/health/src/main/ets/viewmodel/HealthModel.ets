@@ -1,5 +1,5 @@
 import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
-import { BaseViewModel, BreakpointModel, TimeUtil, USE_MOCK_DATA } from 'common';
+import { BaseViewModel, BreakpointModel, I18nUtil, TimeUtil, USE_MOCK_DATA, UserInfo } from 'common';
 import { healthCard } from '../constants/constants';
 import { BreakpointNameEnum } from 'common/src/main/ets/constant/GridRowColSetting';
 import { HealthCardModel } from './HealthCardModel';
@@ -34,6 +34,11 @@ export class HealthModel extends BaseViewModel {
   public static get instance() {
     if (!HealthModel._instance) {
       HealthModel._instance = new HealthModel();
+      // 从 UserInfo 加载用户的身高体重（持久化数据）
+      const userInfo = PersistenceV2.connect(UserInfo, () => new UserInfo());
+      if (userInfo) {
+        HealthModel._instance.inputVM.weight = userInfo.weight;
+      }
       // Mock 模式下为 inputVM 注入虚拟数据（与 mock 数据文件保持一致）
       if (USE_MOCK_DATA) {
         HealthModel._instance.initMockInputData();
@@ -76,32 +81,32 @@ export class HealthModel extends BaseViewModel {
     const now = new Date();
     const nowMs = now.getTime();
     this.dataVM.img = $r('app.media.health_data_icon');
-    this.dataVM.title = '健康数据';
+    this.dataVM.title = $r('app.string.health_date_input_name');
     this.dataVM.type = 1;
     this.dataVM.icon = '';
     this.dataVM.timeStatus = TimeUtil.formatDate(nowMs, TimeUtil.PATTERN_DATE_TIME_CN_MONTH);
 
     this.reportVM.img = $r('app.media.health_report_icon');
-    this.reportVM.title = '健康报告';
+    this.reportVM.title = $r('app.string.health_report_title');
     this.reportVM.type = 2;
     this.reportVM.icon = '';
     this.reportVM.timeStatus = TimeUtil.formatDate(nowMs, TimeUtil.PATTERN_DATE_CN_WITHOUT_YEAR);
 
 
     this.sleepVM.img = $r('app.media.health_sleep_icon');
-    this.sleepVM.title = '睡眠';
+    this.sleepVM.title = $r('app.string.health_sleep');
     this.sleepVM.type = 3;
     this.sleepVM.icon = $r('app.media.sleep_icon');
 
     if (USE_MOCK_DATA || this.macList.pairedList.length > 0) {
-      this.dataVM.value = '良好';
-      this.dataVM.desc = '今天身体状态';
+      this.dataVM.value = $r('app.string.health_report_status');
+      this.dataVM.desc = $r('app.string.health_report_status_desc');
 
       if (this.userInfo.weight > 0 && this.userInfo.height > 0) {
-        this.reportVM.value = '良好';
-        this.reportVM.desc = '今天身体状态';
+        this.reportVM.value = $r('app.string.health_report_status');
+        this.reportVM.desc = $r('app.string.health_report_status_desc');
       } else {
-        this.reportVM.desc = '暂无数据';
+        this.reportVM.desc = $r('app.string.health_no_data');
       }
 
       this.sleepVM.value = '';
@@ -110,7 +115,7 @@ export class HealthModel extends BaseViewModel {
       const totalSleepMinutes = 390 + (now.getDate() * 13 + now.getMonth() * 7) % 120;
       const sleepH = Math.floor(totalSleepMinutes / 60);
       const sleepM = totalSleepMinutes % 60;
-      this.sleepVM.desc = `${sleepH}时${sleepM}分`;
+      this.sleepVM.desc = `${sleepH}${I18nUtil.t('unit.hours')}${sleepM}${I18nUtil.t('unit.minutes')}`;
       this.sleepVM.timeStatus = '目标 8小时 ｜良好';
 
       // 运动数据：基于当天时间累积增长（模拟真实全天活动规律）
@@ -125,11 +130,11 @@ export class HealthModel extends BaseViewModel {
 
     } else {
       this.dataVM.value = '';
-      this.dataVM.desc = '暂无数据';
+      this.dataVM.desc = $r('app.string.health_no_data');
       this.reportVM.value = '';
-      this.reportVM.desc = '暂无数据';
+      this.reportVM.desc = $r('app.string.health_no_data');
       this.sleepVM.value = '';
-      this.sleepVM.desc = '暂无数据';
+      this.sleepVM.desc = $r('app.string.health_no_data');
       this.sleepVM.timeStatus = TimeUtil.formatDate(nowMs, TimeUtil.PATTERN_DATE_CN_WITHOUT_YEAR);
 
       this.activityHeat = 0;
@@ -141,17 +146,17 @@ export class HealthModel extends BaseViewModel {
 
   initHealthData() {
     this.bloodPreVM.img = $r('app.media.health_blood_pre_icon');
-    this.bloodPreVM.title = '血压';
+    this.bloodPreVM.title = $r('app.string.health_bloodpressure');
     this.bloodPreVM.type = 4;
     this.bloodPreVM.icon = $r('app.media.blood_pre_icon');
 
     this.heartRateVM.img = $r('app.media.health_heart_rate_icon');
-    this.heartRateVM.title = '心率';
+    this.heartRateVM.title = $r('app.string.health_heartrate');
     this.heartRateVM.type = 5;
     this.heartRateVM.icon = $r('app.media.heart_rate_icon');
 
     this.bloodSugarVM.img = $r('app.media.health_blood_sugar_icon');
-    this.bloodSugarVM.title = '血糖';
+    this.bloodSugarVM.title = $r('app.string.health_blood_sugar');
     this.bloodSugarVM.type = 6;
     this.bloodSugarVM.icon = $r('app.media.blood_sugar_icon');
 
@@ -173,13 +178,13 @@ export class HealthModel extends BaseViewModel {
     } else {
       const nowMs = new Date().getTime();
       this.bloodPreVM.value = '';
-      this.bloodPreVM.desc = '暂无数据';
+      this.bloodPreVM.desc = $r('app.string.health_no_data');
       this.bloodPreVM.timeStatus = TimeUtil.formatDate(nowMs, TimeUtil.PATTERN_DATE_CN_WITHOUT_YEAR);
       this.heartRateVM.value = '';
-      this.heartRateVM.desc = '暂无数据';
+      this.heartRateVM.desc = $r('app.string.health_no_data');
       this.heartRateVM.timeStatus = TimeUtil.formatDate(nowMs, TimeUtil.PATTERN_DATE_CN_WITHOUT_YEAR);
       this.bloodSugarVM.value = '';
-      this.bloodSugarVM.desc = '暂无数据';
+      this.bloodSugarVM.desc = $r('app.string.health_no_data');
       this.bloodSugarVM.timeStatus = TimeUtil.formatDate(nowMs, TimeUtil.PATTERN_DATE_CN_WITHOUT_YEAR);
     }
   }

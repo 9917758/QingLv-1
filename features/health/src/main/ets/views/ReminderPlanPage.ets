@@ -106,8 +106,8 @@ export struct ReminderPlanPage {
     return type === 0 ? $r('app.media.health_water_clock_icon') : $r('app.media.health_medication_reminder_icon');
   }
 
-  getTypeLabel(type: number): string {
-    return type === 0 ? '饮水' : '用药';
+  getTypeLabel(type: number): ResourceStr {
+    return type === 0 ? $r('app.string.reminder_type_water') : $r('app.string.reminder_type_medication');
   }
 
   getTypeColor(type: number): string {
@@ -145,7 +145,7 @@ export struct ReminderPlanPage {
         leftImageRes: $r('app.media.ic_backward2')
       })
 
-      Text('点击计划可修改时间和详情，到点自动弹窗提醒')
+      Text($r('app.string.reminder_edit_hint'))
         .fontSize($r('sys.float.Caption_S'))
         .fontColor($r('sys.color.font_tertiary'))
         .padding({ left: 16, right: 16, top: 8, bottom: 4 })
@@ -179,14 +179,14 @@ export struct ReminderPlanPage {
                     .fontColor($r('sys.color.font_primary'))
                   Text(this.getTypeLabel(plan.type))
                     .fontSize(10)
-                    .fontColor(Color.White)
+                    .fontColor($r('sys.color.font_on_primary'))
                     .padding({ left: 5, right: 5, top: 1, bottom: 1 })
                     .backgroundColor(this.getTypeColor(plan.type))
                     .borderRadius($r('sys.float.corner_radius_level2'))
                   if (plan.isCheckedToday) {
-                    Text('已完成')
+                    Text($r('app.string.reminder_completed'))
                       .fontSize(10)
-                      .fontColor(Color.White)
+                      .fontColor($r('sys.color.font_on_primary'))
                       .padding({ left: 5, right: 5, top: 1, bottom: 1 })
                       .backgroundColor('#4CAF50')
                       .borderRadius($r('sys.float.corner_radius_level2'))
@@ -223,25 +223,25 @@ export struct ReminderPlanPage {
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Start)
-    .backgroundColor('#FFF1F3F5')
+    .backgroundColor($r('sys.color.comp_background_list_card'))
   }
 
   @Builder
   renderEditDialog() {
     Column() {
       Column({ space: 12 }) {
-        Text('编辑提醒计划')
+        Text($r('app.string.reminder_edit_title'))
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
           .width('100%')
 
         // 名称
         Row() {
-          Text('名称')
+          Text($r('app.string.reminder_name_label'))
             .fontSize($r('sys.float.Body_M'))
             .fontColor($r('sys.color.font_secondary'))
             .width(60)
-          TextInput({ text: this.editName, placeholder: '如：降压药、上午喝水' })
+          TextInput({ text: this.editName, placeholder: $r('app.string.reminder_name_placeholder') })
             .onChange((value: string) => this.editName = value)
             .layoutWeight(1)
             .height(36)
@@ -250,7 +250,7 @@ export struct ReminderPlanPage {
 
         // 类型
         Row() {
-          Text('类型')
+          Text($r('app.string.reminder_type_label'))
             .fontSize($r('sys.float.Body_M'))
             .fontColor($r('sys.color.font_secondary'))
             .width(60)
@@ -260,21 +260,21 @@ export struct ReminderPlanPage {
                 .checked(this.editType === 0)
                 .onChange(() => this.editType = 0)
                 .width(18).height(18)
-              Text('饮水').fontSize($r('sys.float.Body_M'))
+              Text($r('app.string.reminder_type_water')).fontSize($r('sys.float.Body_M'))
             }
             Row({ space: 4 }) {
               Radio({ value: 'med', group: 'planType' })
                 .checked(this.editType === 1)
                 .onChange(() => this.editType = 1)
                 .width(18).height(18)
-              Text('用药').fontSize($r('sys.float.Body_M'))
+              Text($r('app.string.reminder_type_medication')).fontSize($r('sys.float.Body_M'))
             }
           }
         }
 
         // 时间
         Row() {
-          Text('时间')
+          Text($r('app.string.reminder_time_label'))
             .fontSize($r('sys.float.Body_M'))
             .fontColor($r('sys.color.font_secondary'))
             .width(60)
@@ -307,11 +307,11 @@ export struct ReminderPlanPage {
 
         // 剂量/水量
         Row() {
-          Text('剂量/水量')
+          Text($r('app.string.reminder_dosage_label'))
             .fontSize($r('sys.float.Body_M'))
             .fontColor($r('sys.color.font_secondary'))
             .width(60)
-          TextInput({ text: this.editDosage, placeholder: '如：1片、250ml' })
+          TextInput({ text: this.editDosage, placeholder: $r('app.string.reminder_dosage_placeholder') })
             .onChange((value: string) => this.editDosage = value)
             .layoutWeight(1)
             .height(36)
@@ -320,7 +320,7 @@ export struct ReminderPlanPage {
 
         // 按钮
         Row({ space: 12 }) {
-          Button('取消')
+          Button($r('app.string.health_dialog_cancel'))
             .fontSize($r('sys.float.Body_M'))
             .height(40)
             .layoutWeight(1)
@@ -329,12 +329,12 @@ export struct ReminderPlanPage {
             .borderRadius($r('sys.float.corner_radius_level6'))
             .onClick(() => this.showEditDialog = false)
 
-          Button('保存')
+          Button($r('app.string.reminder_save'))
             .fontSize($r('sys.float.Body_M'))
             .height(40)
             .layoutWeight(1)
             .backgroundColor('#117CFF')
-            .fontColor(Color.White)
+            .fontColor($r('sys.color.font_on_primary'))
             .borderRadius($r('sys.float.corner_radius_level6'))
             .onClick(() => this.saveEdit())
         }

@@ -1,6 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
-import { BreakpointModel, CommonHeader, Constants, OHDialog, OHDialogModel, RouterMap, TCLogger } from 'common';
+import { BreakpointModel, CommonHeader, Constants, OHDialog, OHDialogModel, RouterMap, TCLogger, ThemeUtil } from 'common';
+import type { ThemeColors } from 'common';
 import { HealthCardRow } from '../comp/HealthCardRow';
 import { HealthRunningRow } from '../comp/HealthRunningRow';
 import { HealthModel } from '../viewmodel/HealthModel';
@@ -53,6 +54,9 @@ export struct HealthPage {
   suggestionService: HealthSuggestionService = HealthSuggestionService.instance;
   achievementService: AchievementService = AchievementService.instance;
   anomalyService: AnomalyHistoryService = AnomalyHistoryService.instance;
+  @Computed get themeColors(): ThemeColors {
+    return ThemeUtil.instance.currentColors;
+  }
   @Local breakPointModel: BreakpointModel = AppStorageV2.connect(BreakpointModel, () => new BreakpointModel())!;
   @Local onReturnClick: () => void = () => {
   }
@@ -258,13 +262,13 @@ export struct HealthPage {
         .margin({ right: 10 })
       Column({ space: 4 }) {
         Row() {
-          Text('今日饮水')
-            .fontColor($r('sys.color.font_primary'))
+          Text($r('app.string.health_water_title'))
+            .fontColor(this.themeColors.textPrimary)
             .fontSize($r('sys.float.Body_L'))
             .fontWeight(FontWeight.Medium)
           Blank()
           Text(`${this.waterService.todayCount}/${this.waterService.todayGoal} 杯`)
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Caption_S'))
             .onClick(() => {
               let goalPicker = new OHDialogModel();
@@ -289,12 +293,12 @@ export struct HealthPage {
         })
           .width('100%')
           .height(8)
-          .color(this.waterService.isGoalReached() ? '#4CAF50' : '#2196F3')
-          .backgroundColor('#E0E0E0')
+          .color(this.waterService.isGoalReached() ? this.themeColors.success : this.themeColors.info)
+          .backgroundColor(this.themeColors.divider)
 
         if (this.waterService.isGoalReached()) {
           Text('🎉 已达成今日目标！')
-            .fontColor('#4CAF50')
+            .fontColor(this.themeColors.success)
             .fontSize($r('sys.float.Caption_S'))
         }
       }
@@ -306,7 +310,7 @@ export struct HealthPage {
         .height(32)
         .fontSize(14)
         .fontWeight(FontWeight.Bold)
-        .backgroundColor(this.waterService.todayCount >= 20 ? '#CCCCCC' : '#2196F3')
+        .backgroundColor(this.waterService.todayCount >= 20 ? this.themeColors.textTertiary : this.themeColors.info)
         .borderRadius(16)
         .enabled(this.waterService.todayCount < 20)
         .onClick(() => {
@@ -315,7 +319,7 @@ export struct HealthPage {
     }
     .width('100%')
     .padding(14)
-    .backgroundColor(Color.White)
+    .backgroundColor(this.themeColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level7'))
   }
 
@@ -330,23 +334,23 @@ export struct HealthPage {
           .fontSize(20)
           .margin({ right: 10 })
         Column({ space: 2 }) {
-          Text('健康目标')
-            .fontColor($r('sys.color.font_primary'))
+          Text($r('app.string.health_goal_title'))
+            .fontColor(this.themeColors.textPrimary)
             .fontSize($r('sys.float.Body_L'))
             .fontWeight(FontWeight.Medium)
           Text(this.goalService.getGoalDescription(this.healthModelVM.inputVM.weight))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Caption_S'))
         }
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
         Text(`目标 ${this.goalService.goalWeight}公斤`)
-          .fontColor('#FF9800')
+          .fontColor(this.themeColors.warning)
           .fontSize($r('sys.float.Caption_S'))
       }
       .width('100%')
       .padding(14)
-      .backgroundColor(Color.White)
+      .backgroundColor(this.themeColors.backgroundCard)
       .borderRadius($r('sys.float.corner_radius_level7'))
     }
   }
@@ -366,7 +370,7 @@ export struct HealthPage {
             .fontColor(this.scoreService.getScoreColor())
           Text('分')
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .margin({ top: 6 })
         }
         Text(this.scoreService.getScoreLevel())
@@ -383,10 +387,10 @@ export struct HealthPage {
           Text(this.scoreService.bmiScore.toString())
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#4CAF50')
+            .fontColor(this.themeColors.success)
           Text('BMI')
             .fontSize(10)
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
         }
         .alignItems(HorizontalAlign.Center)
 
@@ -394,10 +398,10 @@ export struct HealthPage {
           Text(this.scoreService.bpScore.toString())
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#2196F3')
+            .fontColor(this.themeColors.info)
           Text('血压')
             .fontSize(10)
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
         }
         .alignItems(HorizontalAlign.Center)
 
@@ -408,7 +412,7 @@ export struct HealthPage {
             .fontColor('#9C27B0')
           Text('心率')
             .fontSize(10)
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
         }
         .alignItems(HorizontalAlign.Center)
 
@@ -416,17 +420,17 @@ export struct HealthPage {
           Text(this.scoreService.exerciseScore.toString())
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#FF9800')
+            .fontColor(this.themeColors.warning)
           Text('运动')
             .fontSize(10)
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
         }
         .alignItems(HorizontalAlign.Center)
       }
     }
     .width('100%')
     .padding({ left: 14, right: 14, top: 12, bottom: 12 })
-    .backgroundColor(Color.White)
+    .backgroundColor(this.themeColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level7'))
   }
 
@@ -440,8 +444,8 @@ export struct HealthPage {
         Text('💡')
           .fontSize(16)
           .margin({ right: 6 })
-        Text('健康建议')
-          .fontColor($r('sys.color.font_primary'))
+        Text($r('app.string.health_suggestion_title'))
+          .fontColor(this.themeColors.textPrimary)
           .fontSize($r('sys.float.Body_L'))
           .fontWeight(FontWeight.Medium)
       }
@@ -457,7 +461,7 @@ export struct HealthPage {
               .fontColor(item.color)
             Text(item.content)
               .fontSize($r('sys.float.Caption_S'))
-              .fontColor($r('sys.color.font_secondary'))
+              .fontColor(this.themeColors.textSecondary)
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
@@ -470,7 +474,7 @@ export struct HealthPage {
     }
     .width('100%')
     .padding(14)
-    .backgroundColor(Color.White)
+    .backgroundColor(this.themeColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level7'))
   }
 
@@ -483,14 +487,14 @@ export struct HealthPage {
       Column({ space: 6 }) {
         Text('📊')
           .fontSize(28)
-        Text('BMI计算')
+        Text($r('app.string.health_bmi_calculator'))
           .fontSize(13)
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary'))
+          .fontColor(this.themeColors.textPrimary)
       }
       .layoutWeight(1)
       .padding({ top: 12, bottom: 12 })
-      .backgroundColor(Color.White)
+      .backgroundColor(this.themeColors.backgroundCard)
       .borderRadius($r('sys.float.corner_radius_level7'))
       .alignItems(HorizontalAlign.Center)
       .onClick(() => {
@@ -503,14 +507,14 @@ export struct HealthPage {
       Column({ space: 6 }) {
         Text('🏆')
           .fontSize(28)
-        Text(`成就 ${this.achievementService.getUnlockedCount()}/${this.achievementService.achievements.length}`)
+        Text(`${this.achievementService.getUnlockedCount()}/${this.achievementService.achievements.length}`)
           .fontSize(13)
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary'))
+          .fontColor(this.themeColors.textPrimary)
       }
       .layoutWeight(1)
       .padding({ top: 12, bottom: 12 })
-      .backgroundColor(Color.White)
+      .backgroundColor(this.themeColors.backgroundCard)
       .borderRadius($r('sys.float.corner_radius_level7'))
       .alignItems(HorizontalAlign.Center)
       .onClick(() => {
@@ -523,14 +527,14 @@ export struct HealthPage {
       Column({ space: 6 }) {
         Text('⚠️')
           .fontSize(28)
-        Text(`事件 ${this.anomalyService.getThisWeekCount()}`)
+        Text(`${this.anomalyService.getThisWeekCount()}`)
           .fontSize(13)
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary'))
+          .fontColor(this.themeColors.textPrimary)
       }
       .layoutWeight(1)
       .padding({ top: 12, bottom: 12 })
-      .backgroundColor(Color.White)
+      .backgroundColor(this.themeColors.backgroundCard)
       .borderRadius($r('sys.float.corner_radius_level7'))
       .alignItems(HorizontalAlign.Center)
       .onClick(() => {
@@ -635,30 +639,30 @@ export struct HealthPage {
 
               // AI 健康顾问入口
               ListItem() {
-                Row() {
+                            Row() {
                   Text('🤖')
                     .fontSize(20)
                     .margin({ right: 10 })
                   Column() {
-                    Text('AI 健康顾问')
+                    Text($r('app.string.health_ai_agent_title'))
                       .fontSize(16)
                       .fontWeight(FontWeight.Medium)
-                      .fontColor('#333333')
-                    Text('基于你的健康数据，智能问答')
+                      .fontColor(this.themeColors.textPrimary)
+                    Text($r('app.string.health_ai_agent_subtitle'))
                       .fontSize(13)
-                      .fontColor('#999999')
+                      .fontColor(this.themeColors.textTertiary)
                       .margin({ top: 2 })
                   }
                   .alignItems(HorizontalAlign.Start)
                   Blank()
                   Text('›')
                     .fontSize(20)
-                    .fontColor('#CCCCCC')
+                    .fontColor(this.themeColors.textTertiary)
                 }
                 .width('100%')
                 .height(64)
                 .padding({ left: 16, right: 16 })
-                .backgroundColor(Color.White)
+                .backgroundColor(this.themeColors.backgroundCard)
                 .borderRadius(12)
                 .margin({ left: 16, right: 16 })
                 .onClick(() => {
@@ -678,19 +682,19 @@ export struct HealthPage {
 
               // 用药与饮水提醒入口
               ListItem() {
-                Column() {
+                            Column() {
                   Row() {
                     Image($r('app.media.health_medication_reminder_icon'))
                       .width(24)
                       .height(24)
                       .margin({ right: 10 })
                     Column({ space: 2 }) {
-                      Text('用药与饮水提醒')
-                        .fontColor($r('sys.color.font_primary'))
+                      Text($r('app.string.health_reminder_title'))
+                        .fontColor(this.themeColors.textPrimary)
                         .fontSize($r('sys.float.Body_L'))
                         .fontWeight(FontWeight.Medium)
                       Text('管理提醒计划，到点打卡')
-                        .fontColor($r('sys.color.font_secondary'))
+                        .fontColor(this.themeColors.textSecondary)
                         .fontSize($r('sys.float.Caption_S'))
                     }
                     .alignItems(HorizontalAlign.Start)
@@ -698,7 +702,7 @@ export struct HealthPage {
                     Image($r('app.media.iconRight'))
                       .width(16)
                       .height(16)
-                      .fillColor($r('sys.color.font_tertiary'))
+                      .fillColor(this.themeColors.textTertiary)
                   }
                   .width('100%')
 
@@ -707,7 +711,7 @@ export struct HealthPage {
                       Text('🔥')
                         .fontSize(14)
                       Text(`已累计打卡 ${this.streakService.totalStreakDays} 天`)
-                        .fontColor('#FF6B00')
+                        .fontColor(this.themeColors.warning)
                         .fontSize($r('sys.float.Caption_S'))
                     }
                     .width('100%')
@@ -716,7 +720,7 @@ export struct HealthPage {
                 }
                 .width('100%')
                 .padding(14)
-                .backgroundColor(Color.White)
+                .backgroundColor(this.themeColors.backgroundCard)
                 .borderRadius($r('sys.float.corner_radius_level7'))
                 .onClick(() => {
                   phoneRouterControl.jumpPage({

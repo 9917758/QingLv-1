@@ -5,7 +5,8 @@ import {
   HeartRatePageBuilder,
   SleepPageBuilder
 } from 'data_dashboard';
-import { RouterMap, UserInfo, USE_MOCK_DATA } from 'common';
+import { RouterMap, UserInfo, USE_MOCK_DATA, ThemeUtil } from 'common';
+import type { ThemeColors } from 'common';
 import { phoneRouterControl } from 'oh_router';
 import { HealthCardModel } from '../viewmodel/HealthCardModel';
 import { HealthDataInputPageBuilder } from '../views/HealthDataInputPage';
@@ -34,6 +35,9 @@ export struct HealthCardRow {
   @Param @Require healthCardModelVM: HealthCardModel;
   @Local userInfo: UserInfo = PersistenceV2.connect(UserInfo, () => new UserInfo())!;
   @Local macList: PairedDeviceMacList = PersistenceV2.connect(PairedDeviceMacList, () => new PairedDeviceMacList())!;
+  @Computed get themeColors(): ThemeColors {
+    return ThemeUtil.instance.currentColors;
+  }
 
   build() {
     Column() {
@@ -43,7 +47,7 @@ export struct HealthCardRow {
           .height($r('app.float.vp_26'))
         Blank().height($r('app.float.vp_8'))
         Text(this.healthCardModelVM.title)
-          .fontColor(Color.Black)
+          .fontColor(this.themeColors.textPrimary)
           .fontSize($r('sys.float.Body_L'))
           .fontWeight(FontWeight.Medium)
           .lineHeight($r('app.float.vp_24'))
@@ -58,12 +62,12 @@ export struct HealthCardRow {
         }
 
         Text(this.healthCardModelVM.timeStatus)
-          .fontColor($r('app.color.color_66000000'))
+          .fontColor(this.themeColors.textTertiary)
           .fontSize($r('sys.float.Caption_M'))
           .lineHeight($r('app.float.vp_14'))
       }
       .size({ width: '100%', height: '100%' })
-      .backgroundColor(Color.White)
+      .backgroundColor(this.themeColors.backgroundCard)
       .padding($r('app.float.vp_16'))
       .alignItems(HorizontalAlign.Start)
       .borderRadius($r('sys.float.corner_radius_level7'))
@@ -99,7 +103,7 @@ export struct HealthCardRow {
   hasDataCard() {
     Column() {
       Text(this.healthCardModelVM.value)
-        .fontColor(Color.Black)
+        .fontColor(this.themeColors.textPrimary)
         .fontSize($r('sys.float.Subtitle_L'))
         .fontWeight(FontWeight.Medium)
         .lineHeight($r('app.float.vp_24'))
@@ -107,7 +111,7 @@ export struct HealthCardRow {
       Blank().height($r('app.float.vp_4'))
 
       Text(this.healthCardModelVM.desc)
-        .fontColor($r('app.color.color_999'))
+        .fontColor(this.themeColors.textTertiary)
         .fontSize($r('sys.float.Body_S'))
         .lineHeight($r('app.float.vp_18'))
     }
@@ -122,7 +126,7 @@ export struct HealthCardRow {
     Column() {
       if (this.healthCardModelVM.desc === '暂无数据') {
         Text(this.healthCardModelVM.desc)
-          .fontColor($r('app.color.color_999'))
+          .fontColor(this.themeColors.textTertiary)
           .fontSize($r('sys.float.Body_S'))
           .lineHeight($r('app.float.vp_18'))
       } else {
@@ -134,17 +138,17 @@ export struct HealthCardRow {
 
         Text() {
           Span(this.healthCardModelVM.value)
-            .fontColor(Color.Black)
+            .fontColor(this.themeColors.textPrimary)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Medium)
           if (this.healthCardModelVM.diastolicValue) {
             Span('/' + this.healthCardModelVM.diastolicValue)
-              .fontColor(Color.Black)
+              .fontColor(this.themeColors.textPrimary)
               .fontSize($r('sys.float.Title_S'))
               .fontWeight(FontWeight.Medium)
           }
           Span(this.healthCardModelVM.desc)
-            .fontColor($r('app.color.color_80000000'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Body_S'))
             .fontWeight(FontWeight.Medium)
         }
@@ -163,7 +167,7 @@ export struct HealthCardRow {
     Column() {
       if (this.healthCardModelVM.desc === '暂无数据') {
         Text(this.healthCardModelVM.desc)
-          .fontColor($r('app.color.color_999'))
+          .fontColor(this.themeColors.textTertiary)
           .fontSize($r('sys.float.Body_S'))
           .lineHeight($r('app.float.vp_18'))
       } else {
@@ -175,20 +179,20 @@ export struct HealthCardRow {
 
         Text() {
           Span(this.parseTimeData()[0])
-            .fontColor(Color.Black)
+            .fontColor(this.themeColors.textPrimary)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Medium)
           Span($r('app.string.health_info_hours'))
-            .fontColor($r('app.color.color_80000000'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Body_S'))
             .fontWeight(FontWeight.Medium)
 
           Span(this.parseTimeData()[1])
-            .fontColor(Color.Black)
+            .fontColor(this.themeColors.textPrimary)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Medium)
           Span($r('app.string.health_info_minute'))
-            .fontColor($r('app.color.color_80000000'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Body_S'))
             .fontWeight(FontWeight.Medium)
         }
@@ -203,8 +207,9 @@ export struct HealthCardRow {
     .width('100%')
   }
 
-  parseTimeData() {
-    let timeStr = this.healthCardModelVM.desc.replace('时', '|&&|');
+  parseTimeData(): string[] {
+    const desc: string = typeof this.healthCardModelVM.desc === 'string' ? this.healthCardModelVM.desc : '';
+    let timeStr = desc.replace('时', '|&&|');
     timeStr = timeStr.replace('分', '');
     return timeStr.split('|&&|');
   }

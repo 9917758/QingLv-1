@@ -1,7 +1,7 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
-import { GlobalContext, WindowUtils, TCLogger, Constants, AppStorageKeys, AiBarHeight, StatusBarHeight } from 'common';
+import { GlobalContext, WindowUtils, TCLogger, Constants, AppStorageKeys, AiBarHeight, StatusBarHeight, ThemeUtil, I18nUtil } from 'common';
 
 const TAG = 'EntryAbility';
 
@@ -12,8 +12,16 @@ export default class EntryAbility extends UIAbility {
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     TCLogger.info(TAG, 'Ability onCreate');
-    this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
     GlobalContext.initUIAbilityContext(this.context);
+    // 初始化语言检测（跟随系统 locale）
+    I18nUtil.init();
+    // 加载保存的主题设置
+    ThemeUtil.instance.loadTheme();
+    // 根据主题设置系统颜色模式
+    const isDark = ThemeUtil.instance.isDark;
+    this.context.getApplicationContext().setColorMode(
+      isDark ? ConfigurationConstant.ColorMode.COLOR_MODE_DARK : ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
+    );
   }
 
   onDestroy(): void {

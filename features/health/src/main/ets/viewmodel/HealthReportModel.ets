@@ -3,7 +3,7 @@
  */
 import { HealthReportData, HealthMetricItem, ReportMenuItem, BMILevel } from '../types/HealthReportTypes';
 import { HealthDataInputModel } from './HealthDataInputModel';
-import { TimeUtil, UserInfo, HttpUtil, AuthToken } from 'common';
+import { I18nUtil, TimeUtil, UserInfo, HttpUtil, AuthToken } from 'common';
 import type { ApiResponse, ApiDashboard } from 'common';
 import { PersistenceV2 } from '@kit.ArkUI';
 
@@ -195,15 +195,15 @@ export class HealthReportModel {
   private generateBMIAdvice(bmiLevel: BMILevel): string {
     switch (bmiLevel) {
       case BMILevel.LOW:
-        return '您的体重偏轻，建议适当增加营养摄入，加强运动锻炼。';
+        return I18nUtil.t('health.bmi_advice_underweight');
       case BMILevel.NORMAL:
-        return '您的体重在正常范围内，请继续保持健康的生活方式。';
+        return I18nUtil.t('health.bmi_advice_normal');
       case BMILevel.HIGH:
-        return '您的体重偏高，建议控制饮食，增加有氧运动。';
+        return I18nUtil.t('health.bmi_advice_overweight');
       case BMILevel.OBESE:
-        return '您的体重超标，建议制定减重计划，必要时咨询专业医生。';
+        return I18nUtil.t('health.bmi_advice_obesity');
       default:
-        return '请保持健康的生活方式。';
+        return I18nUtil.t('health.bmi_advice_default');
     }
   }
 
@@ -228,35 +228,35 @@ export class HealthReportModel {
       } as HealthMetricItem,
       {
         icon: $r('app.media.health_bmi_fatPercentage'),
-        label: '体脂率',
+        label: $r('app.string.health_body_fat_rate'),
         value: this.reportData.bodyFat.toFixed(1),
         unit: '%',
         backgroundColor: '#FFF5F5F5'
       } as HealthMetricItem,
       {
         icon: $r('app.media.health_bmi_fatWeight'),
-        label: '脂肪重量',
+        label: $r('app.string.health_fat_weight'),
         value: this.reportData.fatMass.toFixed(1),
         unit: '',
         backgroundColor: '#FFF5F5F5'
       } as HealthMetricItem,
       {
         icon: $r('app.media.health_bmi_heart'),
-        label: '心率',
+        label: $r('app.string.health_heartrate'),
         value: this.reportData.heartRate.toString(),
         unit: '次/分',
         backgroundColor: '#FFF5F5F5'
       } as HealthMetricItem,
       {
         icon: $r('app.media.health_bmi_bloodpressure'),
-        label: '血压',
+        label: $r('app.string.health_bloodpressure'),
         value: `${this.reportData.bloodPressureSystolic}/${this.reportData.bloodPressureDiastolic}`,
         unit: 'mmHg',
         backgroundColor: '#FFF5F5F5'
       } as HealthMetricItem,
       {
         icon: $r('app.media.health_bmi_bloodglucose'),
-        label: '血糖',
+        label: $r('app.string.health_blood_sugar'),
         value: this.reportData.bloodGlucose.toFixed(1),
         unit: 'mmol/L',
         backgroundColor: '#FFF5F5F5'
@@ -270,9 +270,11 @@ export class HealthReportModel {
    */
   public getReportMenuItems(): ReportMenuItem[] {
     const menuItems: ReportMenuItem[] = [
-      { label: '历史记录', value: 'history' } as ReportMenuItem,
-      { label: '生成周度报告', value: 'weekly' } as ReportMenuItem,
-      { label: '生成月度报告', value: 'monthly' } as ReportMenuItem
+      { label: $r('app.string.health_history_title'), value: 'history' } as ReportMenuItem,
+      { label: $r('app.string.health_weekly_report'), value: 'weekly' } as ReportMenuItem,
+      { label: $r('app.string.health_monthly_report'), value: 'monthly' } as ReportMenuItem,
+      { label: $r('app.string.health_export_csv'), value: 'export_csv' } as ReportMenuItem,
+      { label: $r('app.string.health_export_json'), value: 'export_json' } as ReportMenuItem
     ];
     return menuItems;
   }
@@ -283,15 +285,15 @@ export class HealthReportModel {
   public getBMILevelText(): string {
     switch (this.reportData.bmiLevel) {
       case BMILevel.LOW:
-        return '偏瘦';
+        return I18nUtil.t('health.bmi_type_underweight');
       case BMILevel.NORMAL:
-        return '正常';
+        return I18nUtil.t('health.bmi_type_normal');
       case BMILevel.HIGH:
-        return '偏胖';
+        return I18nUtil.t('health.bmi_type_overweight');
       case BMILevel.OBESE:
-        return '肥胖';
+        return I18nUtil.t('health.bmi_type_obesity');
       default:
-        return '正常';
+        return I18nUtil.t('health.bmi_type_normal');
     }
   }
 

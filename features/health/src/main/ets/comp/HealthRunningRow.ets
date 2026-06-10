@@ -89,7 +89,7 @@ export struct HealthRunningRow {
             Span(this.healthModelVM.stepCount > 0 ? this.healthModelVM.stepCount.toString() : '--')
               .fontSize($r('sys.float.Body_L'))
               .fontWeight(FontWeight.Bold)
-              .fontColor(Color.Black)
+              .fontColor($r('sys.color.font_primary'))
             Span($r('app.string.health_step_count_unit'))
               .fontSize($r('sys.float.Caption_M'))
               .fontColor($r('sys.color.mask_secondary'))
@@ -109,7 +109,7 @@ export struct HealthRunningRow {
     .height($r('app.float.vp_120'))
     .width('100%')
     .clip(true)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
   }
 
   @Builder
@@ -133,18 +133,18 @@ export struct HealthRunningRow {
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
-            .fontColor(Color.Black)
+            .fontColor($r('sys.color.font_primary'))
         } else if (valueType === 1) {
           Span(this.healthModelVM.exerciseDuration > 0 ? this.healthModelVM.exerciseDuration.toString() : '--')
             .fontSize($r('sys.float.Title_S'))
-            .fontColor(Color.Black)
+            .fontColor($r('sys.color.font_primary'))
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
         } else {
           Span(this.healthModelVM.travelDistance > 0 ? this.healthModelVM.travelDistance.toString() : '--')
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
-            .fontColor(Color.Black)
+            .fontColor($r('sys.color.font_primary'))
             .fontSize($r('sys.float.Title_S'))
         }
         Span(unit)

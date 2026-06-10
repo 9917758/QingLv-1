@@ -1,0 +1,616 @@
+{
+  "string": [
+    {
+      "name": "health_module_name",
+      "value": "Health"
+    },
+    {
+      "name": "person_info_input_name",
+      "value": "Set Personal Info"
+    },
+    {
+      "name": "person_info_input_next_name",
+      "value": "Personal Info Input"
+    },
+    {
+      "name": "health_Activity_heat",
+      "value": "Calories"
+    },
+    {
+      "name": "health_Activity_heat_unit",
+      "value": "/500 kcal"
+    },
+    {
+      "name": "health_exercise_duration",
+      "value": "Exercise"
+    },
+    {
+      "name": "health_exercise_duration_unit",
+      "value": "/60 min"
+    },
+    {
+      "name": "health_travel_distance",
+      "value": "Distance"
+    },
+    {
+      "name": "health_travel_distance_unit",
+      "value": "/5km"
+    },
+    {
+      "name": "health_step_count",
+      "value": "Steps Today"
+    },
+    {
+      "name": "health_step_count_unit",
+      "value": "/6000 steps"
+    },
+    {
+      "name": "health_knowledge_title",
+      "value": "Health Knowledge"
+    },
+    {
+      "name": "health_all_title",
+      "value": "All"
+    },
+    {
+      "name": "health_eat_name",
+      "value": "Healthy Diet"
+    },
+    {
+      "name": "health_intermittent_fasting",
+      "value": "Intermittent Fasting"
+    },
+    {
+      "name": "health_date_input_name",
+      "value": "Health Data"
+    },
+    {
+      "name": "health_today_exercise_time",
+      "value": "Today's Exercise (min)"
+    },
+    {
+      "name": "health_today_exercise_consumption",
+      "value": "Today's Calories (kcal)"
+    },
+    {
+      "name": "health_today_status",
+      "value": "Today's Body Status"
+    },
+    {
+      "name": "health_bmi_title",
+      "value": "BMI"
+    },
+    {
+      "name": "health_bmi_type_underweight",
+      "value": "Underweight"
+    },
+    {
+      "name": "health_bmi_type_normal",
+      "value": "Normal"
+    },
+    {
+      "name": "health_bmi_type_overweight",
+      "value": "Overweight"
+    },
+    {
+      "name": "health_bmi_type_obesity",
+      "value": "Obesity"
+    },
+    {
+      "name": "health_bmi_type_bodyFatPercentage",
+      "value": "Body Fat %"
+    },
+    {
+      "name": "health_bmi_type_fatWeight",
+      "value": "Fat Weight"
+    },
+    {
+      "name": "health_bmi_weight",
+      "value": "Weight"
+    },
+    {
+      "name": "health_bmi_weight_placeholder",
+      "value": "0 kg"
+    },
+    {
+      "name": "health_bmi_waistCircumference",
+      "value": "Waist"
+    },
+    {
+      "name": "health_bmi_waistCircumference_placeholder",
+      "value": "0 cm"
+    },
+    {
+      "name": "health_bmi_hipCircumference",
+      "value": "Hip"
+    },
+    {
+      "name": "health_bmi_hipCircumference_placeholder",
+      "value": "0 cm"
+    },
+    {
+      "name": "health_bmi_bloodSugar",
+      "value": "Blood Sugar"
+    },
+    {
+      "name": "health_bmi_bloodSugar_placeholder",
+      "value": "0 mmol/L"
+    },
+    {
+      "name": "health_bmi_bloodPressure",
+      "value": "Blood Pressure"
+    },
+    {
+      "name": "health_bmi_bloodPressure_placeholder",
+      "value": "0 mmHg"
+    },
+    {
+      "name": "health_bmi_bloodPressureSystolic",
+      "value": "Systolic"
+    },
+    {
+      "name": "health_bmi_bloodPressureSystolic_placeholder",
+      "value": "0 mmHg"
+    },
+    {
+      "name": "health_bmi_bloodPressureDiastolic",
+      "value": "Diastolic"
+    },
+    {
+      "name": "health_bmi_bloodPressureDiastolic_placeholder",
+      "value": "0 mmHg"
+    },
+    {
+      "name": "health_bmi_heartRate",
+      "value": "Heart Rate"
+    },
+    {
+      "name": "health_bmi_heartRate_placeholder",
+      "value": "0 bpm"
+    },
+    {
+      "name": "health_knowledge_list_title",
+      "value": "Health Knowledge"
+    },
+    {
+      "name": "health_bmi_kilogram",
+      "value": "kg"
+    },
+    {
+      "name": "health_bmi_current_fat_per",
+      "value": "%"
+    },
+    {
+      "name": "health_dialog_cancel",
+      "value": "Cancel"
+    },
+    {
+      "name": "health_dialog_confirm",
+      "value": "Confirm"
+    },
+    {
+      "name": "health_dialog_height_title",
+      "value": "Height"
+    },
+    {
+      "name": "health_dialog_date_title",
+      "value": "Date of Birth"
+    },
+    {
+      "name": "health_sex_man",
+      "value": "Male"
+    },
+    {
+      "name": "health_sex_woman",
+      "value": "Female"
+    },
+    {
+      "name": "health_info_hours",
+      "value": "h"
+    },
+    {
+      "name": "health_info_minute",
+      "value": "min"
+    },
+    {
+      "name": "health_report_status",
+      "value": "Good"
+    },
+    {
+      "name": "health_report_status_desc",
+      "value": "Today's Status"
+    },
+    {
+      "name": "health_ai_agent_title",
+      "value": "AI Health Advisor"
+    },
+    {
+      "name": "health_ai_agent_subtitle",
+      "value": "Smart Q&A based on your health data"
+    },
+    {
+      "name": "health_ai_input_placeholder",
+      "value": "Ask your health question..."
+    },
+    {
+      "name": "health_ai_send",
+      "value": "Send"
+    },
+    {
+      "name": "health_ai_history",
+      "value": "History"
+    },
+    {
+      "name": "health_ai_new_chat",
+      "value": "New Chat"
+    },
+    {
+      "name": "health_ai_history_title",
+      "value": "Chat History"
+    },
+    {
+      "name": "health_ai_new_chat_btn",
+      "value": "New Conversation"
+    },
+    {
+      "name": "health_score_title",
+      "value": "Health Score"
+    },
+    {
+      "name": "health_suggestion_title",
+      "value": "Health Tips"
+    },
+    {
+      "name": "health_anomaly_title",
+      "value": "Alerts"
+    },
+    {
+      "name": "health_achievement_title",
+      "value": "Achievements"
+    },
+    {
+      "name": "health_bmi_calculator",
+      "value": "BMI Calculator"
+    },
+    {
+      "name": "health_water_title",
+      "value": "Water Intake"
+    },
+    {
+      "name": "health_goal_title",
+      "value": "Health Goal"
+    },
+    {
+      "name": "health_reminder_title",
+      "value": "Reminders"
+    },
+    {
+      "name": "health_report_title",
+      "value": "Health Report"
+    },
+    {
+      "name": "health_history_title",
+      "value": "History"
+    },
+    {
+      "name": "health_weekly_report",
+      "value": "Weekly Report"
+    },
+    {
+      "name": "health_monthly_report",
+      "value": "Monthly Report"
+    },
+    {
+      "name": "health_export_csv",
+      "value": "Export CSV"
+    },
+    {
+      "name": "health_export_json",
+      "value": "Export JSON"
+    },
+    {
+      "name": "health_weight_kg",
+      "value": "kg"
+    },
+    {
+      "name": "health_weight_trend",
+      "value": "Weight Trend"
+    },
+    {
+      "name": "health_bodyfat_trend",
+      "value": "Body Fat Trend"
+    },
+    {
+      "name": "health_bloodpressure",
+      "value": "Blood Pressure"
+    },
+    {
+      "name": "health_heartrate",
+      "value": "Heart Rate"
+    },
+    {
+      "name": "health_max",
+      "value": "Max"
+    },
+    {
+      "name": "health_min",
+      "value": "Min"
+    },
+    {
+      "name": "health_change",
+      "value": "Change"
+    },
+    {
+      "name": "health_no_data",
+      "value": "No Data"
+    },
+    {
+      "name": "health_thinking",
+      "value": "Thinking..."
+    },
+    {
+      "name": "health_sleep",
+      "value": "Sleep"
+    },
+    {
+      "name": "health_blood_sugar",
+      "value": "Blood Sugar"
+    },
+    {
+      "name": "health_bmi_advice_underweight",
+      "value": "Your weight is underweight. Consider increasing nutrition intake and exercise."
+    },
+    {
+      "name": "health_bmi_advice_normal",
+      "value": "Your weight is normal. Keep up the healthy lifestyle."
+    },
+    {
+      "name": "health_bmi_advice_overweight",
+      "value": "Your weight is overweight. Consider controlling diet and increasing aerobic exercise."
+    },
+    {
+      "name": "health_bmi_advice_obesity",
+      "value": "Your weight is obese. Consider a weight loss plan and consult a doctor if needed."
+    },
+    {
+      "name": "health_bmi_advice_default",
+      "value": "Please maintain a healthy lifestyle."
+    },
+    {
+      "name": "health_previous_week",
+      "value": "Last Week"
+    },
+    {
+      "name": "health_previous_month",
+      "value": "Last Month"
+    },
+    {
+      "name": "health_body_fat_rate",
+      "value": "Body Fat %"
+    },
+    {
+      "name": "health_fat_weight",
+      "value": "Fat Weight"
+    },
+    {
+      "name": "health_score_label",
+      "value": "Your Health Score: "
+    },
+    {
+      "name": "health_score_unit",
+      "value": "pts"
+    },
+    {
+      "name": "health_exceeded_prefix",
+      "value": "Exceeded "
+    },
+    {
+      "name": "health_percentile_suffix",
+      "value": "% of peers"
+    },
+    {
+      "name": "health_weight_kg_label",
+      "value": "Weight(kg)"
+    },
+    {
+      "name": "health_height_cm_label",
+      "value": "Height(cm)"
+    },
+    {
+      "name": "health_age_label",
+      "value": "Age"
+    },
+    {
+      "name": "health_control_advice",
+      "value": "Control Advice"
+    },
+    {
+      "name": "health_no_export_data",
+      "value": "No data to export"
+    },
+    {
+      "name": "health_export_failed",
+      "value": "Export failed:"
+    },
+    {
+      "name": "health_no_data_yet",
+      "value": "No data yet"
+    },
+    {
+      "name": "health_no_records_yet",
+      "value": "No records yet"
+    },
+    {
+      "name": "health_go_input_data_hint",
+      "value": "Go to Health Data page to add your first record"
+    },
+    {
+      "name": "health_weight_prefix",
+      "value": "Weight"
+    },
+    {
+      "name": "health_blood_glucose",
+      "value": "Blood Glucose"
+    },
+    {
+      "name": "app_name_qinglv",
+      "value": "QingLv"
+    },
+    {
+      "name": "app_private_health_assistant",
+      "value": "Your Personal Health Assistant"
+    },
+    {
+      "name": "login_username_placeholder",
+      "value": "Enter username"
+    },
+    {
+      "name": "login_password_placeholder",
+      "value": "Enter password"
+    },
+    {
+      "name": "login_loading",
+      "value": "Please wait..."
+    },
+    {
+      "name": "login_register",
+      "value": "Register"
+    },
+    {
+      "name": "login_login",
+      "value": "Login"
+    },
+    {
+      "name": "login_has_account",
+      "value": "Already have an account?"
+    },
+    {
+      "name": "login_no_account",
+      "value": "No account?"
+    },
+    {
+      "name": "login_go_login",
+      "value": "Login"
+    },
+    {
+      "name": "login_go_register",
+      "value": "Register"
+    },
+    {
+      "name": "login_validation_error",
+      "value": "Username at least 2 chars, password at least 6 chars"
+    },
+    {
+      "name": "login_server_label",
+      "value": "Server:"
+    },
+    {
+      "name": "reminder_edit_hint",
+      "value": "Tap a plan to edit time and details, auto-reminds at scheduled time"
+    },
+    {
+      "name": "reminder_type_water",
+      "value": "Water"
+    },
+    {
+      "name": "reminder_type_medication",
+      "value": "Medication"
+    },
+    {
+      "name": "reminder_completed",
+      "value": "Done"
+    },
+    {
+      "name": "reminder_edit_title",
+      "value": "Edit Reminder Plan"
+    },
+    {
+      "name": "reminder_name_label",
+      "value": "Name"
+    },
+    {
+      "name": "reminder_name_placeholder",
+      "value": "e.g. BP meds, morning water"
+    },
+    {
+      "name": "reminder_type_label",
+      "value": "Type"
+    },
+    {
+      "name": "reminder_time_label",
+      "value": "Time"
+    },
+    {
+      "name": "reminder_dosage_label",
+      "value": "Dosage"
+    },
+    {
+      "name": "reminder_dosage_placeholder",
+      "value": "e.g. 1 tablet, 250ml"
+    },
+    {
+      "name": "reminder_save",
+      "value": "Save"
+    },
+    {
+      "name": "bmi_calculator_title",
+      "value": "BMI Calculator"
+    },
+    {
+      "name": "bmi_height_label",
+      "value": "Height (cm)"
+    },
+    {
+      "name": "bmi_weight_label",
+      "value": "Weight (kg)"
+    },
+    {
+      "name": "bmi_calculate_btn",
+      "value": "Calculate BMI"
+    },
+    {
+      "name": "bmi_healthy_range",
+      "value": "Healthy Weight Range"
+    },
+    {
+      "name": "anomaly_event_title",
+      "value": "Health Events"
+    },
+    {
+      "name": "anomaly_no_records",
+      "value": "No anomaly records, keep it up!"
+    },
+    {
+      "name": "anomaly_this_week",
+      "value": "This week"
+    },
+    {
+      "name": "anomaly_events_suffix",
+      "value": " anomaly events"
+    },
+    {
+      "name": "anomaly_severity_warning",
+      "value": "Warning"
+    },
+    {
+      "name": "anomaly_severity_info",
+      "value": "Info"
+    },
+    {
+      "name": "achievement_badge_title",
+      "value": "Achievement Badges"
+    },
+    {
+      "name": "achievement_locked",
+      "value": "Locked"
+    },
+    {
+      "name": "achievement_unlocked_prefix",
+      "value": "Unlocked"
+    },
+    {
+      "name": "achievement_suffix",
+      "value": " achievements"
+    }
+  ]
+}

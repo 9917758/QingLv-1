@@ -4,7 +4,9 @@
 import { MonthlyReportData } from '../types/MonthlyReportTypes';
 import { MONTHLY_REPORT_DATA } from '../mock/MonthlyReportMockData';
 import { HealthDataService } from '../service/HealthDataService';
-import { aggregateRecords, getChangeText } from '../util/ReportAggregator';
+import { aggregateRecords, getChangeText, comparePeriods, formatDelta } from '../util/ReportAggregator';
+import type { PeriodComparison } from '../types/MonthlyReportTypes';
+import { I18nUtil } from 'common';
 
 @ObservedV2
 export class MonthlyReportModel {
@@ -25,7 +27,7 @@ export class MonthlyReportModel {
     const now = new Date();
     for (let m = 0; m < 5; m++) {
       const date = new Date(now.getFullYear(), now.getMonth() - m, 1);
-      options.push(`${date.getFullYear()}年${date.getMonth() + 1}月`);
+      options.push(I18nUtil.formatYearMonth(date.getFullYear(), date.getMonth() + 1));
     }
     return options;
   }
@@ -41,9 +43,9 @@ export class MonthlyReportModel {
     const endDate = new Date(now.getFullYear(), now.getMonth() - monthIndex + 1, 0);
 
     const records = HealthDataService.instance.getRecordsByDateRange(startDate.getTime(), endDate.getTime());
-    const monthStr = `${startDate.getFullYear()}年${startDate.getMonth() + 1}月`;
-    const startStr = `${startDate.getFullYear()}年${startDate.getMonth() + 1}月1日`;
-    const endStr = `${startDate.getMonth() + 1}月${endDate.getDate()}日`;
+    const monthStr = I18nUtil.formatYearMonth(startDate.getFullYear(), startDate.getMonth() + 1);
+    const startStr = I18nUtil.formatFullDate(startDate.getFullYear(), startDate.getMonth() + 1, 1);
+    const endStr = I18nUtil.formatDate(startDate.getMonth() + 1, endDate.getDate());
 
     if (records.length === 0) {
       return {
@@ -56,12 +58,32 @@ export class MonthlyReportModel {
     }
 
     const agg = aggregateRecords(records);
+
+    // 计算上一月对比
+    let comparison: PeriodComparison | undefined;
+    const prevStartDate = new Date(now.getFullYear(), now.getMonth() - monthIndex - 1, 1);
+    const prevEndDate = new Date(now.getFullYear(), now.getMonth() - monthIndex, 0);
+    const prevRecords = HealthDataService.instance.getRecordsByDateRange(prevStartDate.getTime(), prevEndDate.getTime());
+    if (prevRecords.length > 0) {
+      const prevAgg = aggregateRecords(prevRecords);
+      const deltas = comparePeriods(agg, prevAgg);
+      comparison = {
+        weightDelta: deltas.weightDelta,
+        bodyFatDelta: deltas.bodyFatDelta,
+        systolicDelta: deltas.systolicDelta,
+        diastolicDelta: deltas.diastolicDelta,
+        heartRateDelta: deltas.heartRateDelta,
+        previousLabel: I18nUtil.t('report.previous_month')
+      };
+    }
+
     return {
       startDate: startStr, endDate: endStr, dateRange: monthStr,
       weightTrend: { maxWeight: agg.maxWeight, minWeight: agg.minWeight, change: agg.weightChange, chartData: agg.weightChartData },
       bodyFatTrend: { maxBodyFat: agg.maxBodyFat, minBodyFat: agg.minBodyFat, change: agg.bodyFatChange, chartData: agg.bodyFatChartData },
       bloodPressure: { systolic: agg.avgSystolic, diastolic: agg.avgDiastolic, pulse: 0 },
-      heartRate: { maxHeartRate: agg.maxHeartRate, minHeartRate: agg.minHeartRate, restingHeartRate: agg.avgHeartRate, averageHeartRate: agg.avgHeartRate }
+      heartRate: { maxHeartRate: agg.maxHeartRate, minHeartRate: agg.minHeartRate, restingHeartRate: agg.avgHeartRate, averageHeartRate: agg.avgHeartRate },
+      comparison
     };
   }
 
@@ -81,5 +103,15 @@ export class MonthlyReportModel {
 
   public getBodyFatChangeText(): string {
     return getChangeText(this.reportData.bodyFatTrend.change);
+  }
+
+  public getComparisonWeightText(): string {
+    if (!this.reportData.comparison) return '';
+    return formatDelta(this.reportData.comparison.weightDelta, '公斤');
+  }
+
+  public getComparisonBodyFatText(): string {
+    if (!this.reportData.comparison) return '';
+    return formatDelta(this.reportData.comparison.bodyFatDelta, '%');
   }
 }

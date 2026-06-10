@@ -98,7 +98,7 @@ export struct ScanningDevicePage {
       $r('app.string.scanning_device_scan_tip') :
       $r('app.string.scanning_device_find_tip'))
         .fontSize($r('sys.float.Title_S'))
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .fontWeight(FontWeight.Medium)
 
       Blank().height($r('app.float.vp_4'))
@@ -142,7 +142,7 @@ export struct ScanningDevicePage {
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Start)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
   }
 
   build() {

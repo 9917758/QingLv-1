@@ -74,7 +74,7 @@ struct popup {
         ? $r('app.string.device_pair_status_connect_success')
         : $r('app.string.device_pair_status_connect_fail'))
         .fontSize($r('sys.float.Subtitle_L'))
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
 
       Blank().height($r('app.float.vp_20'))
 
@@ -84,7 +84,7 @@ struct popup {
             .size({ width: 21, height: $r('app.float.vp_10') })
 
           Text(this.pairedDeviceVM.battery + '%')
-            .fontColor(Color.Black)
+            .fontColor($r('sys.color.font_primary'))
             .fontSize($r('sys.float.Body_L'))
         }
         .justifyContent(FlexAlign.Center)
@@ -133,7 +133,7 @@ struct popup {
 
       Blank().height($r('app.float.vp_16'))
     }
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .width(this.breakpointModel.dialogWidth)
     .borderRadius($r('sys.float.corner_radius_level12'))
     .onClick(() => {

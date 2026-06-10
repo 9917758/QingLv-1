@@ -173,7 +173,7 @@ export struct MinePage {
     }
     .backgroundImage(getMedia('app.media.profile_background'))
     .backgroundImageSize(ImageSize.FILL)
-    .backgroundColor('#f2f3f5')
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .alignItems(HorizontalAlign.Start)
     .width('100%')
     .height('100%')

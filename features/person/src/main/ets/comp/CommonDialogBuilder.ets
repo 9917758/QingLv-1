@@ -4,7 +4,7 @@ import { OHDialogModel } from 'common'
 export function commonDialogBuilder(vm: OHDialogModel) {
   Text(vm.subtitle)
     .fontSize($r('sys.float.Body_M'))
-    .fontColor(Color.Black)
+    .fontColor($r('sys.color.font_primary'))
     .lineHeight($r('app.float.vp_22'))
     .maxLines(-1)
 

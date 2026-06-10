@@ -1,20 +1,21 @@
 # 清律 - 智能健康管理 App（鸿蒙端）
 
-> 基于 HarmonyOS ArkTS 开发的个人健康管理应用，支持健康数据追踪、AI 健康顾问、后端云同步。
+> 基于 HarmonyOS ArkTS 开发的个人健康管理应用，支持健康数据追踪、AI 健康顾问、后端云同步、深色模式、多语言。
 
 ## 功能特性
 
 ### 健康数据管理
 - 体重（公斤）、BMI、体脂率、血压、心率、血糖等指标录入与追踪
-- 周度/月度健康报告，含趋势图表
+- 周度/月度健康报告，含趋势图表与上一周期对比
 - 健康评分系统（0-100 分，多维度综合评估）
 - 健康异常事件检测（基于实际数据：心率、血压、血糖、BMI 阈值判断）
+- 健康数据 CSV/JSON 导出
 
 ### AI 健康顾问
 - 基于用户健康数据的个性化 AI 问答
 - 多轮对话，支持会话管理（新建/切换/删除）
 - 结合收藏的健康知识文章给出建议
-- 后端自动查询用户数据作为上下文
+- 后端自动查询用户数据、体重目标、饮水进度作为上下文
 
 ### 健康知识
 - 30 篇专业健康知识文章（饮食/运动/睡眠/心理）
@@ -32,6 +33,15 @@
 - 服务器地址可配置（设置页）
 - 离线优先：本地缓存 + 异步 API 刷新
 
+### 深色模式
+- 支持浅色/深色/跟随系统三种主题模式
+- 设置页一键切换，即时生效
+- 所有页面和组件自动适配
+
+### 多语言
+- 支持中文/英文，跟随系统语言自动切换
+- 所有模块配有英文资源文件
+
 ## 项目结构
 
 ```
@@ -44,39 +54,27 @@ QingLv-1/
 │   │       │   ├── NetworkConfig.ets  # 后端地址配置
 │   │       │   ├── AuthToken.ets      # JWT Token 管理
 │   │       │   ├── ApiTypes.ets       # API 响应类型定义
+│   │       │   ├── ThemeUtil.ets      # 主题管理（浅色/深色/跟随系统）
+│   │       │   ├── I18nUtil.ets       # 国际化工具（跟随系统语言）
 │   │       │   └── FavoriteUtil.ets   # 收藏工具（按用户隔离）
 │   │       └── ...
 │   └── OHRouter/                  # 路由模块
 ├── features/
 │   ├── health/                    # 健康模块
-│   │   └── src/main/ets/
-│   │       ├── service/               # 业务服务层
-│   │       │   ├── HealthDataService.ets
-│   │       │   ├── WaterIntakeService.ets
-│   │       │   ├── ReminderService.ets
-│   │       │   ├── HealthScoreService.ets
-│   │       │   ├── HealthSuggestionService.ets
-│   │       │   ├── CheckinStreakService.ets
-│   │       │   ├── AchievementService.ets
-│   │       │   ├── AnomalyHistoryService.ets
-│   │       │   └── SleepQualityService.ets
-│   │       ├── viewmodel/             # 视图模型
-│   │       ├── views/                 # 页面
-│   │       │   ├── HealthPage.ets         # 健康首页
-│   │       │   ├── BackendLoginPage.ets   # 后端登录页
-│   │       │   ├── AiAgentPage.ets        # AI 健康顾问
-│   │       │   ├── HealthReportPage.ets
-│   │       │   ├── WeeklyReportPage.ets
-│   │       │   ├── MonthlyReportPage.ets
-│   │       │   └── ...
-│   │       ├── comp/                  # 组件
-│   │       ├── types/                 # 类型定义
-│   │       ├── mock/                  # Mock 数据
-│   │       └── constants/
-│   ├── device/                    # 设备模块
-│   └── person/                    # 个人中心模块
-├── components/
-│   └── aggregated_login/          # 登录组件
+│   │   └── src/main/
+│   │       ├── ets/
+│   │       │   ├── service/           # 业务服务层
+│   │       │   ├── viewmodel/         # 视图模型
+│   │       │   ├── views/             # 页面
+│   │       │   ├── comp/              # 组件
+│   │       │   ├── types/             # 类型定义
+│   │       │   └── mock/              # Mock 数据
+│   │       └── resources/
+│   │           ├── base/element/string.json   # 中文字符串
+│   │           └── en_US/element/string.json  # 英文翻译
+│   ├── person/                    # 个人中心模块
+│   └── device/                    # 设备模块
+├── components/                    # 业务组件
 └── products/
     └── entry/                     # 应用入口
 ```
@@ -116,6 +114,10 @@ QingLv-1/
 - 收藏文章: `fav_${userId}`
 - 健康目标: `health_goal_weight_${userId}`
 - 异常历史: `health_anomaly_history_${userId}`
+
+## 版本历史
+
+详见 [CHANGELOG.md](./CHANGELOG.md)
 
 ## 版本历史
 

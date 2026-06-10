@@ -99,8 +99,8 @@ export class CheckinStreakService {
     this.streaks = [
       { planId: 'mock_water_1', planName: '早晨喝水', currentStreak: 12, longestStreak: 15, totalCheckins: 28, lastCheckinDate: this.getTodayStr() },
       { planId: 'mock_water_2', planName: '下午喝水', currentStreak: 8, longestStreak: 12, totalCheckins: 25, lastCheckinDate: this.getTodayStr() },
-      { planId: 'mock_med_1', planName: '降压药', currentStreak: 20, longestStreak: 20, totalCheckins: 30, lastCheckinDate: this.getTodayStr() },
-      { planId: 'mock_water_3', planName: '睡前喝水', currentStreak: 5, longestStreak: 10, totalCheckins: 22, lastCheckinDate: this.getTodayStr() },
+      { planId: 'mock_med_1', planName: '血压药', currentStreak: 20, longestStreak: 20, totalCheckins: 30, lastCheckinDate: this.getTodayStr() },
+      { planId: 'mock_water_3', planName: '晚上喝水', currentStreak: 5, longestStreak: 10, totalCheckins: 22, lastCheckinDate: this.getTodayStr() },
       { planId: 'mock_med_2', planName: '维生素', currentStreak: 15, longestStreak: 18, totalCheckins: 27, lastCheckinDate: this.getTodayStr() }
     ];
     this.updateTotalStreakDays();

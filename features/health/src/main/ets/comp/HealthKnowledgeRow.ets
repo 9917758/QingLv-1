@@ -58,7 +58,7 @@ export struct HealthKnowledgeRow {
         Row() {
           Row({ space: 6 }) {
             Text($r('app.string.health_knowledge_title'))
-              .fontColor(Color.Black)
+              .fontColor($r('sys.color.font_primary'))
               .fontSize($r('sys.float.Body_L'))
               .fontWeight(FontWeight.Medium)
             // 换一换按钮
@@ -118,14 +118,14 @@ export struct HealthKnowledgeRow {
               if (this.todayArticle.tag) {
                 Text(this.todayArticle.tag)
                   .fontSize($r('sys.float.Caption_S'))
-                  .fontColor(Color.White)
+                  .fontColor($r('sys.color.font_on_primary'))
                   .padding({ left: 6, right: 6, top: 2, bottom: 2 })
                   .backgroundColor(this.tagColors[this.todayArticle.tag] ?? '#888888')
                   .borderRadius($r('sys.float.corner_radius_level2'))
               }
               Blank().height($r('app.float.vp_4'))
               Text(this.todayArticle.subTitle)
-                .fontColor(Color.White)
+                .fontColor($r('sys.color.font_on_primary'))
                 .fontSize($r('sys.float.Body_M'))
                 .fontWeight(FontWeight.Medium)
                 .maxLines(2)
@@ -150,7 +150,7 @@ export struct HealthKnowledgeRow {
           })
         }
       }
-      .backgroundColor(Color.White)
+      .backgroundColor($r('sys.color.comp_background_list_card'))
       .width('100%')
       .borderRadius($r('sys.float.corner_radius_level7'))
       .padding($r('app.float.vp_16'))

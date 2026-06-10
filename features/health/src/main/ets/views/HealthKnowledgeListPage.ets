@@ -67,7 +67,7 @@ export struct HealthKnowledgeListPage {
           .height(36)
           .fontSize(14)
           .borderRadius(18)
-          .backgroundColor('#F5F5F5')
+          .backgroundColor($r('sys.color.comp_background_list_card'))
           .padding({ left: 16, right: 16 })
           .onChange((value: string) => {
             this.searchText = value;
@@ -125,7 +125,7 @@ export struct HealthKnowledgeListPage {
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Start)
-    .backgroundColor('#FFF1F3F5')
+    .backgroundColor($r('sys.color.comp_background_list_card'))
   }
 
   build() {

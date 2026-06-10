@@ -93,15 +93,15 @@ export class AnomalyHistoryService {
     if (inputVM.heartRate > 0 && !todayTypes.has('heartrate')) {
       if (inputVM.heartRate > 100) {
         newEvents.push(this.createEvent(
-          'heartrate', '💓', '心率偏快',
-          `静息心率 ${inputVM.heartRate} 次/分，超过正常范围（60-100）`,
+          'heartrate', '💓', '心率偏高',
+          `当前心率 ${inputVM.heartRate} 次/分，超过正常范围（60-100）`,
           `${inputVM.heartRate}次/分`,
           inputVM.heartRate > 120 ? 'danger' : 'warning'
         ));
       } else if (inputVM.heartRate < 50) {
         newEvents.push(this.createEvent(
-          'heartrate', '💓', '心率偏慢',
-          `静息心率 ${inputVM.heartRate} 次/分，低于正常范围（60-100）`,
+          'heartrate', '💓', '心率偏低',
+          `当前心率 ${inputVM.heartRate} 次/分，低于正常范围（60-100）`,
           `${inputVM.heartRate}次/分`,
           'warning'
         ));
@@ -115,14 +115,14 @@ export class AnomalyHistoryService {
       if (sys >= 140 || dia >= 90) {
         newEvents.push(this.createEvent(
           'bloodpressure', '❤️', '血压偏高',
-          `血压 ${sys}/${dia} mmHg，达到高血压标准（≥140/90）`,
+          `当前血压 ${sys}/${dia} mmHg，建议关注饮食和运动`,
           `${sys}/${dia}mmHg`,
           sys >= 160 || dia >= 100 ? 'danger' : 'warning'
         ));
       } else if (sys < 90 || dia < 60) {
         newEvents.push(this.createEvent(
           'bloodpressure', '❤️', '血压偏低',
-          `血压 ${sys}/${dia} mmHg，低于正常范围（90/60）`,
+          `当前血压 ${sys}/${dia} mmHg，注意休息和营养`,
           `${sys}/${dia}mmHg`,
           'warning'
         ));
@@ -134,14 +134,14 @@ export class AnomalyHistoryService {
       if (inputVM.bloodSugar > 7.0) {
         newEvents.push(this.createEvent(
           'bloodsugar', '🩸', '血糖偏高',
-          `空腹血糖 ${inputVM.bloodSugar} mmol/L，超过正常范围（3.9-6.1）`,
+          `当前血糖 ${inputVM.bloodSugar} mmol/L，建议控制饮食`,
           `${inputVM.bloodSugar}mmol/L`,
           inputVM.bloodSugar > 11.1 ? 'danger' : 'warning'
         ));
       } else if (inputVM.bloodSugar < 3.9) {
         newEvents.push(this.createEvent(
           'bloodsugar', '🩸', '血糖偏低',
-          `空腹血糖 ${inputVM.bloodSugar} mmol/L，低于正常范围（3.9-6.1）`,
+          `当前血糖 ${inputVM.bloodSugar} mmol/L，注意补充糖分`,
           `${inputVM.bloodSugar}mmol/L`,
           'warning'
         ));
@@ -152,22 +152,22 @@ export class AnomalyHistoryService {
     if (inputVM.bmiValue > 0 && !todayTypes.has('bmi')) {
       if (inputVM.bmiValue >= 28) {
         newEvents.push(this.createEvent(
-          'bmi', '⚖️', 'BMI 肥胖',
-          `BMI ${inputVM.bmiValue}，超过肥胖标准（≥28）`,
+          'bmi', '⚖️', '肥胖',
+          `BMI 为 ${inputVM.bmiValue}，建议增加运动量`,
           `${inputVM.bmiValue}`,
           'danger'
         ));
       } else if (inputVM.bmiValue >= 24) {
         newEvents.push(this.createEvent(
-          'bmi', '⚖️', 'BMI 偏胖',
-          `BMI ${inputVM.bmiValue}，超过正常范围（18.5-24）`,
+          'bmi', '⚖️', '超重',
+          `BMI 为 ${inputVM.bmiValue}，建议适当运动`,
           `${inputVM.bmiValue}`,
           'warning'
         ));
       } else if (inputVM.bmiValue < 18.5) {
         newEvents.push(this.createEvent(
-          'bmi', '⚖️', 'BMI 偏瘦',
-          `BMI ${inputVM.bmiValue}，低于正常范围（18.5-24）`,
+          'bmi', '⚖️', '偏瘦',
+          `BMI 为 ${inputVM.bmiValue}，建议加强营养`,
           `${inputVM.bmiValue}`,
           'warning'
         ));

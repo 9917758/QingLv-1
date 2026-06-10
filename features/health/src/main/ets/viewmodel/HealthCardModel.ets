@@ -1,12 +1,12 @@
 @ObservedV2
 export class HealthCardModel {
   @Trace img: PixelMap | ResourceStr | DrawableDescriptor = ''
-  @Trace title: string = '';
+  @Trace title: ResourceStr = '';
   @Trace type: number = 1;
-  @Trace value: string = '';
-  @Trace diastolicValue?: string = '';
-  @Trace desc: string = '';
+  @Trace value: ResourceStr = '';
+  @Trace diastolicValue?: ResourceStr = '';
+  @Trace desc: ResourceStr = '';
   @Trace icon: PixelMap | ResourceStr | DrawableDescriptor = '';
-  @Trace timeStatus: string = '';
+  @Trace timeStatus: ResourceStr = '';
 }
 

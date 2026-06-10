@@ -3,7 +3,8 @@
  * 支持会话列表、多轮对话、新建/切换/删除会话
  */
 import { window } from '@kit.ArkUI';
-import { HttpUtil, AuthToken } from 'common';
+import { HttpUtil, AuthToken, ThemeUtil } from 'common';
+import type { ThemeColors } from 'common';
 import type {
   ApiResponse, ApiChatSession, ApiChatSessionList,
   ApiChatMessage, ApiChatMessageList, ApiChatSendResponse
@@ -38,6 +39,9 @@ export struct AiAgentPage {
   @Local sessions: ApiChatSession[] = [];
   @Local showSessionList: boolean = false;
   @Local statusBarHeight: number = 48;
+  @Computed get themeColors(): ThemeColors {
+    return ThemeUtil.instance.currentColors;
+  }
 
   async aboutToAppear(): Promise<void> {
     this.getStatusBarHeight();
@@ -199,14 +203,14 @@ export struct AiAgentPage {
     Column() {
       // 侧边栏头部
       Row() {
-        Text('历史对话')
+        Text($r('app.string.health_ai_history_title'))
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#333333')
+          .fontColor(this.themeColors.textPrimary)
         Blank()
         Text('✕')
           .fontSize(18)
-          .fontColor('#999999')
+          .fontColor(this.themeColors.textTertiary)
           .padding(8)
           .onClick(() => this.showSessionList = false)
       }
@@ -217,17 +221,17 @@ export struct AiAgentPage {
       Row() {
         Text('+')
           .fontSize(18)
-          .fontColor('#4ECDC4')
+          .fontColor(this.themeColors.accent)
           .fontWeight(FontWeight.Bold)
           .margin({ right: 8 })
-        Text('新建对话')
+        Text($r('app.string.health_ai_new_chat_btn'))
           .fontSize(15)
-          .fontColor('#4ECDC4')
+          .fontColor(this.themeColors.accent)
       }
       .width('100%')
       .height(48)
       .padding({ left: 16, right: 16 })
-      .backgroundColor('#E8F8F5')
+      .backgroundColor(this.themeColors.accentLight)
       .borderRadius(10)
       .margin({ left: 12, right: 12, bottom: 12 })
       .onClick(() => {
@@ -243,13 +247,13 @@ export struct AiAgentPage {
               Column() {
                 Text(session.title)
                   .fontSize(15)
-                  .fontColor(this.sessionId === session.id ? '#4ECDC4' : '#333333')
+                  .fontColor(this.sessionId === session.id ? this.themeColors.accent : this.themeColors.textPrimary)
                   .fontWeight(this.sessionId === session.id ? FontWeight.Medium : FontWeight.Normal)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                 Text(this.formatSessionTime(session.updated_at))
                   .fontSize(12)
-                  .fontColor('#BBBBBB')
+                  .fontColor(this.themeColors.textTertiary)
                   .margin({ top: 4 })
               }
               .alignItems(HorizontalAlign.Start)
@@ -263,7 +267,7 @@ export struct AiAgentPage {
             .width('100%')
             .height(60)
             .padding({ left: 16, right: 12 })
-            .backgroundColor(this.sessionId === session.id ? '#F0FFFE' : Color.White)
+            .backgroundColor(this.sessionId === session.id ? this.themeColors.accentLight : this.themeColors.backgroundCard)
             .borderRadius(8)
             .margin({ left: 8, right: 8, bottom: 4 })
             .onClick(() => this.switchSession(session.id))
@@ -276,7 +280,7 @@ export struct AiAgentPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor(this.themeColors.backgroundPrimary)
   }
 
   // ─── 消息气泡 ───
@@ -291,15 +295,15 @@ export struct AiAgentPage {
       Column() {
         Text(msg.content)
           .fontSize(15)
-          .fontColor(msg.role === 'user' ? Color.White : '#333333')
+          .fontColor(msg.role === 'user' ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
           .padding(12)
           .borderRadius(16)
-          .backgroundColor(msg.role === 'user' ? '#4ECDC4' : '#F5F5F5')
+          .backgroundColor(msg.role === 'user' ? this.themeColors.accent : this.themeColors.backgroundInput)
           .constraintSize({ maxWidth: '85%' })
 
         Text(msg.time)
           .fontSize(11)
-          .fontColor('#BBBBBB')
+          .fontColor(this.themeColors.textTertiary)
           .margin({ top: 4 })
       }
       .alignItems(msg.role === 'user' ? HorizontalAlign.End : HorizontalAlign.Start)
@@ -315,13 +319,13 @@ export struct AiAgentPage {
   @Builder
   loadingIndicator() {
     Row({ space: 4 }) {
-      Text('正在思考')
+      Text($r('app.string.health_thinking'))
         .fontSize(14)
-        .fontColor('#999999')
+        .fontColor(this.themeColors.textTertiary)
       LoadingProgress()
         .width(20)
         .height(20)
-        .color('#4ECDC4')
+        .color(this.themeColors.accent)
     }
     .padding(12)
     .margin({ left: 12, top: 6 })
@@ -335,37 +339,37 @@ export struct AiAgentPage {
           Row() {
             Text('←')
               .fontSize(22)
-              .fontColor('#333333')
+              .fontColor(this.themeColors.textPrimary)
               .padding(8)
               .onClick(() => phoneRouterControl.popPage())
-            Text('AI 健康顾问')
+            Text($r('app.string.health_ai_agent_title'))
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
-              .fontColor('#333333')
+              .fontColor(this.themeColors.textPrimary)
               .margin({ left: 8 })
             Blank()
-            Text('历史')
+            Text($r('app.string.health_ai_history'))
               .fontSize(14)
-              .fontColor('#4ECDC4')
+              .fontColor(this.themeColors.accent)
               .padding({ left: 12, right: 12, top: 6, bottom: 6 })
               .borderRadius(14)
-              .backgroundColor('#E8F8F5')
+              .backgroundColor(this.themeColors.accentLight)
               .onClick(() => this.showSessionList = !this.showSessionList)
-            Text('新对话')
+            Text($r('app.string.health_ai_new_chat'))
               .fontSize(14)
-              .fontColor(Color.White)
+              .fontColor(this.themeColors.textOnAccent)
               .padding({ left: 12, right: 12, top: 6, bottom: 6 })
               .borderRadius(14)
-              .backgroundColor('#4ECDC4')
+              .backgroundColor(this.themeColors.accent)
               .margin({ left: 8 })
               .onClick(() => this.createSession())
           }
           .width('100%')
           .height(56)
           .padding({ left: 12, right: 16 })
-          .backgroundColor(Color.White)
+          .backgroundColor(this.themeColors.backgroundPrimary)
           .borderWidth({ bottom: 1 })
-          .borderColor('#F0F0F0')
+          .borderColor(this.themeColors.divider)
 
           // 消息列表
           List() {
@@ -383,7 +387,7 @@ export struct AiAgentPage {
           }
           .layoutWeight(1)
           .width('100%')
-          .backgroundColor('#FAFAFA')
+          .backgroundColor(this.themeColors.backgroundSecondary)
           .edgeEffect(EdgeEffect.Spring)
           .scrollBar(BarState.Off)
 
@@ -393,16 +397,17 @@ export struct AiAgentPage {
               .layoutWeight(1)
               .height(44)
               .borderRadius(22)
-              .backgroundColor('#F5F5F5')
+              .backgroundColor(this.themeColors.backgroundInput)
               .padding({ left: 16, right: 16 })
               .fontSize(15)
+              .fontColor(this.themeColors.textPrimary)
               .onSubmit(() => this.sendMessage())
 
-            Button(this.isLoading ? '...' : '发送')
+            Button(this.isLoading ? '...' : $r('app.string.health_ai_send'))
               .height(44)
               .borderRadius(22)
-              .backgroundColor(this.isLoading ? '#CCCCCC' : '#4ECDC4')
-              .fontColor(Color.White)
+              .backgroundColor(this.isLoading ? this.themeColors.textTertiary : this.themeColors.accent)
+              .fontColor(this.themeColors.textOnAccent)
               .fontSize(15)
               .fontWeight(FontWeight.Medium)
               .enabled(!this.isLoading)
@@ -410,9 +415,9 @@ export struct AiAgentPage {
           }
           .width('100%')
           .padding({ left: 12, right: 12, top: 8, bottom: 12 })
-          .backgroundColor(Color.White)
+          .backgroundColor(this.themeColors.backgroundPrimary)
           .borderWidth({ top: 1 })
-          .borderColor('#F0F0F0')
+          .borderColor(this.themeColors.divider)
         }
         .width('100%')
         .height('100%')
@@ -425,7 +430,7 @@ export struct AiAgentPage {
           }
           .width('75%')
           .height('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor(this.themeColors.backgroundPrimary)
           .shadow({ radius: 16, color: '#33000000', offsetX: 4, offsetY: 0 })
 
           // 点击遮罩关闭

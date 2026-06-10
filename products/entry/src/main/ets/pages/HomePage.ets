@@ -197,7 +197,7 @@ export struct HomePage {
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
               .fontColor(this.reminderIconType === 0 ? '#4ECDC4' : '#FF6B6B')
-              .backgroundColor(Color.White)
+              .backgroundColor($r('sys.color.comp_background_list_card'))
               .borderRadius(22)
               .borderWidth(1)
               .borderColor(this.reminderIconType === 0 ? '#4ECDC4' : '#FF6B6B')
@@ -210,7 +210,7 @@ export struct HomePage {
         }
         .width('80%')
         .padding({ bottom: 20 })
-        .backgroundColor(Color.White)
+        .backgroundColor($r('sys.color.comp_background_list_card'))
         .borderRadius(16)
         .alignItems(HorizontalAlign.Center)
         .shadow({ radius: 24, color: '#33000000', offsetX: 0, offsetY: 8 })

@@ -76,3 +76,35 @@ export function getChangeText(change: number): string {
   }
   return '0';
 }
+
+/** 周期对比数据 */
+export interface PeriodComparison {
+  weightDelta: number;
+  bodyFatDelta: number;
+  systolicDelta: number;
+  diastolicDelta: number;
+  heartRateDelta: number;
+}
+
+/**
+ * 计算两个周期的对比差异
+ */
+export function comparePeriods(current: AggregatedReport, previous: AggregatedReport): PeriodComparison {
+  const avgWeight = (r: AggregatedReport) => r.maxWeight > 0 ? (r.maxWeight + r.minWeight) / 2 : 0;
+  return {
+    weightDelta: Math.round((avgWeight(current) - avgWeight(previous)) * 10) / 10,
+    bodyFatDelta: Math.round((current.maxBodyFat - previous.maxBodyFat) * 10) / 10,
+    systolicDelta: current.avgSystolic - previous.avgSystolic,
+    diastolicDelta: current.avgDiastolic - previous.avgDiastolic,
+    heartRateDelta: current.avgHeartRate - previous.avgHeartRate,
+  };
+}
+
+/**
+ * 格式式化对比文字（带箭头）
+ */
+export function formatDelta(delta: number, unit: string): string {
+  if (delta === 0) return `持平`;
+  const sign = delta > 0 ? '↑' : '↓';
+  return `${sign} ${Math.abs(delta).toFixed(1)}${unit}`;
+}

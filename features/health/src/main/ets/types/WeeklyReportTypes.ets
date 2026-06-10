@@ -2,6 +2,16 @@
  * 周度报告类型定义
  */
 
+/** 周期对比数据 */
+export interface PeriodComparison {
+  weightDelta: number;
+  bodyFatDelta: number;
+  systolicDelta: number;
+  diastolicDelta: number;
+  heartRateDelta: number;
+  previousLabel: string; // "上周" / "上月"
+}
+
 /**
  * 周度报告数据
  */
@@ -10,18 +20,21 @@ export interface WeeklyReportData {
   startDate: string; // 开始日期，如 "2024年2月27日"
   endDate: string; // 结束日期，如 "03月02日"
   dateRange: string; // 日期范围显示，如 "2024年2月27日 - 03月02日"
-  
+
   // 体重趋势
   weightTrend: WeightTrendData;
-  
+
   // 体脂率趋势
   bodyFatTrend: BodyFatTrendData;
-  
+
   // 血压数据
   bloodPressure: BloodPressureData;
-  
+
   // 心率数据
   heartRate: HeartRateData;
+
+  // 与上一周期对比
+  comparison?: PeriodComparison;
 }
 
 /**

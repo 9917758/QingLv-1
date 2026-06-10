@@ -1,11 +1,14 @@
 //健康报告页面
 import { phoneRouterControl } from 'oh_router';
-import { UnitConverter, RouterMap, BreakpointModel, BarVM } from 'common';
+import { UnitConverter, RouterMap, BreakpointModel, BarVM, ThemeUtil } from 'common';
+import type { ThemeColors } from 'common';
 import { HealthReportModel } from '../viewmodel/HealthReportModel';
 import { HealthMetricItem, MenuItemType } from '../types/HealthReportTypes';
 import { HealthHistoryPageBuilder } from './HealthHistoryPage';
 import { WeeklyReportPageBuilder } from './WeeklyReportPage';
 import { MonthlyReportPageBuilder } from './MonthlyReportPage';
+import { DataExportService } from '../service/DataExportService';
+import { promptAction } from '@kit.ArkUI';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { BreakpointNameEnum } from 'common/src/main/ets/constant/GridRowColSetting';
 
@@ -30,9 +33,14 @@ export function HealthReportPageBuilder() {
 @ComponentV2
 export struct HealthReportPage {
   private vm: HealthReportModel = HealthReportModel.instance;
+  @Computed get themeColors(): ThemeColors {
+    return ThemeUtil.instance.currentColors;
+  }
   @Local breakPointModel: BreakpointModel = AppStorageV2.connect(BreakpointModel, () => new BreakpointModel())!;
 
   aboutToAppear(): void {
+    // 刷新本地数据
+    this.vm.refreshHealthData();
     // 异步从后端刷新报告数据
     this.vm.loadFromApi();
   }
@@ -74,12 +82,30 @@ export struct HealthReportPage {
               pageName: RouterMap.MONTHLY_REPORT_PAGE,
               builder: wrapBuilder(MonthlyReportPageBuilder)
             });
+          } else if (item.value === 'export_csv') {
+            this.handleExport('csv');
+          } else if (item.value === 'export_json') {
+            this.handleExport('json');
           }
         }
       };
       return menuItem;
     });
     return items;
+  }
+
+  private async handleExport(format: 'csv' | 'json'): Promise<void> {
+    try {
+      const count = DataExportService.getRecordCount();
+      if (count === 0) {
+        promptAction.showToast({ message: '没有可导出的数据' });
+        return;
+      }
+      const filePath = await DataExportService.exportToFile(format);
+      promptAction.showToast({ message: `已导出 ${count} 条记录到:\n${filePath}` });
+    } catch (err) {
+      promptAction.showToast({ message: `导出失败: ${err}` });
+    }
   }
 
   private getBMITypeMargin(): string {
@@ -105,7 +131,7 @@ export struct HealthReportPage {
           .margin({ left: 16, top: 24, right: 8 })
           .onClick(this.handleBack)
 
-        Text('健康报告')
+        Text($r('app.string.health_report_title'))
           .size({ height: 27 })
           .margin({ left: 16, top: 24 })
           .fontSize($r('sys.float.Title_S'))
@@ -148,31 +174,31 @@ export struct HealthReportPage {
           Column({ space: 6 }) {
             Column({ space: 2 }) {
               Row({ space: 0 }) {
-                Text('您的身体健康评分：')
+                Text($r('app.string.health_score_label'))
                   .fontSize($r('sys.float.Body_M'))
-                  .fontColor(Color.White)
+                  .fontColor($r('sys.color.font_on_primary'))
                 Text(this.vm.reportData.score.toString())
                   .fontSize($r('sys.float.Title_M'))
                   .fontWeight(FontWeight.Bold)
-                  .fontColor(Color.White)
+                  .fontColor($r('sys.color.font_on_primary'))
                   .margin({ left: 0 })
-                Text('分')
+                Text($r('app.string.health_score_unit'))
                   .fontSize($r('sys.float.Body_M'))
-                  .fontColor(Color.White)
+                  .fontColor($r('sys.color.font_on_primary'))
                   .margin({ left: 1 })
               }
               .alignItems(VerticalAlign.Bottom)
               .margin({ bottom: 2 })
 
               Text() {
-                Span('超过了')
+                Span($r('app.string.health_exceeded_prefix'))
                   .fontSize($r('sys.float.Body_S'))
                   .fontColor('rgba(255,255,255,0.9)')
                 Span(this.vm.reportData.percentile.toString())
                   .fontSize($r('sys.float.Title_M'))
                   .fontWeight(FontWeight.Bold)
-                  .fontColor(Color.White)
-                Span('%的同龄人')
+                  .fontColor($r('sys.color.font_on_primary'))
+                Span($r('app.string.health_percentile_suffix'))
                   .fontSize($r('sys.float.Body_S'))
                   .fontColor('rgba(255,255,255,0.9)')
               }
@@ -218,44 +244,44 @@ export struct HealthReportPage {
           Text(this.vm.reportData.weight.toFixed(1))
             .fontSize($r('sys.float.Title_M'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('sys.color.black'))
-          Text('体重(公斤)')
+            .fontColor(this.themeColors.textPrimary)
+          Text($r('app.string.health_weight_kg_label'))
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
         }
         .layoutWeight(1)
 
         Divider()
           .vertical(true)
           .height(42)
-          .color($r('sys.color.comp_divider'))
+          .color(this.themeColors.divider)
           .strokeWidth('1px')
 
         Column({ space: 6 }) {
           Text(this.vm.reportData.height.toString())
             .fontSize($r('sys.float.Title_M'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('sys.color.black'))
-          Text('身高(厘米)')
+            .fontColor(this.themeColors.textPrimary)
+          Text($r('app.string.health_height_cm_label'))
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
         }
         .layoutWeight(1)
 
         Divider()
           .vertical(true)
           .height(42)
-          .color($r('sys.color.comp_divider'))
+          .color(this.themeColors.divider)
           .strokeWidth('1px')
 
         Column({ space: 6 }) {
           Text(this.vm.reportData.age.toString())
             .fontSize($r('sys.float.Title_M'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('sys.color.black'))
-          Text('年龄')
+            .fontColor(this.themeColors.textPrimary)
+          Text($r('app.string.health_age_label'))
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
         }
         .layoutWeight(1)
       }
@@ -267,7 +293,7 @@ export struct HealthReportPage {
         top: 20,
         bottom: 24
       })
-      .backgroundColor($r('sys.color.comp_background_list_card'))
+      .backgroundColor(this.themeColors.backgroundCard)
       .shadow({
         radius: $r('sys.float.corner_radius_level1'),
         color: $r('sys.color.comp_background_gray'),
@@ -301,7 +327,7 @@ export struct HealthReportPage {
 
               Text(item.label)
                 .fontSize($r('sys.float.Body_L'))
-                .fontColor($r('sys.color.black'))
+                .fontColor(this.themeColors.textPrimary)
                 .fontWeight(FontWeight.Medium)
                 .fontFamily('HarmonyOS Sans SC')
             }
@@ -311,13 +337,13 @@ export struct HealthReportPage {
               Span(item.value)
                 .fontSize(28)
                 .fontWeight(FontWeight.Medium)
-                .fontColor($r('sys.color.black'))
+                .fontColor(this.themeColors.textPrimary)
                 .fontFamily('HarmonyOS Sans SC')
 
               if (item.unit) {
                 Span(item.unit)
                   .fontSize($r('sys.float.Body_S'))
-                  .fontColor($r('sys.color.font_secondary'))
+                  .fontColor(this.themeColors.textSecondary)
                   .fontFamily('HarmonyOS Sans SC')
               }
             }
@@ -332,7 +358,7 @@ export struct HealthReportPage {
             left: 16,
             right: 16
           })
-          .backgroundColor($r('sys.color.background_primary'))
+          .backgroundColor(this.themeColors.backgroundPrimary)
           .borderRadius($r('sys.float.corner_radius_level7'))
           .alignItems(HorizontalAlign.Start)
           .justifyContent(FlexAlign.SpaceBetween)
@@ -350,10 +376,10 @@ export struct HealthReportPage {
   @Builder
   private renderAdviceCard() {
     Column({ space: 20 }) {
-      Text('控制建议')
+      Text($r('app.string.health_control_advice'))
         .fontSize($r('sys.float.Body_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('sys.color.black'))
+        .fontColor(this.themeColors.textPrimary)
         .fontFamily('HarmonyOS Sans SC')
         .width('100%')
 
@@ -363,7 +389,7 @@ export struct HealthReportPage {
             .width('100%')
             .height(13)
             .borderRadius($r('sys.float.corner_radius_level2'))
-            .backgroundColor($r('sys.color.comp_divider'))
+            .backgroundColor(this.themeColors.divider)
             .id('bottomId')
             .alignRules({
               left: { anchor: '__container__', align: HorizontalAlign.Start },
@@ -383,7 +409,7 @@ export struct HealthReportPage {
             })
 
           Text(this.vm.reportData.bmi.toFixed(1))
-            .fontColor($r('sys.color.black'))
+            .fontColor(this.themeColors.textPrimary)
             .fontSize(27)
             .fontWeight(FontWeight.Bold)
             .fontFamily('HarmonyOS Sans SC Medium')
@@ -408,28 +434,28 @@ export struct HealthReportPage {
 
         Row() {
           Text($r('app.string.health_bmi_type_underweight'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Body_S'))
             .fontFamily('HarmonyOS Sans SC')
             .width('25%')
             .textAlign(TextAlign.Center)
 
           Text($r('app.string.health_bmi_type_normal'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Body_S'))
             .fontFamily('HarmonyOS Sans SC')
             .width('25%')
             .textAlign(TextAlign.Center)
 
           Text($r('app.string.health_bmi_type_overweight'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Body_S'))
             .fontFamily('HarmonyOS Sans SC')
             .width('25%')
             .textAlign(TextAlign.Center)
 
           Text($r('app.string.health_bmi_type_obesity'))
-            .fontColor($r('sys.color.font_secondary'))
+            .fontColor(this.themeColors.textSecondary)
             .fontSize($r('sys.float.Body_S'))
             .fontFamily('HarmonyOS Sans SC')
             .width('25%')
@@ -441,7 +467,7 @@ export struct HealthReportPage {
 
       Text(this.vm.reportData.bmiAdvice)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor('#666666')
+        .fontColor(this.themeColors.textSecondary)
         .fontFamily('HarmonyOS Sans SC')
         .lineHeight(22)
         .width('100%')
@@ -453,7 +479,7 @@ export struct HealthReportPage {
       top: 20,
       bottom: 20
     })
-    .backgroundColor($r('sys.color.background_primary'))
+    .backgroundColor(this.themeColors.backgroundPrimary)
     .borderRadius($r('sys.float.corner_radius_level7'))
   }
 
@@ -482,7 +508,7 @@ export struct HealthReportPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor($r('sys.color.comp_background_gray'))
+      .backgroundColor(this.themeColors.backgroundSecondary)
     }
     .hideTitleBar(true)
   }

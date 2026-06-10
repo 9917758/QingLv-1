@@ -22,7 +22,7 @@ export struct HealthInfoRow {
       Text(this.titleName)
         .fontSize($r('sys.float.Body_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
 
       TextInput({
         text: this.titleValue,
@@ -31,7 +31,7 @@ export struct HealthInfoRow {
         .type(InputType.Normal)
         .layoutWeight(1)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .placeholderFont({ size: $r('sys.float.Body_L') })
         .placeholderColor($r('sys.color.font_secondary'))
         .backgroundColor(Color.Transparent)

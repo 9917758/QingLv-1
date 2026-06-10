@@ -46,7 +46,7 @@ struct popup {
     Column() {
       Text(this.dataInputDialogModelVM.title)
         .fontSize($r('sys.float.Title_S'))
-        .fontColor(Color.Black)
+        .fontColor($r('sys.color.font_primary'))
         .width('100%')
         .lineHeight($r('app.float.vp_28'))
         .textAlign(TextAlign.Center)
@@ -119,7 +119,7 @@ struct popup {
       .width('100%')
       .height($r('app.float.vp_24'))
     }
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .width(this.breakpointModel.dialogWidth)
     .borderRadius($r('sys.float.corner_radius_level16'))
     .padding($r('app.float.vp_24'))

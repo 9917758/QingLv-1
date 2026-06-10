@@ -279,6 +279,7 @@ export struct EditPersonalCenter {
     CommonHeader({
       title: $r('app.string.person_owner_title'),
       onReturnClick: () => {
+        this.syncToApi();
         phoneRouterControl.popPage();
       },
       leftImageRes: $r('app.media.ic_backward2')

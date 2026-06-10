@@ -2,6 +2,16 @@
  * 月度报告数据类型定义
  */
 
+/** 周期对比数据 */
+export interface PeriodComparison {
+  weightDelta: number;
+  bodyFatDelta: number;
+  systolicDelta: number;
+  diastolicDelta: number;
+  heartRateDelta: number;
+  previousLabel: string; // "上周" / "上月"
+}
+
 // 图表数据点
 export interface ChartDataPoint {
   date: string;  // 日期，格式如 "12/4"
@@ -48,5 +58,6 @@ export interface MonthlyReportData {
   bodyFatTrend: BodyFatTrend;
   bloodPressure: BloodPressureData;
   heartRate: HeartRateData;
+  comparison?: PeriodComparison;
 }
 

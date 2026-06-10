@@ -1,4 +1,5 @@
-import { CommonHeader, RouterMap, BarVM, OHDialog, OHDialogModel, USE_MOCK_DATA, NetworkConfig, AuthToken } from 'common';
+import { CommonHeader, RouterMap, BarVM, OHDialog, OHDialogModel, USE_MOCK_DATA, NetworkConfig, AuthToken, ThemeUtil, I18nUtil } from 'common';
+import type { ThemeMode, ThemeOption } from 'common';
 import { emitter } from '@kit.BasicServicesKit';
 import { OHPage, phoneRouterControl } from 'oh_router';
 import { UserInfoRow } from '../comp/UserInfoRow';
@@ -28,12 +29,18 @@ import { SetUpGenericCard } from '../comp/SetUpGenericCard';
 export struct SetUpPage {
   vm: SettingAboutVM = new SettingAboutVM();
   @Local serverUrl: string = NetworkConfig.serverUrl;
+  @Local currentTheme: ThemeMode = ThemeUtil.instance.mode;
+  @Local currentLang: string = '';
 
   aboutToAppear(): void {
     this.vm.init()
     this.vm.getClearSize()
     NetworkConfig.load();
     this.serverUrl = NetworkConfig.serverUrl;
+    ThemeUtil.instance.loadTheme();
+    this.currentTheme = ThemeUtil.instance.mode;
+    // 语言指示器跟随系统 locale（I18nUtil 在 EntryAbility 中已初始化）
+    this.currentLang = I18nUtil.lang;
   }
 
   @Builder
@@ -58,7 +65,7 @@ export struct SetUpPage {
   clearCacheDialogBuilder(vm: OHDialogModel) {
     Text(vm.subtitle + vm.cacheSize)
       .fontSize($r('sys.float.Body_M'))
-      .fontColor(Color.Black)
+      .fontColor($r('sys.color.font_primary'))
       .lineHeight($r('app.float.vp_22'))
       .maxLines(-1)
 
@@ -131,18 +138,79 @@ export struct SetUpPage {
             })
           }
 
+          // 主题设置
+          SetUpGenericCard() {
+            Row() {
+              Text('🎨')
+                .fontSize(16)
+                .margin({ right: 8 })
+              Text($r('app.string.person_setting_theme'))
+                .fontSize($r('sys.float.Body_L'))
+                .fontColor($r('sys.color.font_primary'))
+                .fontWeight(FontWeight.Medium)
+              Blank()
+              Text(this.currentTheme === 'light' ? $r('app.string.person_setting_theme_light') :
+                this.currentTheme === 'dark' ? $r('app.string.person_setting_theme_dark') :
+                  $r('app.string.person_setting_theme_system'))
+                .fontSize($r('sys.float.Body_S'))
+                .fontColor($r('sys.color.font_secondary'))
+            }
+            .width('100%')
+            .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+
+            this.line()
+
+            Row({ space: 12 }) {
+              ForEach(ThemeUtil.getThemeOptions(), (option: ThemeOption) => {
+                Button(option.label)
+                  .fontSize(13)
+                  .fontWeight(this.currentTheme === option.value ? FontWeight.Bold : FontWeight.Normal)
+                  .fontColor(this.currentTheme === option.value ? Color.White : $r('sys.color.font_primary'))
+                  .backgroundColor(this.currentTheme === option.value ? '#4ECDC4' : $r('sys.color.comp_background_tertiary'))
+                  .borderRadius(8)
+                  .height(36)
+                  .layoutWeight(1)
+                  .onClick(() => {
+                    ThemeUtil.instance.setTheme(option.value);
+                    this.currentTheme = option.value;
+                  })
+              })
+            }
+            .width('100%')
+            .padding({ left: 16, right: 16, top: 8, bottom: 14 })
+          }
+
+          // 语言设置
+          SetUpGenericCard() {
+            Row() {
+              Text('🌍')
+                .fontSize(16)
+                .margin({ right: 8 })
+              Text($r('app.string.person_setting_language'))
+                .fontSize($r('sys.float.Body_L'))
+                .fontColor($r('sys.color.font_primary'))
+                .fontWeight(FontWeight.Medium)
+              Blank()
+              Text(this.currentLang === 'zh' ? $r('app.string.person_setting_lang_zh') : $r('app.string.person_setting_lang_en'))
+                .fontSize($r('sys.float.Body_S'))
+                .fontColor($r('sys.color.font_secondary'))
+            }
+            .width('100%')
+            .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+          }
+
           if (USE_MOCK_DATA) {
             SetUpGenericCard() {
               Row() {
                 Text('🧪')
                   .fontSize(16)
                   .margin({ right: 8 })
-                Text('开发者选项')
+                Text($r('app.string.person_setting_dev_options'))
                   .fontSize($r('sys.float.Body_L'))
                   .fontColor($r('sys.color.font_primary'))
                   .fontWeight(FontWeight.Medium)
                 Blank()
-                Text('Mock 模式')
+                Text($r('app.string.person_setting_mock_mode'))
                   .fontSize($r('sys.float.Body_S'))
                   .fontColor('#FF6B00')
                   .padding({ left: 8, right: 8, top: 2, bottom: 2 })
@@ -154,19 +222,12 @@ export struct SetUpPage {
 
               this.line()
 
-              Column({ space: 8 }) {
-                Text('当前应用使用模拟数据运行，所有健康数据、设备连接均为虚拟数据。')
-                  .fontSize($r('sys.float.Body_S'))
-                  .fontColor($r('sys.color.font_secondary'))
-                  .lineHeight(20)
-                Text('• 健康数据基于模拟趋势生成\n• 设备扫描返回虚拟设备\n• 登录状态自动填充')
-                  .fontSize($r('sys.float.Body_S'))
-                  .fontColor($r('sys.color.font_secondary'))
-                  .lineHeight(20)
-              }
-              .width('100%')
-              .padding({ left: 16, right: 16, top: 8, bottom: 14 })
-              .alignItems(HorizontalAlign.Start)
+              Text($r('app.string.person_setting_mock_desc'))
+                .fontSize($r('sys.float.Body_S'))
+                .fontColor($r('sys.color.font_secondary'))
+                .lineHeight(20)
+                .width('100%')
+                .padding({ left: 16, right: 16, top: 8, bottom: 14 })
             }
           }
 
@@ -175,7 +236,7 @@ export struct SetUpPage {
               Text('🌐')
                 .fontSize(16)
                 .margin({ right: 8 })
-              Text('后端服务器地址')
+              Text($r('app.string.person_setting_server_url'))
                 .fontSize($r('sys.float.Body_L'))
                 .fontColor($r('sys.color.font_primary'))
                 .fontWeight(FontWeight.Medium)
@@ -188,24 +249,24 @@ export struct SetUpPage {
                 .layoutWeight(1)
                 .height(40)
                 .borderRadius(8)
-                .backgroundColor('#F5F5F5')
+                .backgroundColor($r('sys.color.comp_background_list_card'))
                 .fontSize(13)
-              Button('保存')
+              Button($r('app.string.person_setting_save'))
                 .height(40)
                 .borderRadius(8)
                 .backgroundColor('#4ECDC4')
-                .fontColor(Color.White)
+                .fontColor($r('sys.color.font_on_primary'))
                 .fontSize(13)
                 .onClick(() => {
                   try {
                     NetworkConfig.save(this.serverUrl);
                     this.getUIContext().getPromptAction().showToast({
-                      message: '服务器地址已保存',
+                      message: $r('app.string.person_setting_server_saved'),
                       duration: 1500
                     });
                   } catch (e) {
                     this.getUIContext().getPromptAction().showToast({
-                      message: '保存失败',
+                      message: $r('app.string.person_setting_server_save_fail'),
                       duration: 1500
                     });
                   }
@@ -258,8 +319,6 @@ export struct SetUpPage {
     .backgroundColor($r('sys.color.comp_background_gray'))
   }
 }
-
-
 @Builder
 export function SetUpPageBuilder() {
   SetUpPage()

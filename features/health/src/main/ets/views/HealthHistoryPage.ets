@@ -4,7 +4,8 @@
 import { phoneRouterControl } from 'oh_router';
 import { HealthHistoryModel } from '../viewmodel/HealthHistoryModel';
 import { HealthHistoryItem } from '../types/HealthHistoryTypes';
-import { RouterMap, UnitConverter, BarVM } from 'common';
+import { RouterMap, UnitConverter, BarVM, ThemeUtil } from 'common';
+import type { ThemeColors } from 'common';
 import { HealthHistoryDetailPageBuilder } from './HealthHistoryDetailPage';
 
 @Builder
@@ -15,6 +16,9 @@ export function HealthHistoryPageBuilder() {
 @ComponentV2
 export struct HealthHistoryPage {
   private vm: HealthHistoryModel = HealthHistoryModel.instance;
+  @Computed get themeColors(): ThemeColors {
+    return ThemeUtil.instance.currentColors;
+  }
 
   aboutToAppear(): void {
     this.vm.loadHistory();
@@ -62,12 +66,12 @@ export struct HealthHistoryPage {
             .margin({ left: 16, top: 32, right: 8 })
             .onClick(this.handleBack)
 
-          Text('历史记录')
+          Text($r('app.string.health_history_title'))
             .size({ height: 27 })
             .margin({ top: 32 })
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(700)
-            .fontColor($r('sys.color.black'))
+            .fontColor(this.themeColors.textPrimary)
 
           Blank().layoutWeight(1)
         }
@@ -80,7 +84,7 @@ export struct HealthHistoryPage {
           Text(this.vm.selectedMonth)
             .fontSize($r('sys.float.Body_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('sys.color.black'))
+            .fontColor(this.themeColors.textPrimary)
             .fontFamily('HarmonyOS Sans SC')
             .layoutWeight(1)
 
@@ -107,11 +111,11 @@ export struct HealthHistoryPage {
             Column({ space: 8 }) {
               Text('📋')
                 .fontSize(48)
-              Text('还没有记录哦')
-                .fontColor('#999999')
+              Text($r('app.string.health_no_records_yet'))
+                .fontColor(this.themeColors.textTertiary)
                 .fontSize(16)
-              Text('去健康数据页面录入第一条数据吧')
-                .fontColor('#BBBBBB')
+              Text($r('app.string.health_go_input_data_hint'))
+                .fontColor(this.themeColors.textTertiary)
                 .fontSize(14)
             }
             .width('100%')
@@ -125,20 +129,20 @@ export struct HealthHistoryPage {
                   Row() {
                     Text(`体重${item.weight}`)
                       .fontSize($r('sys.float.Body_L'))
-                      .fontColor($r('sys.color.black'))
+                      .fontColor(this.themeColors.textPrimary)
                       .fontFamily('HarmonyOS Sans SC')
                       .layoutWeight(1)
 
                     Text(item.date)
                       .fontSize($r('sys.float.Body_M'))
-                      .fontColor($r('sys.color.font_secondary'))
+                      .fontColor(this.themeColors.textSecondary)
                       .fontFamily('HarmonyOS Sans SC')
                       .margin({ right: 8 })
 
                     Image($r('sys.media.ohos_ic_public_arrow_right'))
                       .width(16)
                       .height(16)
-                      .fillColor($r('sys.color.font_secondary'))
+                      .fillColor(this.themeColors.textTertiary)
                   }
                   .width('100%')
                   .padding({
@@ -152,7 +156,7 @@ export struct HealthHistoryPage {
                   if (index < this.vm.getCurrentMonthData().length - 1) {
                     Divider()
                       .strokeWidth('1px')
-                      .color($r('sys.color.comp_divider'))
+                      .color(this.themeColors.divider)
                       .margin({ left: 16, right: 16 })
                   }
                 }
@@ -163,7 +167,7 @@ export struct HealthHistoryPage {
           }
           .width('100%')
           .height('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor(this.themeColors.backgroundCard)
           .borderRadius($r('sys.float.corner_radius_level7'))
           .clip(true)
           .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
@@ -180,7 +184,7 @@ export struct HealthHistoryPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor($r('sys.color.comp_background_gray'))
+      .backgroundColor(this.themeColors.backgroundSecondary)
     }
     .hideTitleBar(true)
   }

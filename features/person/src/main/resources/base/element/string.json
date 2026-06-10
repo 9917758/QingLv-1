@@ -223,6 +223,130 @@
     {
       "name": "person_personal_information_collection_title",
       "value": "个人信息收集清单"
+    },
+    {
+      "name": "person_setting_theme",
+      "value": "主题模式"
+    },
+    {
+      "name": "person_setting_theme_light",
+      "value": "浅色"
+    },
+    {
+      "name": "person_setting_theme_dark",
+      "value": "深色"
+    },
+    {
+      "name": "person_setting_theme_system",
+      "value": "跟随系统"
+    },
+    {
+      "name": "person_setting_language",
+      "value": "语言"
+    },
+    {
+      "name": "person_setting_lang_zh",
+      "value": "中文"
+    },
+    {
+      "name": "person_setting_lang_en",
+      "value": "English"
+    },
+    {
+      "name": "person_setting_dev_options",
+      "value": "开发者选项"
+    },
+    {
+      "name": "person_setting_mock_mode",
+      "value": "Mock 模式"
+    },
+    {
+      "name": "person_setting_mock_desc",
+      "value": "当前应用使用模拟数据运行，所有健康数据、设备连接均为虚拟数据。"
+    },
+    {
+      "name": "person_setting_server_url",
+      "value": "后端服务器地址"
+    },
+    {
+      "name": "person_setting_save",
+      "value": "保存"
+    },
+    {
+      "name": "person_setting_server_saved",
+      "value": "服务器地址已保存"
+    },
+    {
+      "name": "person_setting_server_save_fail",
+      "value": "保存失败"
+    },
+    {
+      "name": "person_mine_favorites",
+      "value": "我的收藏"
+    },
+    {
+      "name": "person_mine_feedback",
+      "value": "意见反馈"
+    },
+    {
+      "name": "person_mine_settings",
+      "value": "设置"
+    },
+    {
+      "name": "person_mine_login",
+      "value": "点击登录"
+    },
+    {
+      "name": "person_info_next",
+      "value": "下一步"
+    },
+    {
+      "name": "person_info_skip",
+      "value": "跳过"
+    },
+    {
+      "name": "person_info_start",
+      "value": "开启你的健康之旅"
+    },
+    {
+      "name": "person_info_select_gender",
+      "value": "请选择你的性别"
+    },
+    {
+      "name": "person_info_input_height",
+      "value": "请输入你的身高"
+    },
+    {
+      "name": "person_info_input_weight",
+      "value": "请输入你的体重"
+    },
+    {
+      "name": "person_info_cm",
+      "value": "厘米"
+    },
+    {
+      "name": "person_info_kg",
+      "value": "公斤"
+    },
+    {
+      "name": "person_info_select_birthday",
+      "value": "请选择你的出生年月"
+    },
+    {
+      "name": "person_info_age",
+      "value": "你的年龄"
+    },
+    {
+      "name": "person_info_age_unit",
+      "value": "岁"
+    },
+    {
+      "name": "person_info_skip_confirm",
+      "value": "确认跳过吗？"
+    },
+    {
+      "name": "person_info_skip_desc",
+      "value": "跳过后可在设置中重新填写"
     }
   ]
 }

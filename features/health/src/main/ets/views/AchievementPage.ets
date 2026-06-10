@@ -61,7 +61,7 @@ export struct AchievementPage {
             .fontSize(11)
             .fontColor($r('sys.color.font_tertiary'))
           Blank()
-          Text(achievement.isUnlocked ? achievement.unlockedDate : '未解锁')
+          Text(achievement.isUnlocked ? achievement.unlockedDate : $r('app.string.achievement_locked'))
             .fontSize(11)
             .fontColor(achievement.isUnlocked ? '#4CAF50' : $r('sys.color.font_tertiary'))
         }
@@ -71,13 +71,13 @@ export struct AchievementPage {
           .width('100%')
           .height(6)
           .color(achievement.isUnlocked ? '#4CAF50' : '#CCCCCC')
-          .backgroundColor('#F0F0F0')
+          .backgroundColor($r('sys.color.comp_background_list_card'))
       }
       .width('100%')
     }
     .width('100%')
     .padding(14)
-    .backgroundColor(achievement.isUnlocked ? '#F0FFF4' : '#F5F5F5')
+    .backgroundColor(achievement.isUnlocked ? '#F0FFF4' : $r('sys.color.comp_background_list_card'))
     .borderRadius($r('sys.float.corner_radius_level7'))
   }
 
@@ -115,7 +115,7 @@ export struct AchievementPage {
       .width('100%')
       .height('100%')
       .justifyContent(FlexAlign.Start)
-      .backgroundColor('#FFF1F3F5')
+      .backgroundColor($r('sys.color.comp_background_list_card'))
     }
     .hideTitleBar(true)
     .onBackPressed(() => {

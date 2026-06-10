@@ -20,7 +20,7 @@ export struct HealthDataActivityRow {
     Row() {
       Column() {
         Text(this.dataInputModelVM.todayExerciseTime.toString())
-          .fontColor(Color.Black)
+          .fontColor($r('sys.color.font_primary'))
           .fontSize($r('sys.float.Title_M'))
           .fontWeight(FontWeight.Medium)
           .lineHeight($r('app.float.vp_30'))
@@ -41,7 +41,7 @@ export struct HealthDataActivityRow {
 
       Column() {
         Text(this.dataInputModelVM.todayExerciseConsumption.toString())
-          .fontColor(Color.Black)
+          .fontColor($r('sys.color.font_primary'))
           .fontSize($r('sys.float.Title_M'))
           .fontWeight(FontWeight.Medium)
           .lineHeight($r('app.float.vp_30'))
@@ -78,7 +78,7 @@ export struct HealthDataActivityRow {
       .justifyContent(FlexAlign.Center)
 
     }
-    .backgroundColor(Color.White)
+    .backgroundColor($r('sys.color.comp_background_list_card'))
     .height($r('app.float.vp_84'))
     .width('100%')
     .borderRadius($r('sys.float.corner_radius_level7'))

@@ -4,7 +4,7 @@
 import { HealthHistoryItem, MonthGroup } from '../types/HealthHistoryTypes';
 import { HEALTH_HISTORY_GROUPS } from '../mock/HealthHistoryMockData';
 import { HealthDataService } from '../service/HealthDataService';
-import { GlobalContext, USE_MOCK_DATA, UserInfo } from 'common';
+import { GlobalContext, I18nUtil, USE_MOCK_DATA, UserInfo } from 'common';
 import { PersistenceV2 } from '@kit.ArkUI';
 
 @ObservedV2
@@ -87,9 +87,9 @@ export class HealthHistoryModel {
 
     for (const r of records) {
       const d = new Date(r.timestamp);
-      const monthKey = `${d.getFullYear()}年${d.getMonth() + 1}月`;
-      const dateStr = `${d.getMonth() + 1}月${d.getDate()}日`;
-      const fullDateStr = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+      const monthKey = I18nUtil.formatYearMonth(d.getFullYear(), d.getMonth() + 1);
+      const dateStr = I18nUtil.formatDate(d.getMonth() + 1, d.getDate());
+      const fullDateStr = I18nUtil.formatFullDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
 
       const item: HealthHistoryItem = {
         id: r.id,
