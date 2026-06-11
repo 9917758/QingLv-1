@@ -118,7 +118,3 @@ QingLv-1/
 ## 版本历史
 
 详见 [CHANGELOG.md](./CHANGELOG.md)
-
-## 版本历史
-
-详见 [CHANGELOG.md](./CHANGELOG.md)

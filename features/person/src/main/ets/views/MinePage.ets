@@ -1,5 +1,5 @@
 import { PersistenceV2 } from '@kit.ArkUI'
-import { CommonHeader, getMedia, RouterMap, UserInfo } from 'common'
+import { CommonHeader, RouterMap, UserInfo } from 'common'
 import { MineItem } from '../viewmodel/MineModel'
 import { OHPage, phoneRouterControl } from 'oh_router'
 import { SetUpPageBuilder } from './SetupPage'
@@ -171,8 +171,6 @@ export struct MinePage {
       .enableScrollInteraction(true)
       .layoutWeight(1)
     }
-    .backgroundImage(getMedia('app.media.profile_background'))
-    .backgroundImageSize(ImageSize.FILL)
     .backgroundColor($r('sys.color.comp_background_list_card'))
     .alignItems(HorizontalAlign.Start)
     .width('100%')
