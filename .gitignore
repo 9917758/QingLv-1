@@ -18,3 +18,6 @@ replay_pid*.log
 **/oh_modules
 
 .vscode
+
+# Local Network Config
+commons/common/src/main/ets/util/NetworkConfig.ets

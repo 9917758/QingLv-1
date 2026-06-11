@@ -70,8 +70,8 @@ export class HttpUtil {
       const options: http.HttpRequestOptions = {
         method: method,
         header: header,
-        connectTimeout: 10000,
-        readTimeout: 10000,
+        connectTimeout: 60000,
+        readTimeout: 60000,
       };
 
       if (body !== undefined) {
@@ -81,16 +81,8 @@ export class HttpUtil {
       TCLogger.info(TAG, `${http.RequestMethod[method]} ${url}`);
       const response = await httpRequest.request(url, options);
       httpRequest.destroy();
-
       const statusCode = response.responseCode;
       const resultStr = response.result as string;
-
-      if (statusCode === 401) {
-        // Token 过期或无效，清除登录状态
-        AuthToken.clear();
-        TCLogger.warn(TAG, 'Token expired, cleared');
-        return { data: null, error: '登录已过期，请重新登录', statusCode: 401 };
-      }
 
       if (statusCode >= 200 && statusCode < 300) {
         try {
@@ -111,6 +103,17 @@ export class HttpUtil {
       } catch {
         // 忽略解析错误
       }
+
+      if (statusCode === 401) {
+        // Token 过期或无效，清除登录状态
+        AuthToken.clear();
+        TCLogger.warn(TAG, 'Token expired, cleared');
+        // 如果后端传了具体的错误（如密码错误），优先使用后端的，否则提示登录过期
+        if (!errorMsg || errorMsg.startsWith('请求失败')) {
+          errorMsg = '登录已过期，请重新登录';
+        }
+      }
+
       return { data: null, error: errorMsg, statusCode: statusCode };
 
     } catch (err) {

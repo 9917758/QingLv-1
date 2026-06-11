@@ -10,8 +10,8 @@ const TAG = 'NetworkConfig';
 const SERVER_URL_KEY = 'server_url';
 
 export class NetworkConfig {
-  /** 默认后端地址（VMware 虚拟网卡 IP，固定不变） */
-  private static readonly DEFAULT_URL = 'http://192.168.237.1:8000';
+  /** 默认后端地址（WLAN 局域网 IP） */
+  private static readonly DEFAULT_URL = 'http://100.79.96.224:8000';
 
   /** 当前生效的后端地址 */
   static serverUrl: string = NetworkConfig.DEFAULT_URL;
