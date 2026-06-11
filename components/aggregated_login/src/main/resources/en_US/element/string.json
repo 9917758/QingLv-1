@@ -1,0 +1,100 @@
+{
+  "string": [
+    {
+      "name": "scope_not_supported",
+      "value": "The scopes or permissions are not supported."
+    },
+    {
+      "name": "network_error",
+      "value": "No Internet connection. Check your network settings."
+    },
+    {
+      "name": "app_not_required_scopes_or_permissions",
+      "value": "The app does not have the required scopes or permissions."
+    },
+    {
+      "name": "service_error",
+      "value": "Service or network error. Please try again later."
+    },
+    {
+      "name": "not_login_in",
+      "value": "You have not logged in with your Huawei ID. Please try again."
+    },
+    {
+      "name": "mobile_number",
+      "value": "Enter account"
+    },
+    {
+      "name": "verification_code",
+      "value": "SMS Verification Code"
+    },
+    {
+      "name": "obtaining_verification_code",
+      "value": "Get Code"
+    },
+    {
+      "name": "tips",
+      "value": "Tips"
+    },
+    {
+      "name": "verifyCode_tips",
+      "value": "Getting verification code is a simulated scenario. Actual implementation depends on business logic."
+    },
+    {
+      "name": "obtain_in_seconds",
+      "value": "Resend in seconds"
+    },
+    {
+      "name": "login",
+      "value": "Login"
+    },
+    {
+      "name": "login_in_other",
+      "value": "Other Login Methods"
+    },
+    {
+      "name": "quickly_login",
+      "value": "Huawei ID Quick Login"
+    },
+    {
+      "name": "read_and_agree",
+      "value": "I have read and agree to"
+    },
+    {
+      "name": "user_privacy_agreement",
+      "value": "User Privacy Agreement"
+    },
+    {
+      "name": "select_the_agreement",
+      "value": "Please read and check the agreement"
+    },
+    {
+      "name": "password",
+      "value": "Enter password"
+    },
+    {
+      "name": "message_login",
+      "value": "Password Login"
+    },
+    {
+      "name": "verification_code_login",
+      "value": "Verification Code Login"
+    },
+    {
+      "name": "forgot_password",
+      "value": "Forgot Password"
+    },
+    {
+      "name": "wx_login",
+      "value": "WeChat"
+    },
+    {
+      "name": "agcit_huawei_common_login",
+      "value": "1.0.0"
+    },
+    {
+      "name": "agcittype_huawei_common_login",
+      "value": "serviceComponent"
+    }
+  ]
+}

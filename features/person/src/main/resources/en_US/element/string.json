@@ -1,0 +1,352 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "Demo"
+    },
+    {
+      "name": "app_description",
+      "value": "Demo detailed description"
+    },
+    {
+      "name": "page_show",
+      "value": "page from package"
+    },
+    {
+      "name": "phone_number",
+      "value": "123****789"
+    },
+    {
+      "name": "person_info_title",
+      "value": "Personal Info"
+    },
+    {
+      "name": "person_info_avatar_url",
+      "value": "Avatar"
+    },
+    {
+      "name": "person_info_avatar_default_url",
+      "value": "https://agc-storage-drcn.platform.dbankcloud.cn/v0/news-hnp2d/avatar%2Favatar_12.jpg"
+    },
+    {
+      "name": "person_info_nickname",
+      "value": "Nickname"
+    },
+    {
+      "name": "person_info_content_empty_tip",
+      "value": "Content is empty, please enter and save"
+    },
+    {
+      "name": "person_info_sex",
+      "value": "Gender"
+    },
+    {
+      "name": "person_info_sex_man",
+      "value": "Male"
+    },
+    {
+      "name": "person_info_sex_woman",
+      "value": "Female"
+    },
+    {
+      "name": "person_info_sex_confidentiality",
+      "value": "Private"
+    },
+    {
+      "name": "person_info_height",
+      "value": "Height"
+    },
+    {
+      "name": "person_info_input_error_tip",
+      "value": "Please enter valid data without special characters"
+    },
+    {
+      "name": "person_info_weight",
+      "value": "Weight"
+    },
+    {
+      "name": "person_info_birthday",
+      "value": "Birthday"
+    },
+    {
+      "name": "person_info_phone_name",
+      "value": "Phone Number"
+    },
+    {
+      "name": "person_info_default_phone",
+      "value": "100**2222"
+    },
+    {
+      "name": "person_info_email",
+      "value": "Email"
+    },
+    {
+      "name": "person_info_personal_profile",
+      "value": "Bio"
+    },
+    {
+      "name": "person_info_personal_profile_placeholder",
+      "value": "Tell us about yourself~~"
+    },
+    {
+      "name": "person_fold_point",
+      "value": "... "
+    },
+    {
+      "name": "person_fold_show",
+      "value": "Expand"
+    },
+    {
+      "name": "person_fold_close",
+      "value": "Collapse"
+    },
+    {
+      "name": "person_about_title",
+      "value": "About"
+    },
+    {
+      "name": "person_about_app_name",
+      "value": "App Name"
+    },
+    {
+      "name": "person_about_version_info",
+      "value": "Version Info"
+    },
+    {
+      "name": "person_about_version",
+      "value": "10.15.1"
+    },
+    {
+      "name": "person_about_wait_update",
+      "value": "Update Available"
+    },
+    {
+      "name": "person_about_new_version",
+      "value": "Already the latest version"
+    },
+    {
+      "name": "person_about_service_call",
+      "value": "Customer Service"
+    },
+    {
+      "name": "person_about_service_phone",
+      "value": "900800"
+    },
+    {
+      "name": "person_about_copyright_number",
+      "value": "SuICP Bei 17040376 Hao-135A"
+    },
+    {
+      "name": "person_about_copyright",
+      "value": "Huawei XX Copyright © 2019-2023"
+    },
+    {
+      "name": "person_about_technology",
+      "value": "Technical Support: xxxxxxxx"
+    },
+    {
+      "name": "person_owner_title",
+      "value": "Personal Info"
+    },
+    {
+      "name": "person_confirm",
+      "value": "Confirm"
+    },
+    {
+      "name": "person_cancel",
+      "value": "Cancel"
+    },
+    {
+      "name": "person_message_title",
+      "value": "Message Center"
+    },
+    {
+      "name": "person_mine_call_service",
+      "value": "Contact Support"
+    },
+    {
+      "name": "person_mine_title",
+      "value": "Me"
+    },
+    {
+      "name": "person_mine_normal_function",
+      "value": "Common Services"
+    },
+    {
+      "name": "person_third_party_list_title",
+      "value": "Third-Party Data Sharing"
+    },
+    {
+      "name": "person_privacy_settings_title",
+      "value": "Privacy Settings"
+    },
+    {
+      "name": "person_privacy_policy_title",
+      "value": "Privacy Policy"
+    },
+    {
+      "name": "person_setting_title",
+      "value": "Settings"
+    },
+    {
+      "name": "person_setting_logout",
+      "value": "Log Out"
+    },
+    {
+      "name": "person_setting_logout_success",
+      "value": "Logged out successfully"
+    },
+    {
+      "name": "person_setting_not_login",
+      "value": "You have not logged in"
+    },
+    {
+      "name": "person_setting_sure_clean",
+      "value": "Confirm to clear cache?"
+    },
+    {
+      "name": "person_setting_clean_success",
+      "value": "Cache cleared successfully"
+    },
+    {
+      "name": "person_setting_clean_fail",
+      "value": "Failed to clear cache, please try again"
+    },
+    {
+      "name": "person_delete",
+      "value": "Delete"
+    },
+    {
+      "name": "person_service_agreement_title",
+      "value": "Terms of Service"
+    },
+    {
+      "name": "person_personal_information_collection_title",
+      "value": "Personal Information Collection"
+    },
+    {
+      "name": "person_setting_theme",
+      "value": "Theme"
+    },
+    {
+      "name": "person_setting_theme_light",
+      "value": "Light"
+    },
+    {
+      "name": "person_setting_theme_dark",
+      "value": "Dark"
+    },
+    {
+      "name": "person_setting_theme_system",
+      "value": "Follow System"
+    },
+    {
+      "name": "person_setting_language",
+      "value": "Language"
+    },
+    {
+      "name": "person_setting_lang_zh",
+      "value": "中文"
+    },
+    {
+      "name": "person_setting_lang_en",
+      "value": "English"
+    },
+    {
+      "name": "person_setting_dev_options",
+      "value": "Developer Options"
+    },
+    {
+      "name": "person_setting_mock_mode",
+      "value": "Mock Mode"
+    },
+    {
+      "name": "person_setting_mock_desc",
+      "value": "App is running with mock data. All health data and device connections are virtual."
+    },
+    {
+      "name": "person_setting_server_url",
+      "value": "Backend Server URL"
+    },
+    {
+      "name": "person_setting_save",
+      "value": "Save"
+    },
+    {
+      "name": "person_setting_server_saved",
+      "value": "Server URL saved"
+    },
+    {
+      "name": "person_setting_server_save_fail",
+      "value": "Save failed"
+    },
+    {
+      "name": "person_mine_favorites",
+      "value": "Favorites"
+    },
+    {
+      "name": "person_mine_feedback",
+      "value": "Feedback"
+    },
+    {
+      "name": "person_mine_settings",
+      "value": "Settings"
+    },
+    {
+      "name": "person_mine_login",
+      "value": "Tap to Login"
+    },
+    {
+      "name": "person_info_next",
+      "value": "Next"
+    },
+    {
+      "name": "person_info_skip",
+      "value": "Skip"
+    },
+    {
+      "name": "person_info_start",
+      "value": "Start Your Health Journey"
+    },
+    {
+      "name": "person_info_select_gender",
+      "value": "Please select your gender"
+    },
+    {
+      "name": "person_info_input_height",
+      "value": "Please enter your height"
+    },
+    {
+      "name": "person_info_input_weight",
+      "value": "Please enter your weight"
+    },
+    {
+      "name": "person_info_cm",
+      "value": "cm"
+    },
+    {
+      "name": "person_info_kg",
+      "value": "kg"
+    },
+    {
+      "name": "person_info_select_birthday",
+      "value": "Please select your birthday"
+    },
+    {
+      "name": "person_info_age",
+      "value": "Your age"
+    },
+    {
+      "name": "person_info_age_unit",
+      "value": "years old"
+    },
+    {
+      "name": "person_info_skip_confirm",
+      "value": "Confirm skip?"
+    },
+    {
+      "name": "person_info_skip_desc",
+      "value": "You can fill in later in Settings"
+    }
+  ]
+}

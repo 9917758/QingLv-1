@@ -1,0 +1,124 @@
+{
+  "string": [
+    {
+      "name": "module_name",
+      "value": "Device"
+    },
+    {
+      "name": "pair_help_title",
+      "value": "Help"
+    },
+    {
+      "name": "pair_help_offline_tip",
+      "value": "If the device shows offline, it may be due to:"
+    },
+    {
+      "name": "pair_help_offline",
+      "value": "1. Bluetooth is not enabled \n2. Device is too far away \n3. Device has been reset"
+    },
+    {
+      "name": "pair_help_again_tip",
+      "value": "If it cannot be recovered, please try the following to reset the device:"
+    },
+    {
+      "name": "pair_help_again",
+      "value": "1. Press and hold the button for 10 seconds \n2. Tap to reconnect"
+    },
+    {
+      "name": "pair_help_again_connect",
+      "value": "Reconnect"
+    },
+    {
+      "name": "scanning_device_title",
+      "value": "Add Device"
+    },
+    {
+      "name": "scanning_device_scan_tip",
+      "value": "Searching for devices..."
+    },
+    {
+      "name": "scanning_device_find_tip",
+      "value": "Device found"
+    },
+    {
+      "name": "scanning_device_tip",
+      "value": "Please make sure Bluetooth is enabled on both the watch and phone"
+    },
+    {
+      "name": "scanning_device_connect_btn",
+      "value": "Connect"
+    },
+    {
+      "name": "scanning_device_connecting_btn",
+      "value": "Connecting"
+    },
+    {
+      "name": "device_info_unbind_btn",
+      "value": "Unbind Device"
+    },
+    {
+      "name": "device_info_unbind_tip",
+      "value": "After unbinding, the device will no longer communicate with \"Health\". Continue?"
+    },
+    {
+      "name": "device_cancel",
+      "value": "Cancel"
+    },
+    {
+      "name": "device_unbind",
+      "value": "Unbind"
+    },
+    {
+      "name": "access_bluetooth",
+      "value": "Bluetooth permission is required for health management"
+    },
+    {
+      "name": "device_info_current_battery_per",
+      "value": "%"
+    },
+    {
+      "name": "device_info_current_battery",
+      "value": "Current Battery"
+    },
+    {
+      "name": "device_info_charge_cycles",
+      "value": "times"
+    },
+    {
+      "name": "device_info_charge_cycles_title",
+      "value": "Charges This Month"
+    },
+    {
+      "name": "device_pair_status_connected",
+      "value": "Paired"
+    },
+    {
+      "name": "device_pair_status_not_connected",
+      "value": "Not Paired"
+    },
+    {
+      "name": "device_pair_status_reconnect",
+      "value": "Reconnect"
+    },
+    {
+      "name": "device_pair_status_connect_success",
+      "value": "Paired Successfully"
+    },
+    {
+      "name": "device_pair_status_connect_fail",
+      "value": "Pairing Failed"
+    },
+    {
+      "name": "device_bluetooth_dialog_title",
+      "value": "Bluetooth Permission"
+    },
+    {
+      "name": "device_bluetooth_dialog_message",
+      "value": "App does not have Bluetooth permission. Go to App Center to configure."
+    },
+    {
+      "name": "device_bluetooth_dialog_confirm",
+      "value": "Confirm"
+    }
+  ]
+}

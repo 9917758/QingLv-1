@@ -1,0 +1,52 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "Health Management"
+    },
+    {
+      "name": "health_score",
+      "value": "Health Score"
+    },
+    {
+      "name": "heart_rate",
+      "value": "Heart Rate"
+    },
+    {
+      "name": "unit_bpm",
+      "value": "bpm"
+    },
+    {
+      "name": "today_step",
+      "value": "Today's Steps"
+    },
+    {
+      "name": "water_cup",
+      "value": "Water Cups"
+    },
+    {
+      "name": "water_drink",
+      "value": "Drink Water"
+    },
+    {
+      "name": "drink",
+      "value": "Drink"
+    },
+    {
+      "name": "EntryFormAbility_label",
+      "value": "清律健康卡片"
+    },
+    {
+      "name": "EntryFormAbility_desc",
+      "value": "展示体重、BMI、饮水等健康数据"
+    }
+  ]
+}

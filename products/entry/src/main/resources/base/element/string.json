@@ -1,0 +1,76 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "健康管理"
+    },
+    {
+      "name": "EntryFormAbility_desc",
+      "value": "form_description"
+    },
+    {
+      "name": "EntryFormAbility_label",
+      "value": "form_label"
+    },
+    {
+      "name": "widget_desc",
+      "value": "This is a service widget."
+    },
+    {
+      "name": "widget_display_name",
+      "value": "widget"
+    },
+    {
+      "name": "title_immersive",
+      "value": "Today's delicious food"
+    },
+    {
+      "name": "detail_immersive",
+      "value": "A bowl of fragrant fried noodles, back to childhood memories"
+    },
+    {
+      "name": "HealthWidget_desc",
+      "value": "This is a service widget."
+    },
+    {
+      "name": "HealthWidget_display_name",
+      "value": "健康数据卡片"
+    },
+    {
+      "name": "health_score",
+      "value": "健康评分"
+    },
+    {
+      "name": "heart_rate",
+      "value": "心率"
+    },
+    {
+      "name": "unit_bpm",
+      "value": "次/分"
+    },
+    {
+      "name": "today_step",
+      "value": "今日步数"
+    },
+    {
+      "name": "water_cup",
+      "value": "饮水杯数"
+    },
+    {
+      "name": "water_drink",
+      "value": "饮水打卡"
+    },
+    {
+      "name": "drink",
+      "value": "打卡"
+    }
+  ]
+}

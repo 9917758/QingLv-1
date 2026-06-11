@@ -1,0 +1,616 @@
+{
+  "string": [
+    {
+      "name": "health_module_name",
+      "value": "健康"
+    },
+    {
+      "name": "person_info_input_name",
+      "value": "设置个人信息"
+    },
+    {
+      "name": "person_info_input_next_name",
+      "value": "个人信息录入"
+    },
+    {
+      "name": "health_Activity_heat",
+      "value": "活动热量"
+    },
+    {
+      "name": "health_Activity_heat_unit",
+      "value": "/500 千卡"
+    },
+    {
+      "name": "health_exercise_duration",
+      "value": "锻炼时长"
+    },
+    {
+      "name": "health_exercise_duration_unit",
+      "value": "/60 分钟"
+    },
+    {
+      "name": "health_travel_distance",
+      "value": "运动距离"
+    },
+    {
+      "name": "health_travel_distance_unit",
+      "value": "/5km"
+    },
+    {
+      "name": "health_step_count",
+      "value": "今日步数"
+    },
+    {
+      "name": "health_step_count_unit",
+      "value": "/6000步"
+    },
+    {
+      "name": "health_knowledge_title",
+      "value": "健康知识"
+    },
+    {
+      "name": "health_all_title",
+      "value": "全部"
+    },
+    {
+      "name": "health_eat_name",
+      "value": "健康饮食"
+    },
+    {
+      "name": "health_intermittent_fasting",
+      "value": "轻断食"
+    },
+    {
+      "name": "health_date_input_name",
+      "value": "健康数据"
+    },
+    {
+      "name": "health_today_exercise_time",
+      "value": "今日运动(分钟)"
+    },
+    {
+      "name": "health_today_exercise_consumption",
+      "value": "今日消耗(千卡)"
+    },
+    {
+      "name": "health_today_status",
+      "value": "今天身体状态"
+    },
+    {
+      "name": "health_bmi_title",
+      "value": "BMI"
+    },
+    {
+      "name": "health_bmi_type_underweight",
+      "value": "偏瘦"
+    },
+    {
+      "name": "health_bmi_type_normal",
+      "value": "正常"
+    },
+    {
+      "name": "health_bmi_type_overweight",
+      "value": "偏胖"
+    },
+    {
+      "name": "health_bmi_type_obesity",
+      "value": "肥胖"
+    },
+    {
+      "name": "health_bmi_type_bodyFatPercentage",
+      "value": "实际体脂率"
+    },
+    {
+      "name": "health_bmi_type_fatWeight",
+      "value": "实际脂肪重量"
+    },
+    {
+      "name": "health_bmi_weight",
+      "value": "体重"
+    },
+    {
+      "name": "health_bmi_weight_placeholder",
+      "value": "0公斤"
+    },
+    {
+      "name": "health_bmi_waistCircumference",
+      "value": "腰围"
+    },
+    {
+      "name": "health_bmi_waistCircumference_placeholder",
+      "value": "0厘米"
+    },
+    {
+      "name": "health_bmi_hipCircumference",
+      "value": "臀围"
+    },
+    {
+      "name": "health_bmi_hipCircumference_placeholder",
+      "value": "0厘米"
+    },
+    {
+      "name": "health_bmi_bloodSugar",
+      "value": "血糖"
+    },
+    {
+      "name": "health_bmi_bloodSugar_placeholder",
+      "value": "0mmol/L"
+    },
+    {
+      "name": "health_bmi_bloodPressure",
+      "value": "血压"
+    },
+    {
+      "name": "health_bmi_bloodPressure_placeholder",
+      "value": "0 mmHg"
+    },
+    {
+      "name": "health_bmi_bloodPressureSystolic",
+      "value": "收缩压"
+    },
+    {
+      "name": "health_bmi_bloodPressureSystolic_placeholder",
+      "value": "0 mmHg"
+    },
+    {
+      "name": "health_bmi_bloodPressureDiastolic",
+      "value": "舒张压"
+    },
+    {
+      "name": "health_bmi_bloodPressureDiastolic_placeholder",
+      "value": "0 mmHg"
+    },
+    {
+      "name": "health_bmi_heartRate",
+      "value": "心率"
+    },
+    {
+      "name": "health_bmi_heartRate_placeholder",
+      "value": "0次/分"
+    },
+    {
+      "name": "health_knowledge_list_title",
+      "value": "健康知识"
+    },
+    {
+      "name": "health_bmi_kilogram",
+      "value": "公斤"
+    },
+    {
+      "name": "health_bmi_current_fat_per",
+      "value": "%"
+    },
+    {
+      "name": "health_dialog_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "health_dialog_confirm",
+      "value": "确认"
+    },
+    {
+      "name": "health_dialog_height_title",
+      "value": "身高"
+    },
+    {
+      "name": "health_dialog_date_title",
+      "value": "出生年月"
+    },
+    {
+      "name": "health_sex_man",
+      "value": "男"
+    },
+    {
+      "name": "health_sex_woman",
+      "value": "女"
+    },
+    {
+      "name": "health_info_hours",
+      "value": "时"
+    },
+    {
+      "name": "health_info_minute",
+      "value": "分"
+    },
+    {
+      "name": "health_report_status",
+      "value": "良好"
+    },
+    {
+      "name": "health_report_status_desc",
+      "value": "今天身体状态"
+    },
+    {
+      "name": "health_ai_agent_title",
+      "value": "AI 健康顾问"
+    },
+    {
+      "name": "health_ai_agent_subtitle",
+      "value": "基于你的健康数据，智能问答"
+    },
+    {
+      "name": "health_ai_input_placeholder",
+      "value": "输入你的健康问题..."
+    },
+    {
+      "name": "health_ai_send",
+      "value": "发送"
+    },
+    {
+      "name": "health_ai_history",
+      "value": "历史"
+    },
+    {
+      "name": "health_ai_new_chat",
+      "value": "新对话"
+    },
+    {
+      "name": "health_ai_history_title",
+      "value": "历史对话"
+    },
+    {
+      "name": "health_ai_new_chat_btn",
+      "value": "新建对话"
+    },
+    {
+      "name": "health_score_title",
+      "value": "健康评分"
+    },
+    {
+      "name": "health_suggestion_title",
+      "value": "健康建议"
+    },
+    {
+      "name": "health_anomaly_title",
+      "value": "异常事件"
+    },
+    {
+      "name": "health_achievement_title",
+      "value": "成就"
+    },
+    {
+      "name": "health_bmi_calculator",
+      "value": "BMI计算"
+    },
+    {
+      "name": "health_water_title",
+      "value": "今日饮水"
+    },
+    {
+      "name": "health_goal_title",
+      "value": "健康目标"
+    },
+    {
+      "name": "health_reminder_title",
+      "value": "用药与饮水提醒"
+    },
+    {
+      "name": "health_report_title",
+      "value": "健康报告"
+    },
+    {
+      "name": "health_history_title",
+      "value": "历史记录"
+    },
+    {
+      "name": "health_weekly_report",
+      "value": "周度报告"
+    },
+    {
+      "name": "health_monthly_report",
+      "value": "月度报告"
+    },
+    {
+      "name": "health_export_csv",
+      "value": "导出数据(CSV)"
+    },
+    {
+      "name": "health_export_json",
+      "value": "导出数据(JSON)"
+    },
+    {
+      "name": "health_weight_kg",
+      "value": "公斤"
+    },
+    {
+      "name": "health_weight_trend",
+      "value": "体重趋势"
+    },
+    {
+      "name": "health_bodyfat_trend",
+      "value": "体脂率趋势"
+    },
+    {
+      "name": "health_bloodpressure",
+      "value": "血压"
+    },
+    {
+      "name": "health_heartrate",
+      "value": "心率"
+    },
+    {
+      "name": "health_max",
+      "value": "最高"
+    },
+    {
+      "name": "health_min",
+      "value": "最低"
+    },
+    {
+      "name": "health_change",
+      "value": "变化"
+    },
+    {
+      "name": "health_no_data",
+      "value": "暂无数据"
+    },
+    {
+      "name": "health_thinking",
+      "value": "正在思考"
+    },
+    {
+      "name": "health_sleep",
+      "value": "睡眠"
+    },
+    {
+      "name": "health_blood_sugar",
+      "value": "血糖"
+    },
+    {
+      "name": "health_bmi_advice_underweight",
+      "value": "您的体重偏轻，建议适当增加营养摄入，加强运动锻炼。"
+    },
+    {
+      "name": "health_bmi_advice_normal",
+      "value": "您的体重在正常范围内，请继续保持健康的生活方式。"
+    },
+    {
+      "name": "health_bmi_advice_overweight",
+      "value": "您的体重偏高，建议控制饮食，增加有氧运动。"
+    },
+    {
+      "name": "health_bmi_advice_obesity",
+      "value": "您的体重超标，建议制定减重计划，必要时咨询专业医生。"
+    },
+    {
+      "name": "health_bmi_advice_default",
+      "value": "请保持健康的生活方式。"
+    },
+    {
+      "name": "health_previous_week",
+      "value": "上周"
+    },
+    {
+      "name": "health_previous_month",
+      "value": "上月"
+    },
+    {
+      "name": "health_body_fat_rate",
+      "value": "体脂率"
+    },
+    {
+      "name": "health_fat_weight",
+      "value": "脂肪重量"
+    },
+    {
+      "name": "health_score_label",
+      "value": "您的身体健康评分："
+    },
+    {
+      "name": "health_score_unit",
+      "value": "分"
+    },
+    {
+      "name": "health_exceeded_prefix",
+      "value": "超过了"
+    },
+    {
+      "name": "health_percentile_suffix",
+      "value": "%的同龄人"
+    },
+    {
+      "name": "health_weight_kg_label",
+      "value": "体重(公斤)"
+    },
+    {
+      "name": "health_height_cm_label",
+      "value": "身高(厘米)"
+    },
+    {
+      "name": "health_age_label",
+      "value": "年龄"
+    },
+    {
+      "name": "health_control_advice",
+      "value": "控制建议"
+    },
+    {
+      "name": "health_no_export_data",
+      "value": "没有可导出的数据"
+    },
+    {
+      "name": "health_export_failed",
+      "value": "导出失败:"
+    },
+    {
+      "name": "health_no_data_yet",
+      "value": "目前暂无数据"
+    },
+    {
+      "name": "health_no_records_yet",
+      "value": "还没有记录哦"
+    },
+    {
+      "name": "health_go_input_data_hint",
+      "value": "去健康数据页面录入第一条数据吧"
+    },
+    {
+      "name": "health_weight_prefix",
+      "value": "体重"
+    },
+    {
+      "name": "health_blood_glucose",
+      "value": "血糖"
+    },
+    {
+      "name": "app_name_qinglv",
+      "value": "清律"
+    },
+    {
+      "name": "app_private_health_assistant",
+      "value": "您的私人健康助手"
+    },
+    {
+      "name": "login_username_placeholder",
+      "value": "请输入用户名"
+    },
+    {
+      "name": "login_password_placeholder",
+      "value": "请输入密码"
+    },
+    {
+      "name": "login_loading",
+      "value": "请稍候..."
+    },
+    {
+      "name": "login_register",
+      "value": "注册"
+    },
+    {
+      "name": "login_login",
+      "value": "登录"
+    },
+    {
+      "name": "login_has_account",
+      "value": "已有账号？"
+    },
+    {
+      "name": "login_no_account",
+      "value": "没有账号？"
+    },
+    {
+      "name": "login_go_login",
+      "value": "去登录"
+    },
+    {
+      "name": "login_go_register",
+      "value": "去注册"
+    },
+    {
+      "name": "login_validation_error",
+      "value": "用户名至少2位，密码至少6位"
+    },
+    {
+      "name": "login_server_label",
+      "value": "服务器:"
+    },
+    {
+      "name": "reminder_edit_hint",
+      "value": "点击计划可修改时间和详情，到点自动弹窗提醒"
+    },
+    {
+      "name": "reminder_type_water",
+      "value": "饮水"
+    },
+    {
+      "name": "reminder_type_medication",
+      "value": "用药"
+    },
+    {
+      "name": "reminder_completed",
+      "value": "已完成"
+    },
+    {
+      "name": "reminder_edit_title",
+      "value": "编辑提醒计划"
+    },
+    {
+      "name": "reminder_name_label",
+      "value": "名称"
+    },
+    {
+      "name": "reminder_name_placeholder",
+      "value": "如：降压药、上午喝水"
+    },
+    {
+      "name": "reminder_type_label",
+      "value": "类型"
+    },
+    {
+      "name": "reminder_time_label",
+      "value": "时间"
+    },
+    {
+      "name": "reminder_dosage_label",
+      "value": "剂量/水量"
+    },
+    {
+      "name": "reminder_dosage_placeholder",
+      "value": "如：1片、250ml"
+    },
+    {
+      "name": "reminder_save",
+      "value": "保存"
+    },
+    {
+      "name": "bmi_calculator_title",
+      "value": "BMI 计算器"
+    },
+    {
+      "name": "bmi_height_label",
+      "value": "身高 (cm)"
+    },
+    {
+      "name": "bmi_weight_label",
+      "value": "体重 (kg)"
+    },
+    {
+      "name": "bmi_calculate_btn",
+      "value": "计算 BMI"
+    },
+    {
+      "name": "bmi_healthy_range",
+      "value": "健康体重范围"
+    },
+    {
+      "name": "anomaly_event_title",
+      "value": "健康事件"
+    },
+    {
+      "name": "anomaly_no_records",
+      "value": "暂无异常记录，继续保持！"
+    },
+    {
+      "name": "anomaly_this_week",
+      "value": "本周"
+    },
+    {
+      "name": "anomaly_events_suffix",
+      "value": "条异常事件"
+    },
+    {
+      "name": "anomaly_severity_warning",
+      "value": "警告"
+    },
+    {
+      "name": "anomaly_severity_info",
+      "value": "提示"
+    },
+    {
+      "name": "achievement_badge_title",
+      "value": "成就徽章"
+    },
+    {
+      "name": "achievement_locked",
+      "value": "未解锁"
+    },
+    {
+      "name": "achievement_unlocked_prefix",
+      "value": "已解锁"
+    },
+    {
+      "name": "achievement_suffix",
+      "value": "个成就"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "forms": [
+    {
+      "name": "HealthMainCard",
+      "description": "清律健康桌面服务卡片",
+      "src": "./ets/entryformability/HealthCard.ets",
+      "uiSyntax": "arkts",
+      "colorMode": "auto",
+      "isDefault": true,
+      "isDynamic": true,
+      "updateEnabled": false,
+      "updateDuration": 0,
+      "defaultDimension": "2*2",
+      "supportDimensions": [
+        "2*2",
+        "2*3",
+        "2*4"
+      ]
+    }
+  ]
+}
