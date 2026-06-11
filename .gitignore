@@ -1,23 +1,49 @@
-/node_modules
-/oh_modules
-/local.properties
-/.idea
-**/build
-/.hvigor
-.cxx
-/.clangd
-/.clang-format
-/.clang-tidy
-**/.test
-/.appanalyzer
+# ── 依赖与包管理 ──
+node_modules/
+oh_modules/
+.pnpm-store/
+.ohpm/
 
+# ── 构建产物 ──
+**/build/
+**/output/
+**/.cxx/
+*.har
+*.hsp
+*.hap
+*.hsm
+
+# ── IDE 配置 ──
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── DevEco Studio ──
+/.hvigor/
+**/BuildProfile.ets
+**/oh-package-lock.json5
+local.properties
+code-linter.json5
+
+# ── 系统生成 ──
+@ohos/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── 日志 ──
 hs_err_pid*.log
 replay_pid*.log
-**/oh-package-lock.json5
-**/BuildProfile.ets
-**/oh_modules
+*.log
 
-.vscode
+# ── 测试 ──
+**/.test/
+**/coverage/
 
-# Local Network Config
+# ── 安全扫描 ──
+/.appanalyzer/
+
+# ── 本地配置（不提交） ──
 commons/common/src/main/ets/util/NetworkConfig.ets
