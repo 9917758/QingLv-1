@@ -91,12 +91,6 @@ export struct AiAgentPage {
         time: this.getTimeStr()
       }];
       await this.loadSessions();
-    } else {
-      this.messages = [{
-        role: 'assistant',
-        content: `初始化对话失败：${resp.error}`,
-        time: this.getTimeStr()
-      }];
     }
   }
 
