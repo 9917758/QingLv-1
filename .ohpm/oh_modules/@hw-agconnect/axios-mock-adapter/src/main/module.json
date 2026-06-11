@@ -1,0 +1,30 @@
+{
+	"app": {
+		"bundleName": "com.hj.hwaccount",
+		"debug": false,
+		"versionCode": 1000000,
+		"versionName": "1.0.0",
+		"minAPIVersion": 50000012,
+		"targetAPIVersion": 50100018,
+		"apiReleaseType": "Release",
+		"compileSdkVersion": "5.1.0.125",
+		"compileSdkType": "HarmonyOS",
+		"appEnvironments": [],
+		"bundleType": "app",
+		"buildMode": "release"
+	},
+	"module": {
+		"name": "axios_mock_adapter",
+		"type": "har",
+		"deviceTypes": [
+			"default",
+			"tablet",
+			"2in1"
+		],
+		"packageName": "@hw-agconnect/axios-mock-adapter",
+		"installationFree": false,
+		"virtualMachine": "ark12.0.2.0",
+		"compileMode": "esmodule",
+		"dependencies": []
+	}
+}
