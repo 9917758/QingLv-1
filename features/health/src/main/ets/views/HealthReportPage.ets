@@ -8,6 +8,7 @@ import { HealthHistoryPageBuilder } from './HealthHistoryPage';
 import { WeeklyReportPageBuilder } from './WeeklyReportPage';
 import { MonthlyReportPageBuilder } from './MonthlyReportPage';
 import { DataExportService } from '../service/DataExportService';
+import { HealthDataService } from '../service/HealthDataService';
 import { promptAction } from '@kit.ArkUI';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { BreakpointNameEnum } from 'common/src/main/ets/constant/GridRowColSetting';
@@ -90,6 +91,8 @@ export struct HealthReportPage {
             this.handleExport('csv');
           } else if (item.value === 'export_json') {
             this.handleExport('json');
+          } else if (item.value === 'import_json') {
+            this.handleImport();
           }
         }
       };
@@ -100,6 +103,10 @@ export struct HealthReportPage {
 
   private async handleExport(format: 'csv' | 'json'): Promise<void> {
     try {
+      // 确保记录已从 API 加载
+      if (DataExportService.getRecordCount() === 0) {
+        await HealthDataService.instance.loadFromApi(50);
+      }
       const count = DataExportService.getRecordCount();
       if (count === 0) {
         promptAction.showToast({ message: '没有可导出的数据' });
@@ -109,6 +116,20 @@ export struct HealthReportPage {
       promptAction.showToast({ message: `已导出 ${count} 条记录到:\n${filePath}` });
     } catch (err) {
       promptAction.showToast({ message: `导出失败: ${err}` });
+    }
+  }
+
+  private async handleImport(): Promise<void> {
+    try {
+      const count = await DataExportService.importFromFile();
+      if (count > 0) {
+        promptAction.showToast({ message: `成功恢复 ${count} 条数据` });
+        this.vm.refreshHealthData();
+      } else {
+        promptAction.showToast({ message: '没有新数据需要恢复（日期已存在）' });
+      }
+    } catch (err) {
+      promptAction.showToast({ message: `恢复失败: ${err}` });
     }
   }
 

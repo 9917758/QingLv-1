@@ -1,6 +1,6 @@
 import { common } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
+import { emitter } from '@kit.BasicServicesKit';
 import {
   BarVM,
   BreakpointModel,
@@ -18,6 +18,8 @@ import { phoneRouterControl } from 'oh_router';
 import { commonDialogBuilder } from '../comp/CommonDialogBuilder';
 
 const TAG = 'PersonInfoBirthdayPage';
+
+const LOGIN_COMPLETE_EVENT: emitter.InnerEvent = { eventId: 1001 };
 
 @Builder
 export function PersonInfoBirthdayPageBuilder(): void {
@@ -135,6 +137,7 @@ export struct PersonInfoBirthdayPage {
             return;
           }
           this.userInfo.isEditOk = true;
+          emitter.emit(LOGIN_COMPLETE_EVENT);
           phoneRouterControl.popPage({ popData: 'loginSuccess' })
         })
       Blank().height($r('app.float.vp_16'))
@@ -152,6 +155,7 @@ export struct PersonInfoBirthdayPage {
           dialogVM.subtitle = '跳过后会影响展现真实身体数据'
           dialogVM.onValueConfirmClick = () => {
             this.userInfo.isEditOk = true;
+            emitter.emit(LOGIN_COMPLETE_EVENT);
             phoneRouterControl.popPage({ popData: 'loginSuccess' })
           }
           dialogVM.childBuilder = commonDialogBuilder

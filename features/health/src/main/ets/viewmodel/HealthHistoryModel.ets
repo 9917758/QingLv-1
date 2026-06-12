@@ -14,6 +14,8 @@ export class HealthHistoryModel {
   @Trace historyGroups: MonthGroup[] = [];
   @Trace selectedMonth: string = '';
   @Trace showMonthPicker: boolean = false;
+  @Trace searchKeyword: string = '';
+  @Trace isSearching: boolean = false;
 
   public static get instance() {
     if (!HealthHistoryModel._instance) {
@@ -44,7 +46,7 @@ export class HealthHistoryModel {
    * 从后端 API 加载历史数据（异步）
    */
   public async loadFromApi(): Promise<void> {
-    const records = await HealthDataService.instance.loadFromApi(200);
+    const records = await HealthDataService.instance.loadFromApi(50);
     const fromRecords = this.convertRecordsToGroups(records);
     if (USE_MOCK_DATA) {
       this.historyGroups = this.mergeGroups(HEALTH_HISTORY_GROUPS, fromRecords);
@@ -178,5 +180,53 @@ export class HealthHistoryModel {
   public selectMonth(month: string): void {
     this.selectedMonth = month;
     this.showMonthPicker = false;
+  }
+
+  /**
+   * 搜索/过滤历史记录
+   */
+  public search(keyword: string): void {
+    this.searchKeyword = keyword.trim();
+    this.isSearching = this.searchKeyword.length > 0;
+  }
+
+  /**
+   * 清除搜索
+   */
+  public clearSearch(): void {
+    this.searchKeyword = '';
+    this.isSearching = false;
+  }
+
+  /**
+   * 获取过滤后的当前月份数据
+   */
+  public getFilteredMonthData(): HealthHistoryItem[] {
+    const data = this.getCurrentMonthData();
+    if (!this.isSearching || this.searchKeyword.length === 0) {
+      return data;
+    }
+    const keyword = this.searchKeyword;
+    // 按日期或体重范围搜索
+    return data.filter((item: HealthHistoryItem) => {
+      // 日期匹配
+      if (item.date.includes(keyword) || item.fullDate.includes(keyword)) {
+        return true;
+      }
+      // 体重匹配（支持 "60" 或 "60-70" 范围格式）
+      if (keyword.includes('-')) {
+        const parts = keyword.split('-');
+        const min = parseFloat(parts[0]);
+        const max = parseFloat(parts[1]);
+        if (!isNaN(min) && !isNaN(max) && item.weight > 0) {
+          return item.weight >= min && item.weight <= max;
+        }
+      }
+      const num = parseFloat(keyword);
+      if (!isNaN(num) && item.weight > 0) {
+        return Math.abs(item.weight - num) < 0.5;
+      }
+      return false;
+    });
   }
 }

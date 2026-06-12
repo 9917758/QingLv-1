@@ -1,5 +1,34 @@
 # Changelog
 
+## v2.3.0 - 2026-06-12
+
+### 新增
+
+- **数据备份与恢复**: 健康报告页新增 JSON 导出/导入功能，支持本地备份和恢复健康数据
+- **健康日记**: 历史详情页新增日记功能，用户可为每天的健康数据写文字记录
+- **搜索功能**: 健康历史页新增搜索栏，支持按日期或体重范围（如 `65` 或 `60-70`）过滤记录
+- **个人中心 emitter 事件**: PersonInfoBirthdayPage 完成后通过 emitter 通知 InputPage 正确 pop
+
+### 改动
+
+- **API 拉取优化**: 所有 `loadFromApi(200)` 减少为 `loadFromApi(50)`，降低后端压力
+- **HealthPage 并行请求**: `refreshFromApi` 从串行改为 `Promise.all` 并行，首页加载更快
+- **HealthReportModel 数据补全**: API 数据不完整时自动用 UserInfo 本地计算 BMI/体脂
+
+### 修复
+
+- **PersonInfoInputPage 白屏**: 移除 `onPop: popPage()` 双重弹栈回调，改用 emitter 事件协调
+- **AiAgentPage 崩溃**: `async aboutToAppear()` 添加 try-catch
+- **HealthHistoryDetailPage 崩溃**: `.toFixed()` 作用在 undefined 上 → `@Local historyData` 用默认值初始化
+- **FeedbackHistoryPage 未处理 rejection**: Promise 链添加 `.catch()`
+- **导出提示无数据**: `handleExport` 在检查记录数前先调用 `loadFromApi` 加载数据
+- **BMI 不计算**: API 返回 bmi=0 时自动用 UserInfo 身高体重本地计算
+- **ThemeColors.primary 不存在**: 改为 `.accent`
+- **emitter 导入路径错误**: 从 `@kit.ArkUI` 改为 `@kit.BasicServicesKit`
+- **.gitignore 更新**: 新增 `.ohpm/`、`@ohos/`、`node_modules/` 等忽略规则，移除 883 个误提交的缓存文件
+
+---
+
 ## v2.2.0 - 2026-06-10
 
 ### 新增

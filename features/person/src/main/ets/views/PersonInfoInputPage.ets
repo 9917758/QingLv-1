@@ -1,6 +1,6 @@
 import { common } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
+import { emitter } from '@kit.BasicServicesKit';
 import { BarVM, BreakpointModel, CommonHeader, GlobalContext, OHDialog,
   OHDialogModel,
   RouterMap, TCLogger, UserInfo } from 'common';
@@ -10,6 +10,8 @@ import { SkipStepModel } from '../viewmodel/SkipStepModel';
 import { commonDialogBuilder } from '../comp/CommonDialogBuilder';
 
 const TAG = 'PersonInfoInputPage';
+
+const LOGIN_COMPLETE_EVENT: emitter.InnerEvent = { eventId: 1001 };
 
 @Builder
 export function PersonInfoInputPageBuilder(): void {
@@ -21,6 +23,16 @@ export struct PersonInfoInputPage {
   @Local breakPointModel: BreakpointModel = AppStorageV2.connect(BreakpointModel, () => new BreakpointModel())!;
   @Local userInfo: UserInfo = PersistenceV2.connect(UserInfo, () => new UserInfo())!;
   @Local onReturnClick: () => void = () => {
+  }
+
+  aboutToAppear(): void {
+    emitter.on(LOGIN_COMPLETE_EVENT, () => {
+      phoneRouterControl.popPage({ popData: 'loginSuccess' });
+    });
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(LOGIN_COMPLETE_EVENT.eventId);
   }
 
   // 页面内容渲染
@@ -195,9 +207,6 @@ export struct PersonInfoInputPage {
           phoneRouterControl.jumpPage({
             pageName: RouterMap.PERSONAL_INFO_BIRTHDAY_PAGE,
             builder: wrapBuilder(PersonInfoBirthdayPageBuilder),
-            onPop: (_popInfo: PopInfo) => {
-              phoneRouterControl.popPage({ popData: 'loginSuccess' })
-            }
           })
         })
       Blank().height($r('app.float.vp_16'))
@@ -217,9 +226,6 @@ export struct PersonInfoInputPage {
             phoneRouterControl.jumpPage({
               pageName: RouterMap.PERSONAL_INFO_BIRTHDAY_PAGE,
               builder: wrapBuilder(PersonInfoBirthdayPageBuilder),
-              onPop: (_popInfo: PopInfo) => {
-                phoneRouterControl.popPage({ popData: 'loginSuccess' })
-              }
             })
           }
           dialogVM.childBuilder = commonDialogBuilder

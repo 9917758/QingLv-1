@@ -146,6 +146,34 @@ export class HealthDataService {
     return this._records.length;
   }
 
+  /** 批量导入记录到本地（不触发 API 同步，跳过重复日期） */
+  public bulkImportLocal(records: HealthDataRecord[]): number {
+    const existingDates = new Set(this._records.map((r: HealthDataRecord) => {
+      const d = new Date(r.timestamp);
+      return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+    }));
+
+    let count = 0;
+    for (const record of records) {
+      const d = new Date(record.timestamp);
+      const dateStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+      if (!existingDates.has(dateStr)) {
+        this._records.unshift(record);
+        existingDates.add(dateStr);
+        count++;
+      }
+    }
+
+    if (count > 0) {
+      this._records.sort((a: HealthDataRecord, b: HealthDataRecord) => b.timestamp - a.timestamp);
+      if (this._records.length > MAX_RECORDS) {
+        this._records = this._records.slice(0, MAX_RECORDS);
+      }
+      this.persistLocal();
+    }
+    return count;
+  }
+
   private persistLocal(): void {
     try {
       const pref = PreferenceUtil.getInstance(GlobalContext.getUIAbilityContext());

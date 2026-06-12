@@ -9,7 +9,9 @@
 - 周度/月度健康报告，含趋势图表与上一周期对比
 - 健康评分系统（0-100 分，多维度综合评估）
 - 健康异常事件检测（基于实际数据：心率、血压、血糖、BMI 阈值判断）
-- 健康数据 CSV/JSON 导出
+- 健康数据 CSV/JSON 导出与恢复（本地备份）
+- 健康日记：为每天的健康数据写文字记录
+- 历史记录搜索：按日期或体重范围过滤
 
 ### AI 健康顾问
 - 基于用户健康数据的个性化 AI 问答
@@ -63,12 +65,13 @@ QingLv-1/
 │   ├── health/                    # 健康模块
 │   │   └── src/main/
 │   │       ├── ets/
-│   │       │   ├── service/           # 业务服务层
+│   │       │   ├── service/           # 业务服务层（HealthDataService, DataExportService, HealthDiaryService 等）
 │   │       │   ├── viewmodel/         # 视图模型
 │   │       │   ├── views/             # 页面
 │   │       │   ├── comp/              # 组件
 │   │       │   ├── types/             # 类型定义
-│   │       │   └── mock/              # Mock 数据
+│   │       │   ├── mock/              # Mock 数据
+│   │       │   └── util/              # 工具（FavoriteUtil, ReportAggregator 等）
 │   │       └── resources/
 │   │           ├── base/element/string.json   # 中文字符串
 │   │           └── en_US/element/string.json  # 英文翻译
@@ -114,10 +117,6 @@ QingLv-1/
 - 收藏文章: `fav_${userId}`
 - 健康目标: `health_goal_weight_${userId}`
 - 异常历史: `health_anomaly_history_${userId}`
-
-## 版本历史
-
-详见 [CHANGELOG.md](./CHANGELOG.md)
 
 ## 版本历史
 

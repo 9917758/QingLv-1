@@ -108,17 +108,41 @@ export struct HealthHistoryPage {
           placement: Placement.BottomRight
         })
 
+        // 搜索栏
+        Row() {
+          TextInput({ placeholder: '搜索日期或体重（如 65 或 60-70）', text: this.vm.searchKeyword })
+            .layoutWeight(1)
+            .height(36)
+            .fontSize(14)
+            .backgroundColor(this.themeColors.backgroundSecondary)
+            .borderRadius(18)
+            .onChange((value: string) => {
+              this.vm.search(value);
+            })
+          if (this.vm.isSearching) {
+            Text('清除')
+              .fontSize(14)
+              .fontColor(this.themeColors.accent)
+              .margin({ left: 8 })
+              .onClick(() => {
+                this.vm.clearSearch();
+              })
+          }
+        }
+        .width('100%')
+        .padding({ left: 16, right: 16, top: 4, bottom: 4 })
+
         // 列表卡片容器 - 整体白色卡片
         Column() {
-          if (this.vm.getCurrentMonthData().length === 0) {
+          if (this.vm.getFilteredMonthData().length === 0) {
             // 空状态提示
             Column({ space: 8 }) {
               Text('📋')
                 .fontSize(48)
-              Text($r('app.string.health_no_records_yet'))
+              Text(this.vm.isSearching ? '没有匹配的记录' : $r('app.string.health_no_records_yet'))
                 .fontColor(this.themeColors.textTertiary)
                 .fontSize(16)
-              Text($r('app.string.health_go_input_data_hint'))
+              Text(this.vm.isSearching ? '试试其他关键词' : $r('app.string.health_go_input_data_hint'))
                 .fontColor(this.themeColors.textTertiary)
                 .fontSize(14)
             }
@@ -127,7 +151,7 @@ export struct HealthHistoryPage {
             .justifyContent(FlexAlign.Center)
           } else {
           List({ space: 0 }) {
-            ForEach(this.vm.getCurrentMonthData(), (item: HealthHistoryItem, index: number) => {
+            ForEach(this.vm.getFilteredMonthData(), (item: HealthHistoryItem, index: number) => {
               ListItem() {
                 Column() {
                   Row() {
@@ -157,7 +181,7 @@ export struct HealthHistoryPage {
                   })
 
                   // 下划线（最后一项不显示）
-                  if (index < this.vm.getCurrentMonthData().length - 1) {
+                  if (index < this.vm.getFilteredMonthData().length - 1) {
                     Divider()
                       .strokeWidth('1px')
                       .color(this.themeColors.divider)

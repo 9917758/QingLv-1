@@ -292,7 +292,8 @@ export class HealthReportModel {
       { label: $r('app.string.health_weekly_report'), value: 'weekly' } as ReportMenuItem,
       { label: $r('app.string.health_monthly_report'), value: 'monthly' } as ReportMenuItem,
       { label: $r('app.string.health_export_csv'), value: 'export_csv' } as ReportMenuItem,
-      { label: $r('app.string.health_export_json'), value: 'export_json' } as ReportMenuItem
+      { label: $r('app.string.health_export_json'), value: 'export_json' } as ReportMenuItem,
+      { label: '恢复备份数据', value: 'import_json' } as ReportMenuItem,
     ];
     return menuItems;
   }
@@ -344,25 +345,37 @@ export class HealthReportModel {
       const now = new Date();
       const reportDateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
+      // 优先用 API 数据，不完整时用 UserInfo 补全
+      const h: number = this.userInfo?.height || 0;
+      const w: number = d.weight > 0 ? d.weight : (this.userInfo?.weight || 0);
+      const bmi: number = d.bmi > 0 ? d.bmi : (h > 0 && w > 0 ? this.healthDataInputModel?.bmiCalculator(h, w) || 0 : 0);
+      const sex: string = this.userInfo?.gender || '男';
+      const birthday: string = this.userInfo?.birthday || '';
+      const bodyFat: number = d.body_fat_percentage > 0 ? d.body_fat_percentage :
+        (h > 0 && w > 0 && birthday ? this.healthDataInputModel?.getBodyFatPercentage(birthday, bmi, sex) || 0 : 0);
+
       this.reportData = {
         userName: this.userInfo?.nickName || '用户',
         score: d.today_score,
         percentile: this.calculatePercentile(d.today_score),
         reportDate: reportDateStr,
-        weight: d.weight,
-        height: this.userInfo?.height || 0,
-        age: this.userInfo?.birthday ? this.calculateAge(this.userInfo.birthday) : 0,
-        bmi: d.bmi,
-        bmiLevel: this.getBMILevelFromValue(d.bmi),
-        bodyFat: d.body_fat_percentage,
-        fatMass: Math.round(d.weight * d.body_fat_percentage / 100 * 10) / 10,
+        weight: w,
+        height: h,
+        age: birthday ? this.calculateAge(birthday) : 0,
+        bmi: bmi,
+        bmiLevel: this.getBMILevelFromValue(bmi),
+        bodyFat: bodyFat,
+        fatMass: w > 0 && bodyFat > 0 ? Math.round(w * bodyFat / 100 * 10) / 10 : 0,
         heartRate: d.heart_rate,
         bloodPressureSystolic: d.blood_pressure_systolic,
         bloodPressureDiastolic: d.blood_pressure_diastolic,
         bloodGlucose: d.blood_sugar,
-        bmiTarget: this.calculateBMITarget(d.bmi),
-        bmiAdvice: this.generateBMIAdvice(this.getBMILevelFromValue(d.bmi))
+        bmiTarget: this.calculateBMITarget(bmi),
+        bmiAdvice: this.generateBMIAdvice(this.getBMILevelFromValue(bmi))
       } as HealthReportData;
+    } else {
+      // API 无数据时，用本地 UserInfo 计算
+      this.loadHealthData();
     }
   }
 

@@ -1,8 +1,10 @@
 //健康历史详情页面
 import { phoneRouterControl } from 'oh_router';
-import { TValueType, UnitConverter, BarVM, ThemeUtil } from 'common';
+import { TValueType, UnitConverter, BarVM, ThemeUtil, GlobalContext } from 'common';
 import type { ThemeColors } from 'common';
 import { HealthHistoryItem } from '../types/HealthHistoryTypes';
+import { HealthDiaryService } from '../service/HealthDiaryService';
+import { promptAction } from '@kit.ArkUI';
 
 @Builder
 export function HealthHistoryDetailPageBuilder(value: TValueType) {
@@ -18,6 +20,9 @@ export struct HealthHistoryDetailPage {
   @Computed get themeColors(): ThemeColors {
     return ThemeUtil.instance.currentColors;
   }
+  @Local diaryContent: string = '';
+  @Local isEditingDiary: boolean = false;
+
   @Local historyData: HealthHistoryItem = {
     id: '1',
     date: '9月12日',
@@ -36,6 +41,28 @@ export struct HealthHistoryDetailPage {
 
   aboutToAppear(): void {
     this.historyData = this.value as HealthHistoryItem;
+    // 加载该日期的日记
+    const d = new Date(this.historyData.fullDate);
+    if (!isNaN(d.getTime())) {
+      const dateStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+      const entry = HealthDiaryService.instance.getEntry(dateStr);
+      this.diaryContent = entry ? entry.content : '';
+    }
+  }
+
+  private getDateStr(): string {
+    const d = new Date(this.historyData.fullDate);
+    if (isNaN(d.getTime())) return '';
+    return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+  }
+
+  private saveDiary(): void {
+    const dateStr = this.getDateStr();
+    if (dateStr && this.diaryContent.trim().length > 0) {
+      HealthDiaryService.instance.saveEntry(dateStr, this.diaryContent.trim());
+      promptAction.showToast({ message: '日记已保存' });
+    }
+    this.isEditingDiary = false;
   }
 
   handleBack = (): void => {
@@ -144,6 +171,79 @@ export struct HealthHistoryDetailPage {
             this.renderDataRow($r('app.string.health_bloodpressure'),
               `${this.historyData.bloodPressureSystolic}/${this.historyData.bloodPressureDiastolic}mmHg`, false)
             this.renderDataRow($r('app.string.health_blood_glucose'), `${this.historyData.bloodGlucose.toFixed(1)}mmol/L`, false)
+          }
+          .width('100%')
+          .backgroundColor(this.themeColors.backgroundCard)
+          .borderRadius($r('sys.float.corner_radius_level7'))
+          .clip(true)
+
+          // 日记卡片
+          Column() {
+            Row() {
+              Text('📝 健康日记')
+                .fontSize($r('sys.float.Body_L'))
+                .fontWeight(FontWeight.Medium)
+                .fontColor(this.themeColors.textPrimary)
+              Blank()
+              if (!this.isEditingDiary) {
+                Text(this.diaryContent.length > 0 ? '编辑' : '写日记')
+                  .fontSize(14)
+                  .fontColor(this.themeColors.accent)
+                  .onClick(() => {
+                    this.isEditingDiary = true;
+                  })
+              }
+            }
+            .width('100%')
+            .padding({ left: 24, right: 24, top: 20 })
+
+            if (this.isEditingDiary) {
+              TextInput({ placeholder: '记录今天的感受...', text: this.diaryContent })
+                .width('100%')
+                .height(100)
+                .margin({ left: 16, right: 16, top: 8 })
+                .fontSize(14)
+                .backgroundColor(this.themeColors.backgroundSecondary)
+                .borderRadius(8)
+                .onChange((value: string) => {
+                  this.diaryContent = value;
+                })
+              Row() {
+                Button('保存')
+                  .type(ButtonType.Capsule)
+                  .fontSize(14)
+                  .height(32)
+                  .backgroundColor(this.themeColors.accent)
+                  .onClick(() => {
+                    this.saveDiary();
+                  })
+                Button('取消')
+                  .type(ButtonType.Capsule)
+                  .fontSize(14)
+                  .height(32)
+                  .backgroundColor(this.themeColors.backgroundSecondary)
+                  .fontColor(this.themeColors.textSecondary)
+                  .margin({ left: 8 })
+                  .onClick(() => {
+                    this.isEditingDiary = false;
+                  })
+              }
+              .width('100%')
+              .padding({ left: 24, right: 24, top: 8, bottom: 16 })
+              .justifyContent(FlexAlign.End)
+            } else if (this.diaryContent.length > 0) {
+              Text(this.diaryContent)
+                .fontSize(14)
+                .fontColor(this.themeColors.textSecondary)
+                .width('100%')
+                .padding({ left: 24, right: 24, top: 8, bottom: 20 })
+            } else {
+              Text('点击"写日记"记录今天的感受')
+                .fontSize(14)
+                .fontColor(this.themeColors.textTertiary)
+                .width('100%')
+                .padding({ left: 24, right: 24, top: 8, bottom: 20 })
+            }
           }
           .width('100%')
           .backgroundColor(this.themeColors.backgroundCard)

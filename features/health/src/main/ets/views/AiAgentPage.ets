@@ -45,8 +45,12 @@ export struct AiAgentPage {
 
   async aboutToAppear(): Promise<void> {
     this.getStatusBarHeight();
-    await this.loadSessions();
-    await this.initSession();
+    try {
+      await this.loadSessions();
+      await this.initSession();
+    } catch (err) {
+      console.error(`AiAgentPage aboutToAppear error: ${JSON.stringify(err)}`);
+    }
   }
 
   private getStatusBarHeight(): void {

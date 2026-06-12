@@ -245,12 +245,15 @@ export struct EditPersonalCenter {
   ];
   @Local onReturnClick: () => void = () => {
     // 退出时同步个人信息到后端
-    this.syncToApi();
-    phoneRouterControl.popPage();
+    this.syncToApi().then(() => {
+      phoneRouterControl.popPage();
+    }).catch(() => {
+      phoneRouterControl.popPage();
+    });
   }
 
   /** 将个人信息同步到后端 API */
-  private syncToApi(): void {
+  private async syncToApi(): Promise<void> {
     if (!AuthToken.isLoggedIn()) return;
     const body: UserProfilePayload = {
       nick_name: this.userInfo.nickName,
@@ -261,7 +264,7 @@ export struct EditPersonalCenter {
     if (this.userInfo.birthday) {
       body.birthday = this.userInfo.birthday;
     }
-    HttpUtil.put<object>('/api/auth/me', body);
+    await HttpUtil.put<object>('/api/auth/me', body);
   }
 
   build() {

@@ -98,6 +98,65 @@ export class DataExportService {
   }
 
   /**
+   * 从 JSON 字符串解析为记录数组
+   */
+  public static fromJson(jsonStr: string): HealthDataRecord[] {
+    const data: ExportRecord[] = JSON.parse(jsonStr);
+    return data.map((item: ExportRecord, index: number) => {
+      const record: HealthDataRecord = {
+        id: `import_${Date.now()}_${index}`,
+        timestamp: new Date(item.date + 'T08:00:00').getTime(),
+        weight: item.weight,
+        bmi: item.bmi,
+        bodyFatPercentage: item.bodyFatPercentage,
+        fatWeight: item.fatWeight,
+        bloodSugar: item.bloodSugar,
+        bloodPressureSystolic: item.bloodPressureSystolic,
+        bloodPressureDiastolic: item.bloodPressureDiastolic,
+        heartRate: item.heartRate,
+        waistCircumference: item.waistCircumference,
+        hipCircumference: item.hipCircumference,
+        stepCount: item.stepCount,
+        sleepHours: item.sleepHours,
+      };
+      return record;
+    });
+  }
+
+  /**
+   * 从文件导入数据（合并到现有数据，跳过重复日期）
+   */
+  public static async importFromFile(): Promise<number> {
+    const ctx: Context = GlobalContext.getUIAbilityContext();
+    const cacheDir: string = ctx.cacheDir;
+
+    // 查找最新的 JSON 备份文件
+    const files = fileIo.listFileSync(cacheDir);
+    const jsonFiles = files.filter((f: string) => f.startsWith('health_data_') && f.endsWith('.json'));
+    if (jsonFiles.length === 0) {
+      throw new Error('未找到备份文件，请先导出数据');
+    }
+
+    // 按时间倒序，取最新的文件
+    jsonFiles.sort().reverse();
+    const filePath = `${cacheDir}/${jsonFiles[0]}`;
+
+    // 读取文件
+    const file = fileIo.openSync(filePath, fileIo.OpenMode.READ_ONLY);
+    const stat = fileIo.statSync(file.fd);
+    const buf = new ArrayBuffer(stat.size);
+    fileIo.readSync(file.fd, buf);
+    fileIo.closeSync(file);
+
+    const jsonStr = String.fromCharCode(...new Uint8Array(buf));
+    const importedRecords = DataExportService.fromJson(jsonStr);
+
+    // 合并到本地存储（跳过重复日期）
+    const importCount = HealthDataService.instance.bulkImportLocal(importedRecords);
+    return importCount;
+  }
+
+  /**
    * 获取记录总数
    */
   public static getRecordCount(): number {

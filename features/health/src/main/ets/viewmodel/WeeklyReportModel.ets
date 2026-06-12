@@ -109,7 +109,7 @@ export class WeeklyReportModel {
 
   /** 从后端 API 加载数据后重新生成报告 */
   public async loadFromApi(): Promise<void> {
-    await HealthDataService.instance.loadFromApi(100);
+    await HealthDataService.instance.loadFromApi(50);
     this.generateReport();
   }
 

@@ -110,9 +110,11 @@ export struct HealthPage {
   /** 异步从后端加载最新数据并刷新 UI */
   private async refreshFromApi(): Promise<void> {
     try {
-      await this.waterService.loadFromApi();
-      await this.scoreService.loadFromApi();
-      await this.suggestionService.loadFromApi();
+      await Promise.all([
+        this.waterService.loadFromApi(),
+        this.scoreService.loadFromApi(),
+        this.suggestionService.loadFromApi()
+      ]);
     } catch (err) {
       TCLogger.error(TAG, `refreshFromApi error: ${JSON.stringify(err)}`);
     }
