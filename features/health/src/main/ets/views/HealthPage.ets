@@ -574,7 +574,7 @@ export struct HealthPage {
         .width('100%')
         .linearGradient({
           angle: 180,
-          colors: [['#524792F3', 0.0], ['#00F1F3F5', 1.0]]
+          colors: ThemeUtil.instance.isDark ? [['#1A1A1A', 0.0], ['#121212', 1.0]] : [['#524792F3', 0.0], ['#00F1F3F5', 1.0]]
         })
 
       Column() {

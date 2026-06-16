@@ -11,6 +11,8 @@
  * @fileType: component
  * @image:
  */
+import { ThemeUtil } from 'common';
+
 @ComponentV2
 export struct OuterFrameCard {
   @BuilderParam content: () => void
@@ -23,7 +25,7 @@ export struct OuterFrameCard {
     }
     .size({ width: '100%' })
     .padding({ left: $r('app.float.vp_12'), right: $r('app.float.vp_12') })
-    .backgroundColor($r('sys.color.background_primary'))
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level8'))
   }
 }

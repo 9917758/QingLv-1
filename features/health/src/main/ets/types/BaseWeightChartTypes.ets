@@ -13,6 +13,19 @@ import {
   MarkerView,
   Highlight
 } from '@ohos/mpchart';
+import { ThemeUtil } from 'common';
+
+function hexToRgb(hex: string): number {
+  if (!hex) return 0;
+  const h = hex.replace('#', '');
+  if (h.length === 6) {
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return ColorTemplate.colorRgb(r, g, b);
+  }
+  return 0;
+}
 
 // 健康数据 MarkerView
 class HealthMarkerView extends MarkerView {
@@ -154,12 +167,15 @@ export class ChartConfig {
 // 创建默认配置
 export function createDefaultChartConfig(): ChartConfig {
   const config = new ChartConfig();
-  config.lineColor = ColorTemplate.colorRgb(90, 177, 232);
+  const themeColors = ThemeUtil.instance.currentColors;
+  const isDark = ThemeUtil.instance.isDark;
+
+  config.lineColor = hexToRgb(themeColors.chartLine || '#5AB1E8');
   config.lineWidth = 3;
   config.fillAlpha = 30;
-  config.gridColor = ColorTemplate.colorRgb(240, 240, 240);
-  config.axisLineColor = ColorTemplate.colorRgb(224, 224, 224);
-  config.textColor = ColorTemplate.colorRgb(153, 153, 153);
+  config.gridColor = isDark ? hexToRgb('#3A3A3A') : ColorTemplate.colorRgb(240, 240, 240);
+  config.axisLineColor = isDark ? hexToRgb('#555555') : ColorTemplate.colorRgb(224, 224, 224);
+  config.textColor = hexToRgb(themeColors.textTertiary || '#999999');
   config.textSize = 10;
   config.yAxisMin = 0;
   config.yAxisMax = 200;

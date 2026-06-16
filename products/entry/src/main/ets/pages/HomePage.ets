@@ -1,6 +1,6 @@
 import { common } from '@kit.AbilityKit';
 import { BusinessError, emitter } from '@kit.BasicServicesKit';
-import { TCLogger, BarVM, Constants } from 'common';
+import { TCLogger, BarVM, Constants, ThemeUtil } from 'common';
 import { HomeModel } from '../viewmodel/HomeModel';
 import { TabSingleItem } from '../viewmodel/TabSingleItem';
 import { WaterIntakeService } from 'health';
@@ -131,7 +131,7 @@ export struct HomePage {
       }
       .clip(true)
       .width('100%')
-      .backgroundColor($r('app.color.background_color_page'))
+      .backgroundColor(ThemeUtil.instance.currentColors.backgroundSecondary)
       .barHeight($r('app.float.vp_50'))
       .barMode(BarMode.Fixed)
       .padding({
@@ -231,7 +231,7 @@ export struct HomePage {
     NavDestination() {
       this.render();
     }
-    .backgroundColor($r('sys.color.background_secondary'))
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundSecondary)
     .hideTitleBar(true)
     .onBackPressed(() => {
       let context = this.getUIContext().getHostContext() as common.UIAbilityContext;

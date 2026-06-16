@@ -1,5 +1,5 @@
 import { PersistenceV2 } from '@kit.ArkUI'
-import { CommonHeader, getMedia, RouterMap, UserInfo } from 'common'
+import { CommonHeader, getMedia, RouterMap, UserInfo, ThemeUtil } from 'common'
 import { MineItem } from '../viewmodel/MineModel'
 import { OHPage, phoneRouterControl } from 'oh_router'
 import { SetUpPageBuilder } from './SetupPage'
@@ -28,6 +28,7 @@ import { UserItem } from '../comp/UserItem'
 export struct MinePage {
   logTag: string = 'MinePage';
   @Local userInfo: UserInfo = PersistenceV2.connect(UserInfo, () => new UserInfo())!;
+  @Local isDarkMode: boolean = ThemeUtil.instance.isDark;
   @Local mineArr: MineItem[] = [
     new MineItem('我的收藏', $r('app.media.icon_envelope'), undefined,
       RouterMap.HEALTH_FAVORITES_PAGE),
@@ -96,7 +97,7 @@ export struct MinePage {
     .width('100%')
     .height($r('app.float.vp_72'))
     .padding($r('app.float.vp_12'))
-    .backgroundColor($r('sys.color.background_primary'))
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundCard)
     .borderRadius($r('sys.float.corner_radius_level8'))
   }
 
@@ -152,8 +153,6 @@ export struct MinePage {
             .width('100%')
             .height('auto')
             .lanes(1)
-            .borderRadius($r('sys.float.corner_radius_level8'))
-            .backgroundColor($r('sys.color.comp_background_primary'))
             .divider({
               strokeWidth: '1px',
               color: $r('sys.color.comp_divider'),
@@ -163,6 +162,48 @@ export struct MinePage {
             .padding($r('app.float.vp_4'))
             .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
           }
+
+          // 深色模式开关卡片
+          OuterFrameCard() {
+            List() {
+              ListItem() {
+                Row() {
+                  Text('🌙')
+                    .fontSize(18)
+                    .width($r('app.float.vp_24'))
+                    .height($r('app.float.vp_24'))
+                    .textAlign(TextAlign.Center)
+                  
+                  Row() {
+                    Text('深色模式')
+                      .fontSize($r('sys.float.Subtitle_M'))
+                      .fontWeight(FontWeight.Medium)
+                      .fontColor($r('sys.color.font_primary'))
+
+                    Toggle({ type: ToggleType.Switch, isOn: this.isDarkMode })
+                      .selectedColor('#4ECDC4')
+                      .onChange((isOn: boolean) => {
+                        this.isDarkMode = isOn;
+                        ThemeUtil.instance.setTheme(isOn ? 'dark' : 'system');
+                      })
+                  }
+                  .layoutWeight(1)
+                  .justifyContent(FlexAlign.SpaceBetween)
+                  .margin({ left: $r('app.float.vp_16') })
+                }
+                .padding({
+                  top: $r('app.float.vp_12'),
+                  bottom: $r('app.float.vp_12'),
+                  left: $r('app.float.vp_8'),
+                  right: $r('app.float.vp_8'),
+                })
+              }
+            }
+            .width('100%')
+            .height('auto')
+            .lanes(1)
+            .padding($r('app.float.vp_4'))
+          }
         }
       }
       .align(Alignment.Top)
@@ -171,9 +212,9 @@ export struct MinePage {
       .enableScrollInteraction(true)
       .layoutWeight(1)
     }
-    .backgroundImage(getMedia('app.media.profile_background'))
+    .backgroundImage(ThemeUtil.instance.isDark ? undefined : getMedia('app.media.profile_background'))
     .backgroundImageSize(ImageSize.FILL)
-    .backgroundColor($r('sys.color.comp_background_list_card'))
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundSecondary)
     .alignItems(HorizontalAlign.Start)
     .width('100%')
     .height('100%')

@@ -1,5 +1,5 @@
 import { emitter } from '@kit.BasicServicesKit';
-import { CommonHeader, Constants } from 'common';
+import { CommonHeader, Constants, ThemeUtil } from 'common';
 import { DeviceConnect } from '../comp/DeviceConnect';
 import { DeviceModel } from '../viewmodel/DeviceModel';
 import { PairedDeviceModel } from '../viewmodel/ScannedDevice';
@@ -58,34 +58,39 @@ export struct DevicePage {
   // 页面内容渲染
   @Builder
   render() {
-    CommonHeader({
-      title: $r('app.string.module_name'),
-      onReturnClick: this.onReturnClick,
-      backgroundColorParam: $r('app.color.color_F1F3F5')
-    })
-
     Column() {
-      ForEach(this.deviceModelVM.macList.pairedList, (item: PairedDeviceModel, _index: number) => {
-        DeviceRow({
-          pairedDeviceVM: item,
-          onAgainConnectClick: () => {
-            this.deviceModelVM.currentMainPage = true;
-            this.deviceModelVM.pairDevice(item.deviceId);
-          }
-        });
-        Blank().height($r('app.float.vp_12'))
-      }, (item: PairedDeviceModel) => item.keyId)
-
-      DeviceConnect({
-        deviceModelVM: this.deviceModelVM,
-        onConnectClick: () => {
-          this.deviceModelVM.startScan();
-        }
+      CommonHeader({
+        title: $r('app.string.module_name'),
+        onReturnClick: this.onReturnClick,
+        backgroundColorParam: ThemeUtil.instance.currentColors.backgroundSecondary
       })
+
+      Column() {
+        ForEach(this.deviceModelVM.macList.pairedList, (item: PairedDeviceModel, _index: number) => {
+          DeviceRow({
+            pairedDeviceVM: item,
+            onAgainConnectClick: () => {
+              this.deviceModelVM.currentMainPage = true;
+              this.deviceModelVM.pairDevice(item.deviceId);
+            }
+          });
+          Blank().height($r('app.float.vp_12'))
+        }, (item: PairedDeviceModel) => item.keyId)
+
+        DeviceConnect({
+          deviceModelVM: this.deviceModelVM,
+          onConnectClick: () => {
+            this.deviceModelVM.startScan();
+          }
+        })
+      }
+      .layoutWeight(1)
+      .width('100%')
+      .alignItems(HorizontalAlign.Center)
     }
-    .layoutWeight(1)
     .width('100%')
-    .alignItems(HorizontalAlign.Center)
+    .height('100%')
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundSecondary)
   }
 
   build() {
