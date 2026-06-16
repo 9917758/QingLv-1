@@ -5,6 +5,7 @@ import { PairedDeviceMacList } from 'device';
 import { phoneRouterControl } from 'oh_router';
 import { HealthModel } from '../viewmodel/HealthModel';
 import { RemindPairDialog, RemindPairModel } from './RemindPairDialog';
+import { ThemeUtil } from 'common';
 
 /**
  * @usage: 用于显示运动相关的健康数据(折叠屏展开状态)。主要是活动热量、锻炼时长、运动距离、今日步数。
@@ -77,17 +78,17 @@ export struct HealthRunningFoldRow {
               .height($r('app.float.vp_24'))
             Blank().width($r('app.float.vp_6'))
             Text($r('app.string.health_step_count'))
-              .fontColor($r('sys.color.mask_secondary'))
+              .fontColor(ThemeUtil.instance.currentColors.textSecondary)
               .fontSize($r('sys.float.Body_S'))
           }
 
           Text() {
             Span(this.healthModelVM.stepCount > 0 ? this.healthModelVM.stepCount.toString() : '--')
-              .fontColor($r('sys.color.font_primary'))
+              .fontColor(ThemeUtil.instance.currentColors.textPrimary)
               .fontSize($r('sys.float.Body_L'))
               .fontWeight(FontWeight.Bold)
             Span($r('app.string.health_step_count_unit'))
-              .fontColor($r('sys.color.mask_secondary'))
+              .fontColor(ThemeUtil.instance.currentColors.textSecondary)
               .fontSize($r('sys.float.Caption_M'))
           }
         }
@@ -101,7 +102,7 @@ export struct HealthRunningFoldRow {
 
       Blank().width($r('app.float.vp_16'))
     }
-    .backgroundColor($r('sys.color.comp_background_list_card'))
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundCard)
     .height($r('app.float.vp_96'))
     .width('100%')
     .borderRadius($r('sys.float.corner_radius_level6'))
@@ -117,7 +118,7 @@ export struct HealthRunningFoldRow {
         .backgroundColor(color)
       Blank().width($r('app.float.vp_6'))
       Text(title)
-        .fontColor($r('sys.color.mask_secondary'))
+        .fontColor(ThemeUtil.instance.currentColors.textSecondary)
         .fontSize($r('sys.float.Body_S'))
         .lineHeight($r('app.float.vp_20'))
 
@@ -126,25 +127,25 @@ export struct HealthRunningFoldRow {
       Text() {
         if (valueType === 0) {
           Span(this.healthModelVM.activityHeat > 0 ? this.healthModelVM.activityHeat.toString() : '--')
-            .fontColor($r('sys.color.font_primary'))
+            .fontColor(ThemeUtil.instance.currentColors.textPrimary)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
         } else if (valueType === 1) {
           Span(this.healthModelVM.exerciseDuration > 0 ? this.healthModelVM.exerciseDuration.toString() : '--')
-            .fontColor($r('sys.color.font_primary'))
+            .fontColor(ThemeUtil.instance.currentColors.textPrimary)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
         } else {
           Span(this.healthModelVM.travelDistance > 0 ? this.healthModelVM.travelDistance.toString() : '--')
-            .fontColor($r('sys.color.font_primary'))
+            .fontColor(ThemeUtil.instance.currentColors.textPrimary)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
         }
         Span(unit)
-          .fontColor($r('sys.color.mask_secondary'))
+          .fontColor(ThemeUtil.instance.currentColors.textSecondary)
           .fontSize($r('sys.float.Caption_M'))
       }
     }

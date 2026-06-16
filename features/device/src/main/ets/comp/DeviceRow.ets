@@ -1,7 +1,7 @@
 import { PairedDeviceModel } from '../viewmodel/ScannedDevice';
 import { DeviceModel } from '../viewmodel/DeviceModel';
 import { phoneRouterControl } from 'oh_router';
-import { RouterMap, USE_MOCK_DATA } from 'common';
+import { RouterMap, USE_MOCK_DATA, ThemeUtil } from 'common';
 import { DeviceInfoPageBuilder } from '../views/DeviceInfoPage';
 
 /**
@@ -39,7 +39,7 @@ export struct DeviceRow {
         Text(this.pairedDeviceVM.deviceName)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary'))
+          .fontColor(ThemeUtil.instance.currentColors.textPrimary)
 
         Blank().height($r('app.float.vp_6'))
 
@@ -49,7 +49,7 @@ export struct DeviceRow {
             : $r('app.string.device_pair_status_not_connected'))
             .fontSize($r('sys.float.Body_S'))
             .fontWeight(FontWeight.Regular)
-            .fontColor($r('app.color.color_66000000'))
+            .fontColor(ThemeUtil.instance.currentColors.textSecondary)
 
           if (this.isMainPage) {
             Blank().width($r('app.float.vp_20'))
@@ -57,7 +57,7 @@ export struct DeviceRow {
             Text($r('app.string.device_pair_status_reconnect'))
               .fontSize($r('sys.float.Body_S'))
               .fontWeight(FontWeight.Regular)
-              .fontColor($r('app.color.color_0A59F7'))
+              .fontColor(ThemeUtil.instance.currentColors.info)
               .visibility(this.pairedDeviceVM.pairState === 2 ? Visibility.None : Visibility.Visible)
               .onClick(this.onAgainConnectClick)
 
@@ -65,11 +65,11 @@ export struct DeviceRow {
               Span($r('app.string.device_info_current_battery'))
                 .fontSize($r('sys.float.Body_S'))
                 .fontWeight(FontWeight.Regular)
-                .fontColor($r('app.color.color_66000000'))
+                .fontColor(ThemeUtil.instance.currentColors.textSecondary)
               Span(this.pairedDeviceVM.battery + '%')
                 .fontSize($r('sys.float.Body_S'))
                 .fontWeight(FontWeight.Medium)
-                .fontColor($r('sys.color.font_primary'))
+                .fontColor(ThemeUtil.instance.currentColors.textPrimary)
             }
             .visibility(this.pairedDeviceVM.pairState === 2 ? Visibility.Visible : Visibility.None)
           }
@@ -84,7 +84,7 @@ export struct DeviceRow {
     }
     .height($r('app.float.vp_88'))
     .width('100%')
-    .backgroundColor($r('sys.color.comp_background_list_card'))
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundCard)
     .clip(true)
     .borderRadius($r('sys.float.corner_radius_level8'))
     .alignItems(VerticalAlign.Center)

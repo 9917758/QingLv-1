@@ -5,6 +5,7 @@ import { HealthModel } from '../viewmodel/HealthModel';
 import { RemindPairModel,RemindPairDialog } from './RemindPairDialog';
 import { PairedDeviceMacList } from 'device';
 import { phoneRouterControl } from 'oh_router';
+import { ThemeUtil } from 'common';
 
 
 /**
@@ -82,17 +83,17 @@ export struct HealthRunningRow {
             Blank().width($r('app.float.vp_6'))
             Text($r('app.string.health_step_count'))
               .fontSize($r('sys.float.Body_S'))
-              .fontColor($r('sys.color.mask_secondary'))
+              .fontColor(ThemeUtil.instance.currentColors.textSecondary)
           }
 
           Text() {
             Span(this.healthModelVM.stepCount > 0 ? this.healthModelVM.stepCount.toString() : '--')
               .fontSize($r('sys.float.Body_L'))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('sys.color.font_primary'))
+            .fontColor(ThemeUtil.instance.currentColors.textPrimary)
             Span($r('app.string.health_step_count_unit'))
               .fontSize($r('sys.float.Caption_M'))
-              .fontColor($r('sys.color.mask_secondary'))
+              .fontColor(ThemeUtil.instance.currentColors.textSecondary)
           }
         }
         .width('100%')
@@ -109,7 +110,7 @@ export struct HealthRunningRow {
     .height($r('app.float.vp_120'))
     .width('100%')
     .clip(true)
-    .backgroundColor($r('sys.color.comp_background_list_card'))
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundCard)
   }
 
   @Builder
@@ -124,7 +125,7 @@ export struct HealthRunningRow {
         Text(title)
           .fontSize($r('sys.float.Body_S'))
           .lineHeight($r('app.float.vp_20'))
-          .fontColor($r('sys.color.mask_secondary'))
+          .fontColor(ThemeUtil.instance.currentColors.textSecondary)
       }
 
       Text() {
@@ -133,23 +134,23 @@ export struct HealthRunningRow {
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
-            .fontColor($r('sys.color.font_primary'))
+            .fontColor(ThemeUtil.instance.currentColors.textPrimary)
         } else if (valueType === 1) {
           Span(this.healthModelVM.exerciseDuration > 0 ? this.healthModelVM.exerciseDuration.toString() : '--')
             .fontSize($r('sys.float.Title_S'))
-            .fontColor($r('sys.color.font_primary'))
+            .fontColor(ThemeUtil.instance.currentColors.textPrimary)
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
         } else {
           Span(this.healthModelVM.travelDistance > 0 ? this.healthModelVM.travelDistance.toString() : '--')
             .fontWeight(FontWeight.Bold)
             .lineHeight($r('app.float.vp_20'))
-            .fontColor($r('sys.color.font_primary'))
+            .fontColor(ThemeUtil.instance.currentColors.textPrimary)
             .fontSize($r('sys.float.Title_S'))
         }
         Span(unit)
           .fontSize($r('sys.float.Caption_M'))
-          .fontColor($r('sys.color.mask_secondary'))
+          .fontColor(ThemeUtil.instance.currentColors.textSecondary)
       }
     }
     .alignItems(HorizontalAlign.Start)

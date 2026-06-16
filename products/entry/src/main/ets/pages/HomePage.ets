@@ -35,7 +35,7 @@ export struct HomePage {
         .margin({ top: $r('app.float.vp_4') })
         .fontSize($r('sys.float.Caption_M'))
         .fontWeight(FontWeight.Medium)
-        .fontColor(this.vm.curIndex === tabItem.index ? tabItem.fontColorActive : tabItem.fontColor)
+        .fontColor(this.vm.curIndex === tabItem.index ? ThemeUtil.instance.currentColors.info : ThemeUtil.instance.currentColors.textSecondary)
     }
     .justifyContent(FlexAlign.Center)
     .height($r('app.float.vp_52'))

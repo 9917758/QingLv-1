@@ -1,4 +1,5 @@
 import { DeviceModel } from '../viewmodel/DeviceModel';
+import { ThemeUtil } from 'common';
 
 /**
  * @usage: 用于显示设备连接状态和提供连接操作入口。展示连接状态文本、连接提示信息和连接图标按钮。
@@ -27,13 +28,13 @@ export struct DeviceConnect {
         Text(this.deviceModelVM.connectStatus)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary'))
+          .fontColor(ThemeUtil.instance.currentColors.textPrimary)
 
         Blank().height($r('app.float.vp_6'))
         Text(this.deviceModelVM.connectTip)
           .fontSize($r('sys.float.Body_S'))
           .fontWeight(FontWeight.Regular)
-          .fontColor($r('app.color.color_999'))
+          .fontColor(ThemeUtil.instance.currentColors.textSecondary)
       }
       .layoutWeight(1)
       .height('100%')
@@ -48,7 +49,7 @@ export struct DeviceConnect {
     }
     .height($r('app.float.vp_88'))
     .width('100%')
-    .backgroundColor($r('sys.color.comp_background_list_card'))
+    .backgroundColor(ThemeUtil.instance.currentColors.backgroundCard)
     .clip(true)
     .borderRadius($r('sys.float.corner_radius_level8'))
     .alignItems(VerticalAlign.Center)
