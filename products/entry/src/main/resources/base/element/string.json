@@ -11,6 +11,14 @@
     {
       "name": "EntryAbility_label",
       "value": "健康管理"
+    },
+    {
+      "name": "EntryFormAbility_label",
+      "value": "健康卡片"
+    },
+    {
+      "name": "EntryFormAbility_desc",
+      "value": "清律健康桌面组件"
     }
   ]
 }

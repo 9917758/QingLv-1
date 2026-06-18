@@ -11,6 +11,14 @@
     {
       "name": "EntryAbility_label",
       "value": "Health Management"
+    },
+    {
+      "name": "EntryFormAbility_label",
+      "value": "Health Widget"
+    },
+    {
+      "name": "EntryFormAbility_desc",
+      "value": "Health Desktop Widget"
     }
   ]
 }
