@@ -1,5 +1,28 @@
 # Changelog
 
+## v2.4.0 - 2026-06-18
+
+### 新增
+
+- **AI 助手 Markdown 渲染**: AI 回复中的 `**加粗**` 文本正确显示为粗体，支持标题、列表、引用等格式清理
+- **ReAct Agent 工具调用**: 后端 AI 助手升级为 ReAct 架构，支持 10 个智能工具（营养分析、运动计划、趋势预测、健康风险评估等）
+- **后端用户体重查询**: AI 助手现在能正确获取用户的体重信息（从 User 表读取）
+
+### 修复
+
+- **步数历史白屏**: 移除 `onPop: deletePage()` 回调，修复导航栈双重弹出导致的白屏崩溃
+- **步数假数据日期错误**: Mock 数据改为动态生成，不再出现未来日期
+- **血糖统计 minValue 错误**: 修正 BloodGlucoseMockData 中统计值与实际数据不匹配
+- **周报/月报图表数据异常**: 图表数据限制在统计值声明的范围内
+- **睡眠 Mock 日期不匹配**: 修正 SleepMockData 中 currentDate 与 monthTitle 不一致
+- **血压月视图标签错误**: 修正 5月标签显示为 11/12月日期的问题
+- **HealthPage 无条件调用 Mock**: `generateMockHistory()` 和 `generateMock()` 添加 `USE_MOCK_DATA` 守卫
+- **CheckinStreakService 假数据**: 无持久化数据时不再无条件生成 Mock 打卡记录
+- **routerModule 空值检查**: StepHistoryPage 和 StepCountPage 添加空值保护
+- **后端 Agent 依赖冲突**: 移除 `langgraph.prebuilt`，改用 LangChain 原生 tool calling
+
+---
+
 ## v2.3.0 - 2026-06-12
 
 ### 新增
