@@ -55,7 +55,7 @@ export const BLOOD_PRESSURE_RANGE_OPTIONS: Record<BloodPressureTimeRange, BloodP
       currentDiastolic: 98,
       systolicValues: [128, 125, 130, 122, 127, 132, 120, 125, 128, 130, 124, 126, 129],
       diastolicValues: [96, 95, 98, 98, 97, 100, 94, 96, 98, 99, 95, 97, 98],
-      labels: ['11/15', '', '11/20', '', '11/25', '', '12/1', '', '12/5', '', '12/10', '', '12/15'],
+      labels: ['5/1', '', '5/5', '', '5/10', '', '5/15', '', '5/20', '', '5/25', '', '5/30'],
       statistics: { avgSystolic: 126, avgDiastolic: 97, avgPulse: 73 }
     }
   ],

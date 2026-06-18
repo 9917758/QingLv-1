@@ -13,11 +13,11 @@ export const MONTHLY_REPORT_DATA: MonthlyReportData = {
     minWeight: 120,
     change: -0.2,
     chartData: [
-      { date: '4/4', value: 110 },
-      { date: '4/12', value: 145 },
-      { date: '4/19', value: 105 },
-      { date: '4/26', value: 110 },
-      { date: '5/2', value: 125 }
+      { date: '4/4', value: 121.8 },
+      { date: '4/12', value: 121.5 },
+      { date: '4/19', value: 121.0 },
+      { date: '4/26', value: 120.5 },
+      { date: '5/2', value: 120.0 }
     ]
   },
 
@@ -26,11 +26,11 @@ export const MONTHLY_REPORT_DATA: MonthlyReportData = {
     minBodyFat: 28.1,
     change: -4.0,
     chartData: [
-      { date: '4/4', value: 15.5 },
-      { date: '4/12', value: 28.1 },
-      { date: '4/19', value: 32.8 },
-      { date: '4/26', value: 16.2 },
-      { date: '5/2', value: 24.1 }
+      { date: '4/4', value: 31.8 },
+      { date: '4/12', value: 31.0 },
+      { date: '4/19', value: 30.2 },
+      { date: '4/26', value: 29.5 },
+      { date: '5/2', value: 28.5 }
     ]
   },
 

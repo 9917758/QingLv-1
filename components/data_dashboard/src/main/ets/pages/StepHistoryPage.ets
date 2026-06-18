@@ -66,7 +66,9 @@ export struct StepHistoryPage {
     .hideTitleBar(true)
     .onReady((context) => {
       // 获取参数
-      this.routerModule = context.pathStack;
+      if (context.pathStack) {
+        this.routerModule = context.pathStack;
+      }
     })
     .onBackPressed(() => {
       this.routerModule.pop()

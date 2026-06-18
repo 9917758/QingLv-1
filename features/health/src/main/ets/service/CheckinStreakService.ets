@@ -3,7 +3,7 @@
  * 追踪每条提醒计划的连续打卡天数和总打卡统计
  * 本地存储按用户ID隔离
  */
-import { GlobalContext, PreferenceUtil, UserInfo } from 'common';
+import { GlobalContext, PreferenceUtil, UserInfo, USE_MOCK_DATA } from 'common';
 import { PersistenceV2 } from '@kit.ArkUI';
 
 export interface PlanStreak {
@@ -156,11 +156,13 @@ export class CheckinStreakService {
       if (Array.isArray(parsed) && parsed.length > 0) {
         this.streaks = parsed;
         this.updateTotalStreakDays();
-      } else {
+      } else if (USE_MOCK_DATA) {
         this.generateMockStreaks();
       }
     } catch {
-      this.generateMockStreaks();
+      if (USE_MOCK_DATA) {
+        this.generateMockStreaks();
+      }
     }
   }
 }

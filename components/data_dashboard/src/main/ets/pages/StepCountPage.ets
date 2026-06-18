@@ -84,7 +84,9 @@ export struct StepCountPage {
     }
     .onReady((context) => {
       // 获取参数
-      this.routerModule = context.pathStack;
+      if (context.pathStack) {
+        this.routerModule = context.pathStack;
+      }
     })
     .backgroundColor($r('sys.color.comp_background_gray'))
     .onBackPressed(() => {

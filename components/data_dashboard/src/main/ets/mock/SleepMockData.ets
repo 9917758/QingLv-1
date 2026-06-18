@@ -202,14 +202,14 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
     },
     {
       label: '2026年1月',
-      currentDate: '09月18日',
+      currentDate: '01月18日',
       totalHour: 0,
       totalMinute: 0,
       sleepData: [
         [1.1, 3.2, 0.9, 0.7], [0.9, 2.9, 0.8, 0.6], [1.2, 3.4, 0.8, 0.7], [1.0, 3.1, 0.8, 0.6], [1.1, 3.3, 0.9, 0.7],
         [0.9, 2.8, 0.7, 0.5], [1.2, 3.5, 0.9, 0.6], [1.0, 3.0, 0.8, 0.6], [1.1, 3.1, 0.9, 0.7]
       ],
-      labels: ['9/4', '', '9/8', '', '9/16', '', '9/20', '', '10/2'],
+      labels: ['1/4', '', '1/8', '', '1/16', '', '1/20', '', '1/28'],
       groupSizes: [2, 1, 2, 2, 2],
       statistics: {
         avgDeepSleep: 4,
@@ -222,14 +222,14 @@ export const SLEEP_RANGE_OPTIONS: Record<SleepTimeRange, SleepRangeOption[]> = {
     },
     {
       label: '2025年12月',
-      currentDate: '08月22日',
+      currentDate: '12月22日',
       totalHour: 0,
       totalMinute: 0,
       sleepData: [
         [1.2, 3.5, 0.9, 0.6], [1.0, 3.0, 0.8, 0.6], [0.9, 2.8, 0.7, 0.5], [1.1, 3.2, 0.9, 0.7], [1.0, 3.1, 0.8, 0.6],
         [1.2, 3.4, 0.8, 0.7], [0.9, 2.7, 0.8, 0.5], [1.1, 3.3, 0.9, 0.7], [1.0, 3.0, 0.8, 0.6]
       ],
-      labels: ['8/4', '', '8/8', '', '8/16', '', '8/20', '', '9/2'],
+      labels: ['12/4', '', '12/8', '', '12/16', '', '12/20', '', '12/28'],
       groupSizes: [2, 1, 2, 2, 2],
       statistics: {
         avgDeepSleep: 4,

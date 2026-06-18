@@ -11,10 +11,80 @@ import type {
 } from 'common';
 import { phoneRouterControl } from 'oh_router';
 
+interface MarkdownSegment {
+  text: string;
+  bold: boolean;
+}
+
 interface DisplayMessage {
   role: string;
   content: string;
+  segments: MarkdownSegment[];
+  hasBold: boolean;
   time: string;
+}
+
+/** 检测段落中是否有加粗 */
+function hasBoldSegments(segs: MarkdownSegment[]): boolean {
+  for (let i = 0; i < segs.length; i++) {
+    if (segs[i].bold) return true;
+  }
+  return false;
+}
+
+function segmentsToPlainText(segs: MarkdownSegment[]): string {
+  let result = '';
+  for (let i = 0; i < segs.length; i++) {
+    result += segs[i].text;
+  }
+  return result;
+}
+
+/**
+ * 解析 Markdown 为富文本段落（支持加粗）
+ * 处理顺序：先提取加粗，再清理其他 Markdown 语法
+ */
+function parseMarkdown(md: string): MarkdownSegment[] {
+  // 第一步：先提取 **加粗** 标记（在清理其他语法之前）
+  const segments: MarkdownSegment[] = [];
+  const boldRegex = /\*\*(.+?)\*\*/g;
+  let lastIndex = 0;
+  let match = boldRegex.exec(md);
+  while (match !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ text: cleanMarkdownText(md.substring(lastIndex, match.index)), bold: false });
+    }
+    segments.push({ text: cleanMarkdownText(match[1]), bold: true });
+    lastIndex = boldRegex.lastIndex;
+    match = boldRegex.exec(md);
+  }
+  if (lastIndex < md.length) {
+    segments.push({ text: cleanMarkdownText(md.substring(lastIndex)), bold: false });
+  }
+  if (segments.length === 0) {
+    segments.push({ text: cleanMarkdownText(md), bold: false });
+  }
+  return segments;
+}
+
+/** 清理 Markdown 语法（加粗已处理，这里处理其他标记） */
+function cleanMarkdownText(text: string): string {
+  let t = text;
+  // 标题 ### text → text
+  t = t.replace(/^#{1,6}\s+/gm, '');
+  // 无序列表 - 或 * 开头 → •（只匹配行首且后面有空格的）
+  t = t.replace(/^\s*[-]\s+/gm, '• ');
+  // 引用 > text → 「text」
+  t = t.replace(/^>\s*/gm, '');
+  // 分隔线 --- 或 ___
+  t = t.replace(/^[-_]{3,}\s*$/gm, '');
+  // 链接 [text](url) → text
+  t = t.replace(/\[(.+?)\]\(.+?\)/g, '$1');
+  // 行内代码 `code` → code
+  t = t.replace(/`(.+?)`/g, '$1');
+  // 清理多余空行
+  t = t.replace(/\n{3,}/g, '\n\n');
+  return t;
 }
 
 interface SessionCreateBody {
@@ -89,9 +159,12 @@ export struct AiAgentPage {
     const resp: ApiResponse<ApiChatSession> = await HttpUtil.post<ApiChatSession>('/api/chat/sessions', body);
     if (resp.data) {
       this.sessionId = resp.data.id;
+      const welcomeText = '你好！我是清律健康顾问 🏥\n\n我可以根据你的健康数据和收藏的知识文章，为你提供个性化的健康建议。\n\n你可以问我：\n• 我最近的身体状况怎么样？\n• 根据我的数据，有什么需要注意的？\n• 怎样改善我的睡眠质量？\n• 推荐适合我的运动方式';
       this.messages = [{
         role: 'assistant',
-        content: '你好！我是清律健康顾问 🏥\n\n我可以根据你的健康数据和收藏的知识文章，为你提供个性化的健康建议。\n\n你可以问我：\n• 我最近的身体状况怎么样？\n• 根据我的数据，有什么需要注意的？\n• 怎样改善我的睡眠质量？\n• 推荐适合我的运动方式',
+        content: welcomeText,
+        segments: [{ text: welcomeText, bold: false }],
+        hasBold: false,
         time: this.getTimeStr()
       }];
       await this.loadSessions();
@@ -127,13 +200,17 @@ export struct AiAgentPage {
       const loaded: DisplayMessage[] = [];
       for (let i = 0; i < resp.data.messages.length; i++) {
         const m = resp.data.messages[i];
-        loaded.push({ role: m.role, content: m.content, time: this.formatTime(m.created_at) });
+        const segs = parseMarkdown(m.content);
+        loaded.push({ role: m.role, content: m.content, segments: segs, hasBold: hasBoldSegments(segs), time: this.formatTime(m.created_at) });
       }
       this.messages = loaded;
     } else {
+      const hintText = '你好！我是清律健康顾问 🏥\n\n请输入你的健康问题。';
       this.messages = [{
         role: 'assistant',
-        content: '你好！我是清律健康顾问 🏥\n\n请输入你的健康问题。',
+        content: hintText,
+        segments: [{ text: hintText, bold: false }],
+        hasBold: false,
         time: this.getTimeStr()
       }];
     }
@@ -170,7 +247,7 @@ export struct AiAgentPage {
     const text = this.inputText.trim();
     if (text.length === 0 || this.isLoading || this.sessionId < 0) return;
 
-    const userDisplay: DisplayMessage = { role: 'user', content: text, time: this.getTimeStr() };
+    const userDisplay: DisplayMessage = { role: 'user', content: text, segments: [{ text: text, bold: false }], hasBold: false, time: this.getTimeStr() };
     this.messages = [...this.messages, userDisplay];
     this.inputText = '';
     this.isLoading = true;
@@ -183,17 +260,30 @@ export struct AiAgentPage {
     this.isLoading = false;
 
     if (resp.data) {
+      const rawContent = resp.data.ai_message.content;
+      const parsedSegments = parseMarkdown(rawContent);
+      // 调试：打印原始内容和解析结果
+      console.info(`[AI] raw content (first 200): ${rawContent.substring(0, 200)}`);
+      console.info(`[AI] segments count: ${parsedSegments.length}`);
+      for (let i = 0; i < parsedSegments.length; i++) {
+        console.info(`[AI] seg[${i}] bold=${parsedSegments[i].bold} text=${parsedSegments[i].text.substring(0, 50)}`);
+      }
       const aiDisplay: DisplayMessage = {
         role: 'assistant',
-        content: resp.data.ai_message.content,
+        content: rawContent,
+        segments: parsedSegments,
+        hasBold: hasBoldSegments(parsedSegments),
         time: this.formatTime(resp.data.ai_message.created_at)
       };
       this.messages = [...this.messages, aiDisplay];
       this.loadSessions(); // 刷新会话列表（标题可能更新）
     } else {
+      const errText = `抱歉，暂时无法回答：${resp.error}`;
       const errMsg: DisplayMessage = {
         role: 'assistant',
-        content: `抱歉，暂时无法回答：${resp.error}`,
+        content: errText,
+        segments: [{ text: errText, bold: false }],
+        hasBold: false,
         time: this.getTimeStr()
       };
       this.messages = [...this.messages, errMsg];
@@ -290,6 +380,40 @@ export struct AiAgentPage {
   // ─── 消息气泡 ───
 
   @Builder
+  richTextBubble(segments: MarkdownSegment[], isUser: boolean, hasBold: boolean) {
+    if (!hasBold) {
+      Text(segmentsToPlainText(segments))
+        .fontSize(15)
+        .fontColor(isUser ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
+    } else if (segments.length === 2) {
+      Text() {
+        Span(segments[0].text).fontSize(15)
+          .fontWeight(segments[0].bold ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(isUser ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
+        Span(segments[1].text).fontSize(15)
+          .fontWeight(segments[1].bold ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(isUser ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
+      }
+    } else if (segments.length === 3) {
+      Text() {
+        Span(segments[0].text).fontSize(15)
+          .fontWeight(segments[0].bold ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(isUser ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
+        Span(segments[1].text).fontSize(15)
+          .fontWeight(segments[1].bold ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(isUser ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
+        Span(segments[2].text).fontSize(15)
+          .fontWeight(segments[2].bold ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(isUser ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
+      }
+    } else {
+      Text(segmentsToPlainText(segments))
+        .fontSize(15)
+        .fontColor(isUser ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
+    }
+  }
+
+  @Builder
   messageBubble(msg: DisplayMessage) {
     Row() {
       if (msg.role === 'user') {
@@ -297,13 +421,13 @@ export struct AiAgentPage {
       }
 
       Column() {
-        Text(msg.content)
-          .fontSize(15)
-          .fontColor(msg.role === 'user' ? this.themeColors.textOnAccent : this.themeColors.textPrimary)
-          .padding(12)
-          .borderRadius(16)
-          .backgroundColor(msg.role === 'user' ? this.themeColors.accent : this.themeColors.backgroundInput)
-          .constraintSize({ maxWidth: '85%' })
+        Column() {
+          this.richTextBubble(msg.segments, msg.role === 'user', msg.hasBold)
+        }
+        .padding(12)
+        .borderRadius(16)
+        .backgroundColor(msg.role === 'user' ? this.themeColors.accent : this.themeColors.backgroundInput)
+        .constraintSize({ maxWidth: '85%' })
 
         Text(msg.time)
           .fontSize(11)

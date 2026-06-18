@@ -1,6 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
-import { BreakpointModel, CommonHeader, Constants, OHDialog, OHDialogModel, RouterMap, TCLogger, ThemeUtil } from 'common';
+import { BreakpointModel, CommonHeader, Constants, OHDialog, OHDialogModel, RouterMap, TCLogger, ThemeUtil, USE_MOCK_DATA } from 'common';
 import type { ThemeColors } from 'common';
 import { HealthCardRow } from '../comp/HealthCardRow';
 import { HealthRunningRow } from '../comp/HealthRunningRow';
@@ -90,7 +90,9 @@ export struct HealthPage {
     this.waterService.loadGoal();
     this.goalService.loadGoal();
     // 初始化新服务（Mock 模式下生成模拟数据）
-    this.scoreService.generateMockHistory();
+    if (USE_MOCK_DATA) {
+      this.scoreService.generateMockHistory();
+    }
     this.streakService.loadStreaks();
     // 健康建议基于实际健康数据生成
     this.suggestionService.generate(
@@ -99,12 +101,14 @@ export struct HealthPage {
       this.waterService.todayCount,
       this.waterService.todayGoal
     );
-    this.achievementService.generateMock();
+    if (USE_MOCK_DATA) {
+      this.achievementService.generateMock();
+    }
     // 基于实际健康数据检测异常（非 mock）
     this.anomalyService.generate(this.healthModelVM.inputVM);
 
     // 异步从后端 API 刷新数据（不阻塞 UI 渲染）
-    this.refreshFromApi();
+    void this.refreshFromApi();
   }
 
   /** 异步从后端加载最新数据并刷新 UI */

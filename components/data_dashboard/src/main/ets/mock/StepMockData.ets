@@ -116,7 +116,7 @@ function generateMonthOptions(): StepRangeOption[] {
 
     options.push({
       label: `${year}年${padDate(month)}月`,
-      period: `${padDate(midDay)}月${padDate(midDay)}日`,
+      period: `${padDate(month)}月${padDate(midDay)}日`,
       currentSteps: steps[midDay - 1],
       steps: steps,
       labels: labels,
