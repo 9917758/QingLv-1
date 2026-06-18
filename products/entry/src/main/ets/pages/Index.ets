@@ -1,6 +1,6 @@
 import { PersistenceV2 } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
-import { GlobalContext, PreferenceConstant, PreferenceUtil, RouterMap, UserInfo, NetworkConfig, AuthToken, Constants } from 'common';
+import { GlobalContext, PreferenceConstant, PreferenceUtil, RouterMap, UserInfo, NetworkConfig, AuthToken, Constants, HttpUtil } from 'common';
 import { FavoriteUtil, HealthFavoritesPageBuilder } from 'health';
 import { BmiCalculatorPageBuilder } from 'health/src/main/ets/views/BmiCalculatorPage';
 import { AchievementPageBuilder } from 'health/src/main/ets/views/AchievementPage';
@@ -82,27 +82,26 @@ struct Index {
   }
 
   gotoLoginOrMainPage() {
-    if (this.userInfo.isLogin) {
+    if (this.userInfo.isLogin || AuthToken.isLoggedIn()) {
+      // 后台静默刷新 Token（续期 7 天）
+      HttpUtil.post<Record<string, string>>('/api/auth/refresh').then(resp => {
+        if (resp.data && resp.data['access_token']) {
+          AuthToken.save(resp.data['access_token']);
+        }
+      }).catch(() => {});
+
       phoneRouterControl.replacePage({
         pageName: RouterMap.MAIN_PAGE,
         builder: wrapBuilder(HomePageBuilder)
       })
     } else {
-      // 优先使用后端登录页，有 Token 则直接进主页
-      if (AuthToken.isLoggedIn()) {
-        phoneRouterControl.replacePage({
-          pageName: RouterMap.MAIN_PAGE,
-          builder: wrapBuilder(HomePageBuilder)
-        })
-      } else {
-        phoneRouterControl.jumpPage({
-          pageName: RouterMap.LOGIN_PAGE,
-          builder: wrapBuilder(BackendLoginPageBuilder),
-          onPop: (_popInfo: PopInfo) => {
-            this.gotoMineOrMainPage();
-          }
-        })
-      }
+      phoneRouterControl.jumpPage({
+        pageName: RouterMap.LOGIN_PAGE,
+        builder: wrapBuilder(BackendLoginPageBuilder),
+        onPop: (_popInfo: PopInfo) => {
+          this.gotoMineOrMainPage();
+        }
+      })
     }
   }
 
