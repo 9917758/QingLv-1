@@ -22,8 +22,11 @@ import { CommonHeader } from '../components/CommonHeader';
 export struct StepHistoryPage {
   private vm: StepHistoryVM = StepHistoryVM.instance;
   @Local routerModule: NavPathStack = new NavPathStack();
+
   handleBack = (): void => {
-    this.routerModule.pop();
+    if (this.routerModule) {
+      this.routerModule.pop();
+    }
   }
 
   build() {

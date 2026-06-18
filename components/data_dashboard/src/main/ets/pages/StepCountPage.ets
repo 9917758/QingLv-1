@@ -35,7 +35,9 @@ export struct StepCountPage {
   }
 
   handleBack = (): void => {
-    this.routerModule.pop('back');
+    if (this.routerModule) {
+      this.routerModule.pop('back');
+    }
   }
   navigateToHistory = (): void => {
     this.vm.closeMenus();

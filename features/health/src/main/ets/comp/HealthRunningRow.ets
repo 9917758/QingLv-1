@@ -37,11 +37,7 @@ export struct HealthRunningRow {
 
     phoneRouterControl.jumpPage({
       pageName: RouterMap.STEP_COUNT_PAGE,
-      builder: wrapBuilder(StepCountPageBuilder),
-      onPop: (_popInfo: PopInfo) => {
-        // 删除栈，但无需pop页面
-        phoneRouterControl.deletePage()
-      }
+      builder: wrapBuilder(StepCountPageBuilder)
     })
   }
 
